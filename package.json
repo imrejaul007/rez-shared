@@ -1,0 +1,26 @@
+{
+  "name": "@imrejaul007/rez-shared",
+  "version": "1.0.0",
+  "description": "Shared types, DTOs, status contracts, and utils across all REZ apps",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsc --watch"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imrejaul007/rez-shared.git"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2"
+  }
+}
