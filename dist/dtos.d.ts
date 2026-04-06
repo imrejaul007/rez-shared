@@ -68,11 +68,14 @@ export interface OrderDTO {
     updatedAt: string;
 }
 export type WalletCoinType = CoinType;
-export interface PaginatedResponse<T> {
+/** @deprecated Use PaginatedResponse from types/api.ts instead */
+export interface PaginatedDtoResponse<T> {
     data: T[];
     total: number;
     page: number;
     limit: number;
     totalPages: number;
 }
+/** @deprecated Use PaginatedResponse from types/api.ts */
+export type PaginatedResponse<T> = PaginatedDtoResponse<T>;
 //# sourceMappingURL=dtos.d.ts.map

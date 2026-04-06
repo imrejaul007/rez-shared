@@ -17,15 +17,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // ── Phase 7: Order & Payment status contracts ──────────────────────────────────
 __exportStar(require("./orderStatuses"), exports);
 __exportStar(require("./paymentStatuses"), exports);
-__exportStar(require("./dtos"), exports);
+// PaginatedResponse re-exported from types/api.ts (canonical version)
 __exportStar(require("./statusCompat"), exports);
 // ── Pre-existing shared exports ────────────────────────────────────────────────
 // Types
 __exportStar(require("./types/wallet"), exports);
+__exportStar(require("./types/api"), exports);
 // Utils
 __exportStar(require("./utils/currency"), exports);
 __exportStar(require("./utils/validation"), exports);
 __exportStar(require("./utils/date"), exports);
 // Constants
 __exportStar(require("./constants/coins"), exports);
+__exportStar(require("./constants/errors"), exports);
 //# sourceMappingURL=index.js.map

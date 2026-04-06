@@ -83,11 +83,16 @@ export interface OrderDTO {
 export type WalletCoinType = CoinType;
 
 // ── Pagination wrapper ─────────────────────────────────────────────────────────
+// NOTE: Canonical PaginatedResponse is in types/api.ts. This is kept for backward compat.
 
-export interface PaginatedResponse<T> {
+/** @deprecated Use PaginatedResponse from types/api.ts instead */
+export interface PaginatedDtoResponse<T> {
   data: T[];
   total: number;
   page: number;
   limit: number;
   totalPages: number;
 }
+
+/** @deprecated Use PaginatedResponse from types/api.ts */
+export type PaginatedResponse<T> = PaginatedDtoResponse<T>;
