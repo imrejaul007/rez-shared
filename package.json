@@ -1,0 +1,66 @@
+{
+  "name": "@rez/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities for REZ services",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./middleware": {
+      "import": "./dist/middleware/index.js",
+      "require": "./dist/middleware/index.js",
+      "types": "./dist/middleware/index.d.ts"
+    },
+    "./schemas": {
+      "import": "./dist/schemas/index.js",
+      "require": "./dist/schemas/index.js",
+      "types": "./dist/schemas/index.d.ts"
+    },
+    "./queue": {
+      "import": "./dist/queue/index.js",
+      "require": "./dist/queue/index.js",
+      "types": "./dist/queue/index.d.ts"
+    },
+    "./webhook": {
+      "import": "./dist/webhook/index.js",
+      "require": "./dist/webhook/index.js",
+      "types": "./dist/webhook/index.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "axios": "^1.11.0",
+    "bullmq": "^5.4.0",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "ioredis": "^5.10.1",
+    "isomorphic-dompurify": "^2.3.0",
+    "mongoose": "^8.17.2",
+    "rate-limit-redis": "^4.1.5",
+    "uuid": "^10.0.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.400.0",
+    "@types/express": "^5.0.6",
+    "@types/express-rate-limit": "^6.0.0",
+    "@types/node": "^24.12.0",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.3.3"
+  }
+}
