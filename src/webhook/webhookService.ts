@@ -14,9 +14,10 @@
 
 import { createHmac } from 'crypto';
 import axios, { AxiosError } from 'axios';
-import { RedisClient } from 'redis';
+import type Redis from 'ioredis';
 import mongoose, { Schema, Document } from 'mongoose';
-import { JobQueue } from './jobQueue';
+import { Job } from 'bullmq';
+import { JobQueue } from '../queue/jobQueue';
 
 export enum WebhookEventType {
   // Order events
@@ -105,7 +106,7 @@ export const WebhookDelivery = mongoose.model<IWebhookDelivery>('WebhookDelivery
  */
 export class WebhookService {
   constructor(
-    private redis: RedisClient,
+    private redis: Redis,
     private jobQueue: JobQueue
   ) {}
 
@@ -329,7 +330,7 @@ export class WebhookService {
  * Setup webhook job processor
  */
 export function setupWebhookProcessor(jobQueue: JobQueue, webhookService: WebhookService) {
-  jobQueue.process(async (job) => {
+  jobQueue.process(async (job: Job<any, any, string>) => {
     const { webhookId, event, payload, attempt = 1 } = job.data;
 
     const success = await webhookService.deliver(webhookId, event, payload, attempt);

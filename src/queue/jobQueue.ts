@@ -13,7 +13,7 @@
  */
 
 import { Queue, Worker, Job, QueueEvents } from 'bullmq';
-import { RedisClient } from 'redis';
+import type Redis from 'ioredis';
 
 export interface JobQueueOptions {
   concurrency?: number;
@@ -23,6 +23,7 @@ export interface JobQueueOptions {
 }
 
 export interface AsyncJobData {
+  type?: string;
   [key: string]: any;
 }
 
@@ -30,17 +31,17 @@ export interface AsyncJobData {
  * Generic job queue wrapper
  */
 export class JobQueue<T extends AsyncJobData = AsyncJobData> {
-  private queue: Queue<T>;
-  private worker?: Worker<T>;
+  private queue: Queue<any, any, string>;
+  private worker?: Worker<any, any, string>;
   private queueEvents?: QueueEvents;
 
   constructor(
     name: string,
-    redis: RedisClient,
+    redis: Redis,
     private options: JobQueueOptions = {}
   ) {
     // Create queue
-    this.queue = new Queue<T>(name, {
+    this.queue = new Queue(name, {
       connection: {
         host: (redis as any).options?.host || 'localhost',
         port: (redis as any).options?.port || 6379,
@@ -74,8 +75,8 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
   /**
    * Add job to queue
    */
-  async add(data: T, options?: { priority?: number; delay?: number }): Promise<Job<T>> {
-    return this.queue.add(data.type || 'job', data, {
+  async add(data: T, options?: { priority?: number; delay?: number }): Promise<Job<any, any, string>> {
+    return this.queue.add(data.type || 'job', data as any, {
       priority: options?.priority || 0,
       delay: options?.delay || this.options.defaultDelay || 0,
     });
@@ -88,8 +89,8 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
     uniqueKey: string,
     data: T,
     options?: { priority?: number }
-  ): Promise<Job<T>> {
-    return this.queue.add(data.type || 'job', data, {
+  ): Promise<Job<any, any, string>> {
+    return this.queue.add(data.type || 'job', data as any, {
       jobId: uniqueKey,
       priority: options?.priority || 0,
     });
@@ -102,9 +103,9 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
     data: T,
     scheduledTime: Date,
     options?: { priority?: number }
-  ): Promise<Job<T>> {
+  ): Promise<Job<any, any, string>> {
     const delay = scheduledTime.getTime() - Date.now();
-    return this.queue.add(data.type || 'job', data, {
+    return this.queue.add(data.type || 'job', data as any, {
       priority: options?.priority || 0,
       delay: Math.max(0, delay),
     });
@@ -114,10 +115,10 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
    * Set up job processor
    */
   process(
-    handler: (job: Job<T>) => Promise<any>,
+    handler: (job: Job<any, any, string>) => Promise<any>,
     concurrency: number = this.options.concurrency || 4
   ): void {
-    this.worker = new Worker<T>(this.queue.name, handler, {
+    this.worker = new Worker(this.queue.name, handler, {
       connection: (this.queue as any).client.options,
       concurrency,
     });
@@ -192,7 +193,7 @@ export class JobQueueService {
   private webhookQueue: JobQueue;
   private orderQueue: JobQueue;
 
-  constructor(redis: RedisClient) {
+  constructor(redis: Redis) {
     this.emailQueue = new JobQueue('send-email', redis);
     this.smsQueue = new JobQueue('send-sms', redis);
     this.pushQueue = new JobQueue('send-push', redis);

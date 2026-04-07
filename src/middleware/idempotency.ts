@@ -12,7 +12,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import { RedisClient } from 'redis';
+import type Redis from 'ioredis';
 
 const IDEMPOTENCY_TTL = 3600; // 1 hour in seconds
 
@@ -22,7 +22,7 @@ const IDEMPOTENCY_TTL = 3600; // 1 hour in seconds
  * Checks if a request with the same idempotency key has been processed.
  * If yes, returns cached response. If no, caches the response for future requests.
  */
-export function idempotencyMiddleware(redis: RedisClient) {
+export function idempotencyMiddleware(redis: Redis) {
   return async (req: Request, res: Response, next: NextFunction) => {
     // Only apply to mutation operations
     if (!['POST', 'PATCH', 'PUT', 'DELETE'].includes(req.method)) {
@@ -76,7 +76,7 @@ export function idempotencyMiddleware(redis: RedisClient) {
             body: typeof data === 'string' ? JSON.parse(data) : data,
           };
 
-          redis.setEx(cacheKey, IDEMPOTENCY_TTL, JSON.stringify(responseData)).catch((err) => {
+          redis.setex(cacheKey, IDEMPOTENCY_TTL, JSON.stringify(responseData)).catch((err: unknown) => {
             console.error('Failed to cache idempotent response:', err);
           });
         }
@@ -103,12 +103,12 @@ function isValidUUID(uuid: string): boolean {
 /**
  * Clear idempotency cache (for testing or manual cleanup)
  */
-export async function clearIdempotencyKey(redis: RedisClient, idempotencyKey: string): Promise<void> {
+export async function clearIdempotencyKey(redis: Redis, idempotencyKey: string): Promise<void> {
   const pattern = `idempotency:*:${idempotencyKey}`;
   const keys = await redis.keys(pattern);
 
   if (keys.length > 0) {
-    await redis.del(keys);
+    await redis.del(...keys);
   }
 }
 

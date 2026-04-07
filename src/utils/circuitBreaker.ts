@@ -229,7 +229,6 @@ export function getCircuitBreakerStatus(breakers: Map<string, CircuitBreaker>) {
 
   for (const [name, breaker] of breakers) {
     report.push({
-      name,
       ...breaker.getStatus(),
     });
   }

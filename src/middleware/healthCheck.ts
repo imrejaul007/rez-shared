@@ -6,11 +6,11 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { RedisClient } from 'redis';
+import type Redis from 'ioredis';
 import mongoose from 'mongoose';
 
 export interface HealthCheckDependencies {
-  redis?: RedisClient;
+  redis?: Redis;
   mongoose?: typeof mongoose;
 }
 

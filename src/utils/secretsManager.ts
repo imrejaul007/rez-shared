@@ -12,7 +12,7 @@
  * ```
  */
 
-import { RedisClient } from 'redis';
+import type Redis from 'ioredis';
 
 export type SecretSource = 'env' | 'aws' | 'vault';
 
@@ -27,9 +27,9 @@ const CACHE_TTL = 60 * 60 * 1000; // 1 hour
  */
 export class SecretsManager {
   private source: SecretSource;
-  private redis?: RedisClient;
+  private redis?: Redis;
 
-  constructor(source: SecretSource = 'env', redis?: RedisClient) {
+  constructor(source: SecretSource = 'env', redis?: Redis) {
     this.source = source;
     this.redis = redis;
   }
@@ -135,7 +135,7 @@ export class SecretsManager {
     // Log to Redis for audit trail
     if (this.redis) {
       try {
-        await this.redis.lPush(
+        await this.redis.lpush(
           'audit:secrets',
           JSON.stringify(logEntry)
         );

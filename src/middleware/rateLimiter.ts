@@ -7,13 +7,17 @@
 
 import rateLimit from 'express-rate-limit';
 import RedisStore from 'rate-limit-redis';
-import { RedisClient } from 'redis';
+import type Redis from 'ioredis';
+
+function sendRedisCommand(redis: Redis, ...args: string[]) {
+  return (redis as any).call(...args);
+}
 
 /**
  * Create a rate limiter with Redis store
  */
 export function createRateLimiter(
-  redis: RedisClient,
+  redis: Redis,
   options: {
     windowMs?: number; // Time window in milliseconds (default: 60s)
     max?: number; // Max requests per window (default: 10)
@@ -24,11 +28,8 @@ export function createRateLimiter(
 ) {
   return rateLimit({
     store: new RedisStore({
-      client: redis,
       prefix: 'rate-limit:',
-      sendCommand: async (cmd: string, args: string[]) => {
-        return await (redis as any).sendCommand([cmd, ...args]);
-      },
+      sendCommand: (...args: string[]) => sendRedisCommand(redis, ...args),
     }),
     windowMs: options.windowMs || 60 * 1000,
     max: options.max || 10,
@@ -46,7 +47,7 @@ export function createRateLimiter(
  * Rate limiter for order creation
  * Limit: 5 orders per minute per user
  */
-export function createOrderRateLimiter(redis: RedisClient) {
+export function createOrderRateLimiter(redis: Redis) {
   return createRateLimiter(redis, {
     windowMs: 60 * 1000, // 1 minute
     max: 5, // 5 orders per minute
@@ -59,7 +60,7 @@ export function createOrderRateLimiter(redis: RedisClient) {
  * Rate limiter for status updates (merchant)
  * Limit: 60 updates per minute per merchant
  */
-export function createStatusUpdateRateLimiter(redis: RedisClient) {
+export function createStatusUpdateRateLimiter(redis: Redis) {
   return createRateLimiter(redis, {
     windowMs: 60 * 1000,
     max: 60,
@@ -72,7 +73,7 @@ export function createStatusUpdateRateLimiter(redis: RedisClient) {
  * Rate limiter for KDS updates
  * Limit: 1000 updates per minute per store (high for real-time)
  */
-export function createKdsRateLimiter(redis: RedisClient) {
+export function createKdsRateLimiter(redis: Redis) {
   return createRateLimiter(redis, {
     windowMs: 60 * 1000,
     max: 1000,
@@ -85,7 +86,7 @@ export function createKdsRateLimiter(redis: RedisClient) {
  * Rate limiter for offer creation (merchant)
  * Limit: 10 offers per hour per merchant
  */
-export function createOfferRateLimiter(redis: RedisClient) {
+export function createOfferRateLimiter(redis: Redis) {
   return createRateLimiter(redis, {
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 10,
@@ -98,7 +99,7 @@ export function createOfferRateLimiter(redis: RedisClient) {
  * Global API rate limiter
  * Limit: 1000 requests per minute per IP
  */
-export function createGlobalRateLimiter(redis: RedisClient) {
+export function createGlobalRateLimiter(redis: Redis) {
   return createRateLimiter(redis, {
     windowMs: 60 * 1000,
     max: 1000,
@@ -111,14 +112,11 @@ export function createGlobalRateLimiter(redis: RedisClient) {
  * Auth attempt rate limiter
  * Limit: 5 failed attempts per 15 minutes per IP
  */
-export function createAuthRateLimiter(redis: RedisClient) {
+export function createAuthRateLimiter(redis: Redis) {
   return rateLimit({
     store: new RedisStore({
-      client: redis,
       prefix: 'rate-limit:auth:',
-      sendCommand: async (cmd: string, args: string[]) => {
-        return await (redis as any).sendCommand([cmd, ...args]);
-      },
+      sendCommand: (...args: string[]) => sendRedisCommand(redis, ...args),
     }),
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // 5 attempts

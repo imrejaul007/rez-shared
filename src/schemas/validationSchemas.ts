@@ -44,7 +44,7 @@ export const addressSchema = z.object({
   city: z.string().min(1, 'City is required').max(50),
   state: z.string().min(1, 'State is required').max(50),
   pincode: pincodeSchema,
-  country: z.string().default('India').max(50),
+  country: z.string().max(50).default('India'),
   landmark: z.string().max(100).optional(),
   addressType: z.enum(['home', 'work', 'other']).default('home'),
 });
@@ -93,7 +93,7 @@ export type UpdateOrderStatusRequest = z.infer<typeof updateOrderStatusSchema>;
 /**
  * Offer creation schema (base)
  */
-export const createOfferSchema = z.object({
+const createOfferSchemaBase = z.object({
   title: z.string().min(1, 'Title is required').max(200),
   description: z.string().max(1000).optional(),
   offerType: z.enum(['discount', 'cashback', 'deal', 'flash_sale', 'loyalty', 'gift_card', 'voucher', 'dynamic_pricing']),
@@ -106,7 +106,9 @@ export const createOfferSchema = z.object({
   applicableCategories: z.array(z.string().max(24)).optional(),
   applicableProducts: z.array(z.string().max(24)).optional(),
   userSegments: z.array(z.string()).optional(),
-}).refine((data) => data.startDate < data.endDate, {
+});
+
+export const createOfferSchema = createOfferSchemaBase.refine((data) => data.startDate < data.endDate, {
   message: 'startDate must be before endDate',
   path: ['endDate'],
 });
@@ -116,10 +118,13 @@ export type CreateOfferRequest = z.infer<typeof createOfferSchema>;
 /**
  * Discount offer schema (specific)
  */
-export const createDiscountOfferSchema = createOfferSchema.extend({
+export const createDiscountOfferSchema = createOfferSchemaBase.extend({
   discountType: z.enum(['percentage', 'fixed']),
   discountValue: z.number().positive('Discount value must be positive'),
   maxDiscountAmount: z.number().nonnegative().optional(),
+}).refine((data) => data.startDate < data.endDate, {
+  message: 'startDate must be before endDate',
+  path: ['endDate'],
 });
 
 export type CreateDiscountOfferRequest = z.infer<typeof createDiscountOfferSchema>;
@@ -127,9 +132,12 @@ export type CreateDiscountOfferRequest = z.infer<typeof createDiscountOfferSchem
 /**
  * Cashback offer schema (specific)
  */
-export const createCashbackOfferSchema = createOfferSchema.extend({
+export const createCashbackOfferSchema = createOfferSchemaBase.extend({
   cashbackType: z.enum(['coins', 'wallet']),
   cashbackValue: z.number().positive('Cashback value must be positive'),
+}).refine((data) => data.startDate < data.endDate, {
+  message: 'startDate must be before endDate',
+  path: ['endDate'],
 });
 
 export type CreateCashbackOfferRequest = z.infer<typeof createCashbackOfferSchema>;

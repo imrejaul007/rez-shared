@@ -14,7 +14,7 @@ export interface CoinTransaction {
     _id: string;
     coinType: CoinType;
     amount: number;
-    type: 'earned' | 'spent' | 'expired' | 'refunded';
+    type: 'earned' | 'spent' | 'expired' | 'refunded' | 'bonus' | 'branded_award';
     description: string;
     createdAt: string;
 }
