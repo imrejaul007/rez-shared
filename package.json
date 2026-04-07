@@ -1,9 +1,13 @@
 {
-  "name": "@rez/shared",
+  "name": "@imrejaul007/rez-shared",
   "version": "1.0.0",
   "description": "Shared utilities for REZ services",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
