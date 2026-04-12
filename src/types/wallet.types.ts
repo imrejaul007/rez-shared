@@ -24,7 +24,13 @@
  * Note: CoinType is in constants/coins.ts.
  * Use this WalletCoinType when reading raw MongoDB wallet documents.
  */
-export type WalletCoinType = 'rez' | 'prive' | 'branded' | 'promo';
+/**
+ * WalletCoinType: coin types that have a balance bucket in the Wallet document.
+ * These correspond to the `type` field in Wallet.coins[].
+ * Note: 'cashback' is a balance bucket on WalletEntityBalance, not a coins[] entry.
+ *       'category' and 'referral' are transaction-only coin types — no wallet balance bucket.
+ */
+export type WalletCoinType = 'rez' | 'prive' | 'branded' | 'promo' | 'cashback';
 
 // ── Coin Balance (full) ───────────────────────────────────────────────────────
 
@@ -125,7 +131,20 @@ export type CoinTransactionType =
  * CoinTransaction.coinType values — as stored in the CoinTransaction model.
  * Distinct from WalletCoinType (the coin balance type in Wallet.coins[].type).
  */
-export type CoinTransactionCoinType = 'rez' | 'cashback' | 'referral';
+/**
+ * CoinTransactionCoinType: all coin types that can appear in a CoinTransaction document.
+ * This is the full set from the CoinTransaction model (wallet-service + backend).
+ * Subset of CoinType from constants/coins.ts.
+ * Note: 'nuqta' is a legacy alias for 'rez'; use normalizeCoinType() to canonicalize.
+ */
+export type CoinTransactionCoinType =
+  | 'rez'
+  | 'nuqta'    // legacy alias for 'rez' — present in existing MongoDB docs
+  | 'prive'
+  | 'branded'
+  | 'promo'
+  | 'cashback'
+  | 'referral';
 
 // ── Full Coin Transaction entity ──────────────────────────────────────────────
 
