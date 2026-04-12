@@ -96,7 +96,7 @@ export type UpdateOrderStatusRequest = z.infer<typeof updateOrderStatusSchema>;
 const createOfferSchemaBase = z.object({
   title: z.string().min(1, 'Title is required').max(200),
   description: z.string().max(1000).optional(),
-  offerType: z.enum(['discount', 'cashback', 'deal', 'flash_sale', 'loyalty', 'gift_card', 'voucher', 'dynamic_pricing']),
+  offerType: z.enum(['discount', 'cashback', 'voucher', 'combo', 'special', 'walk_in']),
   startDate: z.date(),
   endDate: z.date(),
   minOrderAmount: z.number().nonnegative().optional(),
