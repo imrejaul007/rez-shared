@@ -5,6 +5,16 @@ export { OrderItemDTO, OrderPaymentDTO, OrderDTO, PaginatedDtoResponse } from '.
 // PaginatedResponse re-exported from types/api.ts (canonical version)
 export * from './statusCompat';
 
+// ── Canonical entity types (Phase 8+: single source of truth) ─────────────────
+// Import entity types directly: import type { User, Order } from '@rez/shared'
+export * from './types/user.types';
+export * from './types/merchant.types';
+export * from './types/offer.types';
+export * from './types/order.types';
+export * from './types/wallet.types';
+export * from './types/booking.types';
+export * from './types/campaign.types';
+
 // ── Pre-existing shared exports ────────────────────────────────────────────────
 // Types
 export * from './types/wallet';
