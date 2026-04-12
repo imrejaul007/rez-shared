@@ -11,7 +11,6 @@ export const COIN_TYPES = {
   PRIVE: 'prive' as const,
   BRANDED: 'branded' as const,
   PROMO: 'promo' as const,
-  CATEGORY: 'category' as const,
   CASHBACK: 'cashback' as const,
   REFERRAL: 'referral' as const,
 } as const;
@@ -20,7 +19,7 @@ export type CoinType = typeof COIN_TYPES[keyof typeof COIN_TYPES];
 
 /** Array form for iteration and validation */
 export const COIN_TYPE_ARRAY: readonly CoinType[] = [
-  'rez', 'prive', 'promo', 'branded', 'category', 'cashback', 'referral',
+  'rez', 'prive', 'promo', 'branded', 'cashback', 'referral',
 ] as const;
 
 // ── Legacy Compatibility ──────────────────────────────────────────────────────
@@ -32,7 +31,6 @@ export const LEGACY_COIN_TYPE_MAP: Record<string, CoinType> = {
   prive: 'prive',
   branded: 'branded',
   promo: 'promo',
-  category: 'category',
   cashback: 'cashback',
   referral: 'referral',
 };
@@ -49,7 +47,6 @@ export const COIN_EXPIRY_DAYS: Record<CoinType, number> = {
   prive:    365,   // Prive coins: 1 year
   promo:    7,     // Promo coins: 7 days (creates urgency)
   branded:  90,    // Branded coins: 3 months
-  category: 30,    // Category coins: 1 month
   cashback: 30,    // Cashback coins: 1 month
   referral: 90,    // Referral coins: 3 months
 };
@@ -59,7 +56,6 @@ export const COIN_DISPLAY_NAMES: Record<CoinType, string> = {
   prive:    'Prive Coins',
   promo:    'Promo Coins',
   branded:  'Branded Coins',
-  category: 'Category Coins',
   cashback: 'Cashback Coins',
   referral: 'Referral Coins',
 };

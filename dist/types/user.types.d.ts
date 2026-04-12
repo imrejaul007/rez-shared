@@ -41,7 +41,9 @@ export interface UserWallet {
 }
 export type UserRole = 'user' | 'admin' | 'merchant' | 'support' | 'operator' | 'super_admin';
 export declare const USER_ROLES: readonly UserRole[];
-export type NuqtaPlusTier = 'free' | 'premium' | 'vip';
+export type RezPlusTier = 'free' | 'premium' | 'vip';
+/** @deprecated use RezPlusTier */
+export type NuqtaPlusTier = RezPlusTier;
 export type PriveTier = 'none' | 'entry' | 'signature' | 'elite';
 export interface User {
     _id: string;
@@ -59,6 +61,8 @@ export interface User {
     fullName?: string;
     username?: string;
     isPremium?: boolean;
+    rezPlusTier?: RezPlusTier;
+    /** @deprecated use rezPlusTier */
     nuqtaPlusTier?: NuqtaPlusTier;
     priveTier?: PriveTier;
     activeZones?: string[];

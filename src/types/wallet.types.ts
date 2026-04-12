@@ -17,9 +17,8 @@
 
 /**
  * CoinType as stored in Wallet documents.
- * 'rez' is the primary coin type. 'nuqta' was the legacy alias and may still
- * appear in existing MongoDB docs — use normalizeCoinType() from '@rez/shared'
- * to canonicalize.
+ * 'rez' is the primary coin type. Use normalizeCoinType() from '@rez/shared'
+ * to canonicalize any legacy values (e.g. 'nuqta') found in existing MongoDB docs.
  *
  * Note: CoinType is in constants/coins.ts.
  * Use this WalletCoinType when reading raw MongoDB wallet documents.
@@ -125,6 +124,36 @@ export type CoinTransactionType =
   | 'bonus'
   | 'branded_award';
 
+// ── Transaction Status ────────────────────────────────────────────────────────
+
+/**
+ * BackendTransactionStatus: lowercase values sent by the backend API.
+ * These are the wire values in CoinTransaction.status and wallet API responses.
+ * Use this type when consuming API responses or writing API handlers.
+ *
+ * Note: 'reversed' is the backend term for a reversal (not 'REFUNDED').
+ */
+export type BackendTransactionStatus =
+  | 'completed'
+  | 'pending'
+  | 'failed'
+  | 'cancelled'
+  | 'processing'
+  | 'reversed';
+
+/**
+ * TransactionStatus: SCREAMING_CASE display enum for UI components.
+ * Map from BackendTransactionStatus before rendering.
+ * Do NOT send these values to the backend — use BackendTransactionStatus instead.
+ */
+export type TransactionStatus =
+  | 'SUCCESS'
+  | 'PENDING'
+  | 'FAILED'
+  | 'CANCELLED'
+  | 'PROCESSING'
+  | 'REVERSED';
+
 // ── Coin Transaction coinType ─────────────────────────────────────────────────
 
 /**
@@ -134,12 +163,12 @@ export type CoinTransactionType =
 /**
  * CoinTransactionCoinType: all coin types that can appear in a CoinTransaction document.
  * This is the full set from the CoinTransaction model (wallet-service + backend).
- * Subset of CoinType from constants/coins.ts.
- * Note: 'nuqta' is a legacy alias for 'rez'; use normalizeCoinType() to canonicalize.
+ * Superset of CoinType from constants/coins.ts (adds 'nuqta' for legacy doc compatibility).
+ * Use normalizeCoinType() to map 'nuqta' → 'rez' before display or logic.
  */
 export type CoinTransactionCoinType =
   | 'rez'
-  | 'nuqta'    // legacy alias for 'rez' — present in existing MongoDB docs
+  | 'nuqta'    // legacy alias for 'rez' — present in existing MongoDB docs; do not write new docs with this value
   | 'prive'
   | 'branded'
   | 'promo'

@@ -14,14 +14,19 @@
  */
 /**
  * CoinType as stored in Wallet documents.
- * 'rez' is the primary coin type. 'nuqta' was the legacy alias and may still
- * appear in existing MongoDB docs — use normalizeCoinType() from '@rez/shared'
- * to canonicalize.
+ * 'rez' is the primary coin type. Use normalizeCoinType() from '@rez/shared'
+ * to canonicalize any legacy values (e.g. 'nuqta') found in existing MongoDB docs.
  *
  * Note: CoinType is in constants/coins.ts.
  * Use this WalletCoinType when reading raw MongoDB wallet documents.
  */
-export type WalletCoinType = 'rez' | 'prive' | 'branded' | 'promo';
+/**
+ * WalletCoinType: coin types that have a balance bucket in the Wallet document.
+ * These correspond to the `type` field in Wallet.coins[].
+ * Note: 'cashback' is a balance bucket on WalletEntityBalance, not a coins[] entry.
+ *       'category' and 'referral' are transaction-only coin types — no wallet balance bucket.
+ */
+export type WalletCoinType = 'rez' | 'prive' | 'branded' | 'promo' | 'cashback';
 export interface CoinBalance {
     type: WalletCoinType;
     amount: number;
@@ -53,7 +58,7 @@ export interface BrandedCoin {
  * Canonical balance shape from IWallet.balance.
  * Fields: total, available, pending, cashback.
  *
- * Note: A simpler WalletBalance interface (nuqta/prive/promo per-coin view)
+ * Note: A simpler WalletBalance interface (rez/prive/promo per-coin view)
  * lives in types/wallet.ts for backward compatibility with pre-Phase-8 code.
  * This WalletEntityBalance reflects the actual MongoDB document shape.
  */
@@ -92,10 +97,30 @@ export interface Wallet {
  */
 export type CoinTransactionType = 'earned' | 'spent' | 'expired' | 'refunded' | 'bonus' | 'branded_award';
 /**
+ * BackendTransactionStatus: lowercase values sent by the backend API.
+ * These are the wire values in CoinTransaction.status and wallet API responses.
+ * Use this type when consuming API responses or writing API handlers.
+ *
+ * Note: 'reversed' is the backend term for a reversal (not 'REFUNDED').
+ */
+export type BackendTransactionStatus = 'completed' | 'pending' | 'failed' | 'cancelled' | 'processing' | 'reversed';
+/**
+ * TransactionStatus: SCREAMING_CASE display enum for UI components.
+ * Map from BackendTransactionStatus before rendering.
+ * Do NOT send these values to the backend — use BackendTransactionStatus instead.
+ */
+export type TransactionStatus = 'SUCCESS' | 'PENDING' | 'FAILED' | 'CANCELLED' | 'PROCESSING' | 'REVERSED';
+/**
  * CoinTransaction.coinType values — as stored in the CoinTransaction model.
  * Distinct from WalletCoinType (the coin balance type in Wallet.coins[].type).
  */
-export type CoinTransactionCoinType = 'rez' | 'cashback' | 'referral';
+/**
+ * CoinTransactionCoinType: all coin types that can appear in a CoinTransaction document.
+ * This is the full set from the CoinTransaction model (wallet-service + backend).
+ * Superset of CoinType from constants/coins.ts (adds 'nuqta' for legacy doc compatibility).
+ * Use normalizeCoinType() to map 'nuqta' → 'rez' before display or logic.
+ */
+export type CoinTransactionCoinType = 'rez' | 'nuqta' | 'prive' | 'branded' | 'promo' | 'cashback' | 'referral';
 export interface CoinTransactionEntity {
     _id: string;
     user: string;

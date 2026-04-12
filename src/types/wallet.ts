@@ -7,7 +7,7 @@ export interface WalletBalance {
   prive:    number;
   promo:    number;
   branded:  number;
-  category: number;
+  cashback: number;
   total:    number;
 }
 

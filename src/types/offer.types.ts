@@ -144,6 +144,13 @@ export interface Offer {
     | 'first-time';
 
   redemptionCount: number;
+
+  /**
+   * Virtual field — not stored in DB.
+   * Computed from validity.isActive + adminApproved on the backend before serialization.
+   */
+  status?: 'active' | 'inactive' | 'pending_approval' | 'rejected';
+
   createdAt: string;
   updatedAt: string;
 }

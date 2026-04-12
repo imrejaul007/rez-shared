@@ -14,7 +14,7 @@
  * Do NOT redefine these types in frontend apps — import from @rez/shared instead.
  */
 export type BookingType = 'table' | 'service' | 'event' | 'ota' | 'trial';
-export type BookingStatus = 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'no_show' | 'refunded' | 'expired';
+export type BookingStatus = 'pending' | 'confirmed' | 'assigned' | 'in_progress' | 'completed' | 'cancelled' | 'no_show' | 'refunded' | 'expired';
 export interface BaseBooking {
     _id: string;
     bookingNumber: string;

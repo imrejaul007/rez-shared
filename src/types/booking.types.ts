@@ -23,6 +23,7 @@ export type BookingType = 'table' | 'service' | 'event' | 'ota' | 'trial';
 export type BookingStatus =
   | 'pending'
   | 'confirmed'
+  | 'assigned'      // ServiceBooking: provider assigned, not yet in_progress
   | 'in_progress'
   | 'completed'
   | 'cancelled'

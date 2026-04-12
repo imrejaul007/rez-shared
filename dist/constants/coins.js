@@ -13,11 +13,12 @@ exports.COIN_TYPES = {
     PRIVE: 'prive',
     BRANDED: 'branded',
     PROMO: 'promo',
-    CATEGORY: 'category',
+    CASHBACK: 'cashback',
+    REFERRAL: 'referral',
 };
 /** Array form for iteration and validation */
 exports.COIN_TYPE_ARRAY = [
-    'rez', 'prive', 'promo', 'branded', 'category',
+    'rez', 'prive', 'promo', 'branded', 'cashback', 'referral',
 ];
 // ── Legacy Compatibility ──────────────────────────────────────────────────────
 /** Maps legacy 'nuqta' to canonical 'rez'. All other types pass through. */
@@ -27,7 +28,8 @@ exports.LEGACY_COIN_TYPE_MAP = {
     prive: 'prive',
     branded: 'branded',
     promo: 'promo',
-    category: 'category',
+    cashback: 'cashback',
+    referral: 'referral',
 };
 /** Normalize any coin type string to canonical CoinType. Falls back to 'rez'. */
 function normalizeCoinType(type) {
@@ -39,14 +41,16 @@ exports.COIN_EXPIRY_DAYS = {
     prive: 365, // Prive coins: 1 year
     promo: 7, // Promo coins: 7 days (creates urgency)
     branded: 90, // Branded coins: 3 months
-    category: 30, // Category coins: 1 month
+    cashback: 30, // Cashback coins: 1 month
+    referral: 90, // Referral coins: 3 months
 };
 exports.COIN_DISPLAY_NAMES = {
     rez: 'REZ Coins',
     prive: 'Prive Coins',
     promo: 'Promo Coins',
     branded: 'Branded Coins',
-    category: 'Category Coins',
+    cashback: 'Cashback Coins',
+    referral: 'Referral Coins',
 };
 // ── Reward Types ─────────────────────────────────────────────────────────────
 exports.REWARD_TYPES = [

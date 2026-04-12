@@ -8,7 +8,8 @@ export declare const COIN_TYPES: {
     readonly PRIVE: "prive";
     readonly BRANDED: "branded";
     readonly PROMO: "promo";
-    readonly CATEGORY: "category";
+    readonly CASHBACK: "cashback";
+    readonly REFERRAL: "referral";
 };
 export type CoinType = typeof COIN_TYPES[keyof typeof COIN_TYPES];
 /** Array form for iteration and validation */

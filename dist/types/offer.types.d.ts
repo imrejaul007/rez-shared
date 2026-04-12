@@ -38,7 +38,9 @@ export interface OfferEngagement {
     isLikedByUser?: boolean;
 }
 export interface OfferEligibility {
-    nuqtaPlusTiers: ('free' | 'premium' | 'vip')[];
+    rezPlusTiers: ('free' | 'premium' | 'vip')[];
+    /** @deprecated use rezPlusTiers */
+    nuqtaPlusTiers?: ('free' | 'premium' | 'vip')[];
     priveTiers: ('none' | 'entry' | 'signature' | 'elite')[];
     requiredZones: string[];
     requireAll: boolean;
@@ -78,6 +80,11 @@ export interface Offer {
     deliveryTime?: string;
     exclusiveZone?: 'corporate' | 'women' | 'birthday' | 'student' | 'senior' | 'defence' | 'healthcare' | 'teacher' | 'government' | 'differently-abled' | 'first-time';
     redemptionCount: number;
+    /**
+     * Virtual field — not stored in DB.
+     * Computed from validity.isActive + adminApproved on the backend before serialization.
+     */
+    status?: 'active' | 'inactive' | 'pending_approval' | 'rejected';
     createdAt: string;
     updatedAt: string;
 }
