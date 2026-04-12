@@ -32,8 +32,10 @@ export interface OrderItemDTO {
 
 // ── Order Payment Sub-document ─────────────────────────────────────────────────
 
+// TF-11 fix: 'online' and 'mixed' do not exist in DB Order.payment.method enum.
+// Canonical values: wallet, card, upi, cod, netbanking, razorpay, stripe.
 export interface OrderPaymentDTO {
-  method: 'cod' | 'online' | 'wallet' | 'mixed';
+  method: 'cod' | 'wallet' | 'card' | 'upi' | 'netbanking' | 'razorpay' | 'stripe';
   status: OrderPaymentStatus;
   transactionId?: string;
   gatewayOrderId?: string;

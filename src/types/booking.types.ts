@@ -16,7 +16,28 @@
 
 // ── Discriminant ──────────────────────────────────────────────────────────────
 
+// TF-04 fix: BookingType is the canonical short form used in rez-shared and consumer apps.
+// The backend rezbackend/src/types/booking.types.ts uses BookingSource = 'table_booking' | ...
+// Use normalizeBookingType() when receiving raw API responses.
 export type BookingType = 'table' | 'service' | 'event' | 'ota' | 'trial';
+
+/** Backend sends suffixed values ('table_booking', etc.). Normalize to canonical short form. */
+export function normalizeBookingType(raw: string): BookingType {
+  const map: Record<string, BookingType> = {
+    table_booking:   'table',
+    service_booking: 'service',
+    event_booking:   'event',
+    ota_booking:     'ota',
+    trial_booking:   'trial',
+    // short forms pass through
+    table:   'table',
+    service: 'service',
+    event:   'event',
+    ota:     'ota',
+    trial:   'trial',
+  };
+  return map[raw] ?? 'service';
+}
 
 // ── Shared Booking Status ─────────────────────────────────────────────────────
 

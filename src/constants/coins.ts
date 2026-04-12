@@ -42,11 +42,14 @@ export function normalizeCoinType(type: string): CoinType {
 
 // ── Coin Configuration ────────────────────────────────────────────────────────
 
+// H36 fix: COIN_EXPIRY_DAYS values must match currencyRules.ts (the canonical backend source).
+// Previous values: promo=7 (was 90 in backend), branded=90 (was 180 in backend).
+// REZ coins: 0 in backend (never expire) — using 0 here to match.
 export const COIN_EXPIRY_DAYS: Record<CoinType, number> = {
-  rez:      365,  // Primary coins: 1 year
+  rez:      0,    // Primary coins: never expire (matches currencyRules.ts expiryDays: 0)
   prive:    365,  // Privé coins: 1 year
-  promo:    7,    // Promo coins: 7 days (creates urgency)
-  branded:  90,   // Branded coins: 3 months
+  promo:    90,   // Promo coins: 90 days (matches currencyRules.ts)
+  branded:  180,  // Branded coins: 6 months (matches currencyRules.ts)
   cashback: 365,  // Cashback coins: 1 year
   referral: 180,  // Referral coins: 6 months
 };
