@@ -78,7 +78,9 @@ export interface OfferEngagement {
 // ── Offer Eligibility ─────────────────────────────────────────────────────────
 
 export interface OfferEligibility {
-  nuqtaPlusTiers: ('free' | 'premium' | 'vip')[];
+  rezPlusTiers: ('free' | 'premium' | 'vip')[];
+  /** @deprecated use rezPlusTiers */
+  nuqtaPlusTiers?: ('free' | 'premium' | 'vip')[];
   priveTiers: ('none' | 'entry' | 'signature' | 'elite')[];
   requiredZones: string[];
   requireAll: boolean;

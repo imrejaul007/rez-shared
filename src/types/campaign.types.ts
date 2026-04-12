@@ -74,7 +74,7 @@ export interface PromoCampaign {
   targetSegment: PromoCampaignTargetSegment;
   region?: PromoCampaignRegion;
   eligibleCategories?: string[];
-  exclusiveToProgramSlug?: 'student_zone' | 'corporate_perks' | 'nuqta_prive';
+  exclusiveToProgramSlug?: 'student_zone' | 'corporate_perks' | 'rez_prive';
   terms?: string[];
   minOrderValue?: number;
   maxBenefit?: number;

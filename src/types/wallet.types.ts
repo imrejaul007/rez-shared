@@ -65,7 +65,7 @@ export interface BrandedCoin {
  * Canonical balance shape from IWallet.balance.
  * Fields: total, available, pending, cashback.
  *
- * Note: A simpler WalletBalance interface (nuqta/prive/promo per-coin view)
+ * Note: A simpler WalletBalance interface (rez/prive/promo per-coin view)
  * lives in types/wallet.ts for backward compatibility with pre-Phase-8 code.
  * This WalletEntityBalance reflects the actual MongoDB document shape.
  */

@@ -73,7 +73,9 @@ export const USER_ROLES: readonly UserRole[] = [
 
 // ── Tier / Zone ───────────────────────────────────────────────────────────────
 
-export type NuqtaPlusTier = 'free' | 'premium' | 'vip';
+export type RezPlusTier = 'free' | 'premium' | 'vip';
+/** @deprecated use RezPlusTier */
+export type NuqtaPlusTier = RezPlusTier;
 export type PriveTier = 'none' | 'entry' | 'signature' | 'elite';
 
 // ── Main User type ────────────────────────────────────────────────────────────
@@ -96,6 +98,8 @@ export interface User {
   fullName?: string;            // Computed: profile.firstName + profile.lastName
   username?: string;
   isPremium?: boolean;
+  rezPlusTier?: RezPlusTier;
+  /** @deprecated use rezPlusTier */
   nuqtaPlusTier?: NuqtaPlusTier;
   priveTier?: PriveTier;
   activeZones?: string[];
