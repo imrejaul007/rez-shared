@@ -19,6 +19,15 @@ __exportStar(require("./orderStatuses"), exports);
 __exportStar(require("./paymentStatuses"), exports);
 // PaginatedResponse re-exported from types/api.ts (canonical version)
 __exportStar(require("./statusCompat"), exports);
+// ── Canonical entity types (Phase 8+: single source of truth) ─────────────────
+// Import entity types directly: import type { User, Order } from '@rez/shared'
+__exportStar(require("./types/user.types"), exports);
+__exportStar(require("./types/merchant.types"), exports);
+__exportStar(require("./types/offer.types"), exports);
+__exportStar(require("./types/order.types"), exports);
+__exportStar(require("./types/wallet.types"), exports);
+__exportStar(require("./types/booking.types"), exports);
+__exportStar(require("./types/campaign.types"), exports);
 // ── Pre-existing shared exports ────────────────────────────────────────────────
 // Types
 __exportStar(require("./types/wallet"), exports);

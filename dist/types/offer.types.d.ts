@@ -1,0 +1,85 @@
+/**
+ * Canonical Offer types for the REZ platform.
+ *
+ * Source of truth: rezbackend/src/models/Offer.ts
+ * Do NOT redefine these types in frontend apps — import from @rez/shared instead.
+ */
+export declare const OFFER_CATEGORIES: readonly ["mega", "student", "new_arrival", "trending", "food", "fashion", "electronics", "general", "entertainment", "beauty", "wellness"];
+export type OfferCategory = (typeof OFFER_CATEGORIES)[number];
+export type OfferType = 'cashback' | 'discount' | 'voucher' | 'combo' | 'special' | 'walk_in';
+export interface OfferStoreRef {
+    id: string;
+    name: string;
+    logo?: string;
+    rating?: number;
+    verified?: boolean;
+}
+export interface OfferValidity {
+    startDate: string;
+    endDate: string;
+    isActive: boolean;
+}
+export interface OfferRestrictions {
+    minOrderValue?: number;
+    maxDiscountAmount?: number;
+    applicableOn?: string[];
+    usageLimitPerUser?: number;
+    usageLimit?: number;
+    userTypeRestriction?: 'student' | 'new_user' | 'premium' | 'all';
+    ageRestriction?: {
+        minAge?: number;
+        maxAge?: number;
+    };
+}
+export interface OfferEngagement {
+    likesCount: number;
+    sharesCount: number;
+    viewsCount: number;
+    isLikedByUser?: boolean;
+}
+export interface OfferEligibility {
+    nuqtaPlusTiers: ('free' | 'premium' | 'vip')[];
+    priveTiers: ('none' | 'entry' | 'signature' | 'elite')[];
+    requiredZones: string[];
+    requireAll: boolean;
+}
+export interface Offer {
+    _id: string;
+    title: string;
+    subtitle?: string;
+    description?: string;
+    image: string;
+    category: OfferCategory;
+    type: OfferType;
+    /**
+     * Canonical field name: cashbackPercentage (lowercase 'b').
+     * Backend model and all frontends must use this spelling.
+     */
+    cashbackPercentage: number;
+    originalPrice?: number;
+    discountedPrice?: number;
+    /** GeoJSON point */
+    location: {
+        type: 'Point';
+        coordinates: [number, number];
+    };
+    /** Distance from user — calculated dynamically; not stored */
+    distance?: number;
+    store: OfferStoreRef;
+    validity: OfferValidity;
+    restrictions: OfferRestrictions;
+    engagement: OfferEngagement;
+    eligibility?: OfferEligibility;
+    visibleTo: 'all' | 'followers' | 'premium';
+    isFollowerExclusive: boolean;
+    exclusiveUntil?: string;
+    isFreeDelivery: boolean;
+    deliveryFee?: number;
+    deliveryTime?: string;
+    exclusiveZone?: 'corporate' | 'women' | 'birthday' | 'student' | 'senior' | 'defence' | 'healthcare' | 'teacher' | 'government' | 'differently-abled' | 'first-time';
+    redemptionCount: number;
+    createdAt: string;
+    updatedAt: string;
+}
+export declare function isOfferCategory(value: string): value is OfferCategory;
+//# sourceMappingURL=offer.types.d.ts.map

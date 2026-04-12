@@ -17,13 +17,14 @@
 
 /**
  * CoinType as stored in Wallet documents.
- * 'rez' is the legacy alias for 'nuqta' and still appears in existing MongoDB docs.
- * Use normalizeCoinType() from '@rez/shared' to canonicalize to the 5-type enum.
+ * 'rez' is the primary coin type. 'nuqta' was the legacy alias and may still
+ * appear in existing MongoDB docs — use normalizeCoinType() from '@rez/shared'
+ * to canonicalize.
  *
- * Note: CoinType (without 'rez') is in constants/coins.ts.
+ * Note: CoinType is in constants/coins.ts.
  * Use this WalletCoinType when reading raw MongoDB wallet documents.
  */
-export type WalletCoinType = 'nuqta' | 'rez' | 'prive' | 'branded' | 'promo';
+export type WalletCoinType = 'rez' | 'prive' | 'branded' | 'promo';
 
 // ── Coin Balance (full) ───────────────────────────────────────────────────────
 
@@ -124,7 +125,7 @@ export type CoinTransactionType =
  * CoinTransaction.coinType values — as stored in the CoinTransaction model.
  * Distinct from WalletCoinType (the coin balance type in Wallet.coins[].type).
  */
-export type CoinTransactionCoinType = 'nuqta' | 'cashback' | 'referral';
+export type CoinTransactionCoinType = 'rez' | 'cashback' | 'referral';
 
 // ── Full Coin Transaction entity ──────────────────────────────────────────────
 

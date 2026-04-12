@@ -31,7 +31,7 @@ export declare const addressSchema: z.ZodObject<{
     state: string;
     pincode: string;
     country: string;
-    addressType: "home" | "work" | "other";
+    addressType: "other" | "home" | "work";
     email?: string | undefined;
     addressLine2?: string | undefined;
     landmark?: string | undefined;
@@ -46,7 +46,7 @@ export declare const addressSchema: z.ZodObject<{
     addressLine2?: string | undefined;
     country?: string | undefined;
     landmark?: string | undefined;
-    addressType?: "home" | "work" | "other" | undefined;
+    addressType?: "other" | "home" | "work" | undefined;
 }>;
 export type Address = z.infer<typeof addressSchema>;
 /**
@@ -73,7 +73,7 @@ export declare const createOrderSchema: z.ZodObject<{
         state: string;
         pincode: string;
         country: string;
-        addressType: "home" | "work" | "other";
+        addressType: "other" | "home" | "work";
         email?: string | undefined;
         addressLine2?: string | undefined;
         landmark?: string | undefined;
@@ -88,7 +88,7 @@ export declare const createOrderSchema: z.ZodObject<{
         addressLine2?: string | undefined;
         country?: string | undefined;
         landmark?: string | undefined;
-        addressType?: "home" | "work" | "other" | undefined;
+        addressType?: "other" | "home" | "work" | undefined;
     }>;
     paymentMethod: z.ZodEnum<["cod", "wallet", "razorpay", "upi", "card", "netbanking"]>;
     fulfillmentType: z.ZodDefault<z.ZodEnum<["delivery", "pickup", "dine_in", "drive_thru"]>>;
@@ -133,13 +133,13 @@ export declare const createOrderSchema: z.ZodObject<{
         state: string;
         pincode: string;
         country: string;
-        addressType: "home" | "work" | "other";
+        addressType: "other" | "home" | "work";
         email?: string | undefined;
         addressLine2?: string | undefined;
         landmark?: string | undefined;
     };
-    paymentMethod: "cod" | "wallet" | "razorpay" | "upi" | "card" | "netbanking";
-    fulfillmentType: "delivery" | "pickup" | "dine_in" | "drive_thru";
+    paymentMethod: "cod" | "wallet" | "card" | "upi" | "netbanking" | "razorpay";
+    fulfillmentType: "delivery" | "pickup" | "drive_thru" | "dine_in";
     idempotencyKey: string;
     specialInstructions?: string | undefined;
     couponCode?: string | undefined;
@@ -166,11 +166,11 @@ export declare const createOrderSchema: z.ZodObject<{
         addressLine2?: string | undefined;
         country?: string | undefined;
         landmark?: string | undefined;
-        addressType?: "home" | "work" | "other" | undefined;
+        addressType?: "other" | "home" | "work" | undefined;
     };
-    paymentMethod: "cod" | "wallet" | "razorpay" | "upi" | "card" | "netbanking";
+    paymentMethod: "cod" | "wallet" | "card" | "upi" | "netbanking" | "razorpay";
     idempotencyKey: string;
-    fulfillmentType?: "delivery" | "pickup" | "dine_in" | "drive_thru" | undefined;
+    fulfillmentType?: "delivery" | "pickup" | "drive_thru" | "dine_in" | undefined;
     specialInstructions?: string | undefined;
     couponCode?: string | undefined;
     coinsUsed?: {
@@ -218,7 +218,7 @@ export declare const createOfferSchema: z.ZodEffects<z.ZodObject<{
     startDate: Date;
     endDate: Date;
     title: string;
-    offerType: "discount" | "cashback" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "voucher" | "dynamic_pricing";
+    offerType: "cashback" | "discount" | "voucher" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "dynamic_pricing";
     description?: string | undefined;
     minOrderAmount?: number | undefined;
     maxRedemptions?: number | undefined;
@@ -230,7 +230,7 @@ export declare const createOfferSchema: z.ZodEffects<z.ZodObject<{
     startDate: Date;
     endDate: Date;
     title: string;
-    offerType: "discount" | "cashback" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "voucher" | "dynamic_pricing";
+    offerType: "cashback" | "discount" | "voucher" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "dynamic_pricing";
     isActive?: boolean | undefined;
     description?: string | undefined;
     minOrderAmount?: number | undefined;
@@ -244,7 +244,7 @@ export declare const createOfferSchema: z.ZodEffects<z.ZodObject<{
     startDate: Date;
     endDate: Date;
     title: string;
-    offerType: "discount" | "cashback" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "voucher" | "dynamic_pricing";
+    offerType: "cashback" | "discount" | "voucher" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "dynamic_pricing";
     description?: string | undefined;
     minOrderAmount?: number | undefined;
     maxRedemptions?: number | undefined;
@@ -256,7 +256,7 @@ export declare const createOfferSchema: z.ZodEffects<z.ZodObject<{
     startDate: Date;
     endDate: Date;
     title: string;
-    offerType: "discount" | "cashback" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "voucher" | "dynamic_pricing";
+    offerType: "cashback" | "discount" | "voucher" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "dynamic_pricing";
     isActive?: boolean | undefined;
     description?: string | undefined;
     minOrderAmount?: number | undefined;
@@ -292,7 +292,7 @@ export declare const createDiscountOfferSchema: z.ZodEffects<z.ZodObject<{
     startDate: Date;
     endDate: Date;
     title: string;
-    offerType: "discount" | "cashback" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "voucher" | "dynamic_pricing";
+    offerType: "cashback" | "discount" | "voucher" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "dynamic_pricing";
     discountType: "fixed" | "percentage";
     discountValue: number;
     description?: string | undefined;
@@ -307,7 +307,7 @@ export declare const createDiscountOfferSchema: z.ZodEffects<z.ZodObject<{
     startDate: Date;
     endDate: Date;
     title: string;
-    offerType: "discount" | "cashback" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "voucher" | "dynamic_pricing";
+    offerType: "cashback" | "discount" | "voucher" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "dynamic_pricing";
     discountType: "fixed" | "percentage";
     discountValue: number;
     isActive?: boolean | undefined;
@@ -324,7 +324,7 @@ export declare const createDiscountOfferSchema: z.ZodEffects<z.ZodObject<{
     startDate: Date;
     endDate: Date;
     title: string;
-    offerType: "discount" | "cashback" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "voucher" | "dynamic_pricing";
+    offerType: "cashback" | "discount" | "voucher" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "dynamic_pricing";
     discountType: "fixed" | "percentage";
     discountValue: number;
     description?: string | undefined;
@@ -339,7 +339,7 @@ export declare const createDiscountOfferSchema: z.ZodEffects<z.ZodObject<{
     startDate: Date;
     endDate: Date;
     title: string;
-    offerType: "discount" | "cashback" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "voucher" | "dynamic_pricing";
+    offerType: "cashback" | "discount" | "voucher" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "dynamic_pricing";
     discountType: "fixed" | "percentage";
     discountValue: number;
     isActive?: boolean | undefined;
@@ -377,7 +377,7 @@ export declare const createCashbackOfferSchema: z.ZodEffects<z.ZodObject<{
     startDate: Date;
     endDate: Date;
     title: string;
-    offerType: "discount" | "cashback" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "voucher" | "dynamic_pricing";
+    offerType: "cashback" | "discount" | "voucher" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "dynamic_pricing";
     cashbackType: "wallet" | "coins";
     cashbackValue: number;
     description?: string | undefined;
@@ -391,7 +391,7 @@ export declare const createCashbackOfferSchema: z.ZodEffects<z.ZodObject<{
     startDate: Date;
     endDate: Date;
     title: string;
-    offerType: "discount" | "cashback" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "voucher" | "dynamic_pricing";
+    offerType: "cashback" | "discount" | "voucher" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "dynamic_pricing";
     cashbackType: "wallet" | "coins";
     cashbackValue: number;
     isActive?: boolean | undefined;
@@ -407,7 +407,7 @@ export declare const createCashbackOfferSchema: z.ZodEffects<z.ZodObject<{
     startDate: Date;
     endDate: Date;
     title: string;
-    offerType: "discount" | "cashback" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "voucher" | "dynamic_pricing";
+    offerType: "cashback" | "discount" | "voucher" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "dynamic_pricing";
     cashbackType: "wallet" | "coins";
     cashbackValue: number;
     description?: string | undefined;
@@ -421,7 +421,7 @@ export declare const createCashbackOfferSchema: z.ZodEffects<z.ZodObject<{
     startDate: Date;
     endDate: Date;
     title: string;
-    offerType: "discount" | "cashback" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "voucher" | "dynamic_pricing";
+    offerType: "cashback" | "discount" | "voucher" | "deal" | "flash_sale" | "loyalty" | "gift_card" | "dynamic_pricing";
     cashbackType: "wallet" | "coins";
     cashbackValue: number;
     isActive?: boolean | undefined;

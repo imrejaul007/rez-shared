@@ -79,8 +79,9 @@ export interface OrderDTO {
 }
 
 // ── Wallet Coin Type (alias for client code that doesn't import constants) ─────
+// Renamed to DtoWalletCoinType to avoid collision with WalletCoinType in types/wallet.types.ts
 
-export type WalletCoinType = CoinType;
+export type DtoWalletCoinType = CoinType;
 
 // ── Pagination wrapper ─────────────────────────────────────────────────────────
 // NOTE: Canonical PaginatedResponse is in types/api.ts. This is kept for backward compat.

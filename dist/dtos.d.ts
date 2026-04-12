@@ -67,7 +67,7 @@ export interface OrderDTO {
     createdAt: string;
     updatedAt: string;
 }
-export type WalletCoinType = CoinType;
+export type DtoWalletCoinType = CoinType;
 /** @deprecated Use PaginatedResponse from types/api.ts instead */
 export interface PaginatedDtoResponse<T> {
     data: T[];
