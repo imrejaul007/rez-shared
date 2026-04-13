@@ -16,4 +16,3 @@ export interface CoinTransaction {
     description: string;
     createdAt: string;
 }
-//# sourceMappingURL=wallet.d.ts.map

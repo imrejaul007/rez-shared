@@ -56,4 +56,3 @@ function isPaymentStatus(value) {
 function isOrderPaymentStatus(value) {
     return exports.ORDER_PAYMENT_STATUSES.includes(value);
 }
-//# sourceMappingURL=paymentStatuses.js.map

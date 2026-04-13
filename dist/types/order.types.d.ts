@@ -131,4 +131,3 @@ export interface Order {
     createdAt: string;
     updatedAt: string;
 }
-//# sourceMappingURL=order.types.d.ts.map

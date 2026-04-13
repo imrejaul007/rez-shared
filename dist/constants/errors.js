@@ -60,4 +60,3 @@ exports.ERROR_STATUS_MAP = {
     MAINTENANCE: 503,
     CSRF_INVALID: 403,
 };
-//# sourceMappingURL=errors.js.map

@@ -31,14 +31,13 @@ export declare function validateEmail(email: string): boolean;
 export declare function sanitizeAddress(address: any): {
     name: string;
     phone: string;
-    email: string | undefined;
+    email: string;
     addressLine1: string;
-    addressLine2: string | undefined;
+    addressLine2: string;
     city: string;
     state: string;
     pincode: string;
     country: string;
-    landmark: string | undefined;
+    landmark: string;
     addressType: any;
 };
-//# sourceMappingURL=sanitizer.d.ts.map

@@ -27,4 +27,3 @@ export declare function isPaymentStatus(value: string): value is PaymentStatus;
  * Type guard: check if a string is a valid OrderPaymentStatus.
  */
 export declare function isOrderPaymentStatus(value: string): value is OrderPaymentStatus;
-//# sourceMappingURL=paymentStatuses.d.ts.map

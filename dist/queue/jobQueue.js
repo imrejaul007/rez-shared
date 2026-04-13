@@ -21,12 +21,10 @@ const bullmq_1 = require("bullmq");
 class JobQueue {
     constructor(name, redis, options = {}) {
         this.options = options;
+        this.redisConnection = redis.options || { host: 'localhost', port: 6379 };
         // Create queue
         this.queue = new bullmq_1.Queue(name, {
-            connection: {
-                host: redis.options?.host || 'localhost',
-                port: redis.options?.port || 6379,
-            },
+            connection: this.redisConnection,
             defaultJobOptions: {
                 attempts: options.maxRetries || 3,
                 backoff: options.retryBackoff === 'fixed'
@@ -37,10 +35,7 @@ class JobQueue {
         });
         // Monitor queue events
         this.queueEvents = new bullmq_1.QueueEvents(name, {
-            connection: {
-                host: redis.options?.host || 'localhost',
-                port: redis.options?.port || 6379,
-            },
+            connection: this.redisConnection,
         });
         this.queueEvents.on('failed', ({ jobId, failedReason }) => {
             console.error(`[${name}] Job ${jobId} failed: ${failedReason}`);
@@ -55,7 +50,7 @@ class JobQueue {
     async add(data, options) {
         return this.queue.add(data.type || 'job', data, {
             priority: options?.priority || 0,
-            delay: options?.delay || this.options.defaultDelay || 0,
+            delay: options?.delay ?? this.options.defaultDelay ?? 0,
         });
     }
     /**
@@ -82,7 +77,7 @@ class JobQueue {
      */
     process(handler, concurrency = this.options.concurrency || 4) {
         this.worker = new bullmq_1.Worker(this.queue.name, handler, {
-            connection: this.queue.client.options,
+            connection: this.redisConnection,
             concurrency,
         });
         this.worker.on('failed', (job, err) => {
@@ -250,4 +245,3 @@ class JobQueueService {
     }
 }
 exports.JobQueueService = JobQueueService;
-//# sourceMappingURL=jobQueue.js.map

@@ -20,4 +20,4 @@ __exportStar(require("./sanitizer"), exports);
 __exportStar(require("./rateLimiter"), exports);
 __exportStar(require("./idempotency"), exports);
 __exportStar(require("./healthCheck"), exports);
-//# sourceMappingURL=index.js.map
+__exportStar(require("./validation"), exports);

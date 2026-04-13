@@ -34,4 +34,3 @@ function getPagination(response) {
     }
     return null;
 }
-//# sourceMappingURL=api.js.map

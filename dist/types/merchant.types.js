@@ -14,4 +14,3 @@ exports.isMerchantVerificationStatus = isMerchantVerificationStatus;
 function isMerchantVerificationStatus(value) {
     return ['pending', 'verified', 'rejected'].includes(value);
 }
-//# sourceMappingURL=merchant.types.js.map

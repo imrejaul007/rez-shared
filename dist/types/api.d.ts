@@ -45,4 +45,3 @@ export interface ApiError {
 export declare function getItems<T>(response: PaginatedResponse<T> | ApiResponse<T[]>): T[];
 /** Extract pagination from either response format */
 export declare function getPagination(response: PaginatedResponse<any> | ApiResponse<any>): Pagination | null;
-//# sourceMappingURL=api.d.ts.map

@@ -23,10 +23,10 @@
 /**
  * WalletCoinType: coin types that have a balance bucket in the Wallet document.
  * These correspond to the `type` field in Wallet.coins[].
- * Note: 'cashback' is a balance bucket on WalletEntityBalance, not a coins[] entry.
- *       'category' and 'referral' are transaction-only coin types — no wallet balance bucket.
+ * TF-01 fix: Added 'referral' — referral coins have a balance bucket in the canonical
+ * rez-shared constants/coins.ts (6 types). 'category' does not exist in any backend enum.
  */
-export type WalletCoinType = 'rez' | 'prive' | 'branded' | 'promo' | 'cashback';
+export type WalletCoinType = 'rez' | 'prive' | 'branded' | 'promo' | 'cashback' | 'referral';
 export interface CoinBalance {
     type: WalletCoinType;
     amount: number;
@@ -136,4 +136,3 @@ export interface CoinTransactionEntity {
     createdAt: string;
     updatedAt: string;
 }
-//# sourceMappingURL=wallet.types.d.ts.map

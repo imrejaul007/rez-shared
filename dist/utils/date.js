@@ -33,4 +33,3 @@ function getExpiryCountdown(expiryDate) {
         return `${hours}h left`;
     return `${days}d left`;
 }
-//# sourceMappingURL=date.js.map

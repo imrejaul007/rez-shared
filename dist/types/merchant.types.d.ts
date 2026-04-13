@@ -131,5 +131,25 @@ export interface Store {
     createdAt: string;
     updatedAt: string;
 }
+/**
+ * Canonical MerchantLoyaltyConfig type for the REZ platform.
+ *
+ * Canonical schema source: rezbackend/rez-backend-master/src/models/MerchantLoyaltyConfig.ts
+ * Mirror (must stay in sync): rez-merchant-service/src/models/MerchantLoyaltyConfig.ts
+ *
+ * pointsPerRupee: how many points a customer earns per ₹1 spent (default 0.1 = 1 pt per ₹10)
+ * expiryDays: how long points remain valid after being earned (default 365)
+ * bonusCategories: service category slugs that earn 2x points
+ */
+export interface MerchantLoyaltyConfig {
+    _id: string;
+    storeId: string;
+    merchantId: string;
+    pointsPerRupee: number;
+    expiryDays: number;
+    bonusCategories: string[];
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
 export declare function isMerchantVerificationStatus(value: string): value is MerchantVerificationStatus;
-//# sourceMappingURL=merchant.types.d.ts.map

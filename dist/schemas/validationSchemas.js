@@ -61,12 +61,14 @@ exports.createOrderSchema = zod_1.z.object({
         rezCoins: zod_1.z.number().nonnegative().optional(),
         promoCoins: zod_1.z.number().nonnegative().optional(),
         storePromoCoins: zod_1.z.number().nonnegative().optional(),
+    }).refine(data => Object.values(data).some(v => typeof v === 'number' && v > 0), {
+        message: 'At least one coin type must have a positive value',
     }).optional(),
     idempotencyKey: zod_1.z.string().uuid('Invalid idempotency key format'),
     fulfillmentDetails: zod_1.z.object({
         tableNumber: zod_1.z.string().optional(),
         storeAddress: zod_1.z.string().optional(),
-        estimatedReadyTime: zod_1.z.date().optional(),
+        estimatedReadyTime: zod_1.z.string().datetime().optional().transform(v => v ? new Date(v) : undefined),
         pickupInstructions: zod_1.z.string().optional(),
     }).optional(),
 });
@@ -87,7 +89,7 @@ exports.updateOrderStatusSchema = zod_1.z.object({
 const createOfferSchemaBase = zod_1.z.object({
     title: zod_1.z.string().min(1, 'Title is required').max(200),
     description: zod_1.z.string().max(1000).optional(),
-    offerType: zod_1.z.enum(['discount', 'cashback', 'deal', 'flash_sale', 'loyalty', 'gift_card', 'voucher', 'dynamic_pricing']),
+    offerType: zod_1.z.enum(['discount', 'cashback', 'voucher', 'combo', 'special', 'walk_in']),
     startDate: zod_1.z.date(),
     endDate: zod_1.z.date(),
     minOrderAmount: zod_1.z.number().nonnegative().optional(),
@@ -190,4 +192,3 @@ function validateQuery(schema) {
         next();
     };
 }
-//# sourceMappingURL=validationSchemas.js.map

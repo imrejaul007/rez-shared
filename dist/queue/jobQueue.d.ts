@@ -11,7 +11,7 @@
  * emailQueue.process(async (job) => { ... });
  * ```
  */
-import { Job } from 'bullmq';
+import type { Job } from 'bullmq';
 import type Redis from 'ioredis';
 export interface JobQueueOptions {
     concurrency?: number;
@@ -31,6 +31,7 @@ export declare class JobQueue<T extends AsyncJobData = AsyncJobData> {
     private queue;
     private worker?;
     private queueEvents?;
+    private readonly redisConnection;
     constructor(name: string, redis: Redis, options?: JobQueueOptions);
     /**
      * Add job to queue
@@ -147,4 +148,3 @@ export declare class JobQueueService {
      */
     closeAll(): Promise<void>;
 }
-//# sourceMappingURL=jobQueue.d.ts.map

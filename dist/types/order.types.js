@@ -12,4 +12,3 @@
  * Re-exports orderStatuses and paymentStatuses for convenience.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-//# sourceMappingURL=order.types.js.map

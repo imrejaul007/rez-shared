@@ -253,7 +253,7 @@ class WebhookService {
      * Generate random secret
      */
     generateSecret() {
-        return require('crypto').randomBytes(32).toString('hex');
+        return (0, crypto_1.randomBytes)(32).toString('hex');
     }
     /**
      * Determine if webhook delivery should be retried
@@ -303,4 +303,3 @@ function setupWebhookProcessor(jobQueue, webhookService) {
         return { delivered: success, attempt };
     }, 5);
 }
-//# sourceMappingURL=webhookService.js.map

@@ -22,4 +22,3 @@ function formatShortCurrency(amount) {
         return `₹${(amount / 1000).toFixed(1)}K`;
     return `₹${amount}`;
 }
-//# sourceMappingURL=currency.js.map

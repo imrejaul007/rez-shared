@@ -28,4 +28,3 @@ export declare const ERROR_CODES: {
 export type ErrorCode = typeof ERROR_CODES[keyof typeof ERROR_CODES];
 /** Map error codes to default HTTP status codes */
 export declare const ERROR_STATUS_MAP: Record<ErrorCode, number>;
-//# sourceMappingURL=errors.d.ts.map

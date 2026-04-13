@@ -20,4 +20,3 @@ exports.USER_ROLES = [
 function isUserRole(value) {
     return exports.USER_ROLES.includes(value);
 }
-//# sourceMappingURL=user.types.js.map

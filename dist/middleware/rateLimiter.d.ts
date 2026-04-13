@@ -45,4 +45,3 @@ export declare function createGlobalRateLimiter(redis: Redis): import("express-r
  * Limit: 5 failed attempts per 15 minutes per IP
  */
 export declare function createAuthRateLimiter(redis: Redis): import("express-rate-limit").RateLimitRequestHandler;
-//# sourceMappingURL=rateLimiter.d.ts.map

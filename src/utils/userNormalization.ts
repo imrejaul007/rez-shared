@@ -14,8 +14,6 @@
  *   const user = normalizeUserResponse(rawApiResponse);
  */
 
-import type { UserProfile } from '../types/wallet.types';
-
 // ── Shape 1: /api/user/profile response ───────────────────────────────────────
 export interface UserProfileShape1 {
   id: string;
@@ -79,6 +77,21 @@ export interface UserProfileShape3 {
   notifications?: { unreadCount?: number };
 }
 
+// ── TF-12: normalizeUserId() — canonical id/_id resolver ───────────────────────
+/**
+ * Extract a stable string id from any entity that may have `id`, `_id`, or
+ * other id-like fields. MongoDB documents use `_id` while API responses use
+ * `id` — this utility normalises both to a single canonical string id.
+ *
+ * Usage:
+ *   import { normalizeUserId } from '@rez/shared';
+ *   const userId = normalizeUserId(user); // always returns string
+ */
+export function normalizeUserId(entity: { id?: string; _id?: string } | null | undefined): string {
+  if (!entity) return '';
+  return entity.id ?? entity._id ?? '';
+}
+
 // ── Canonical normalized output ─────────────────────────────────────────────────
 export interface CanonicalUserProfile {
   id: string;
@@ -97,6 +110,7 @@ export interface CanonicalUserProfile {
   cartItemCount?: number;
   unreadNotificationCount?: number;
   createdAt?: string;
+  updatedAt?: string;
 }
 
 /**

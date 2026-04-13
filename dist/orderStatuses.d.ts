@@ -26,4 +26,3 @@ export declare function isOrderStatus(value: string): value is OrderStatus;
  * Mirrors backend getOrderProgress() — keep in sync.
  */
 export declare function getOrderProgress(status: string): number;
-//# sourceMappingURL=orderStatuses.d.ts.map

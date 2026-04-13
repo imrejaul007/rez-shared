@@ -53,8 +53,8 @@ export declare class AppError extends Error {
     message: string;
     statusCode: number;
     code: ErrorCode | string;
-    details?: Record<string, any> | undefined;
-    constructor(message: string, statusCode: number, code: ErrorCode | string, details?: Record<string, any> | undefined);
+    details?: Record<string, any>;
+    constructor(message: string, statusCode: number, code: ErrorCode | string, details?: Record<string, any>);
 }
 /**
  * Validation error (extends AppError)
@@ -101,4 +101,3 @@ export declare function globalErrorHandler(error: any, req: Request, res: Respon
  * ```
  */
 export declare function asyncHandler(fn: (req: Request, res: Response, next: NextFunction) => Promise<any>): (req: Request, res: Response, next: NextFunction) => void;
-//# sourceMappingURL=errorHandler.d.ts.map

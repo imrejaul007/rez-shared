@@ -33,4 +33,3 @@ declare const _default: {
     normalizePaymentStatus: typeof normalizePaymentStatus;
 };
 export default _default;
-//# sourceMappingURL=statusCompat.d.ts.map

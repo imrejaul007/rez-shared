@@ -39,4 +39,3 @@ export declare function requestLogger(req: Request, res: Response, next: NextFun
  * Express middleware to attach logger to request
  */
 export declare function attachLogger(req: Request, res: Response, next: NextFunction): void;
-//# sourceMappingURL=requestLogger.d.ts.map

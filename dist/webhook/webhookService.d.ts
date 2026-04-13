@@ -138,4 +138,3 @@ export declare class WebhookService {
  * Setup webhook job processor
  */
 export declare function setupWebhookProcessor(jobQueue: JobQueue, webhookService: WebhookService): void;
-//# sourceMappingURL=webhookService.d.ts.map

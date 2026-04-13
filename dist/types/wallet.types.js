@@ -14,4 +14,3 @@
  * Do NOT redefine these types in frontend apps — import from @rez/shared instead.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-//# sourceMappingURL=wallet.types.js.map

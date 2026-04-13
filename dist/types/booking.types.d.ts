@@ -14,6 +14,8 @@
  * Do NOT redefine these types in frontend apps — import from @rez/shared instead.
  */
 export type BookingType = 'table' | 'service' | 'event' | 'ota' | 'trial';
+/** Backend sends suffixed values ('table_booking', etc.). Normalize to canonical short form. */
+export declare function normalizeBookingType(raw: string): BookingType;
 export type BookingStatus = 'pending' | 'confirmed' | 'assigned' | 'in_progress' | 'completed' | 'cancelled' | 'no_show' | 'refunded' | 'expired';
 export interface BaseBooking {
     _id: string;
@@ -124,4 +126,3 @@ export declare function isServiceBooking(booking: AnyBooking): booking is Servic
 export declare function isEventBooking(booking: AnyBooking): booking is EventBooking;
 export declare function isOtaBooking(booking: AnyBooking): booking is OtaBooking;
 export declare function isTrialBooking(booking: AnyBooking): booking is TrialBooking;
-//# sourceMappingURL=booking.types.d.ts.map

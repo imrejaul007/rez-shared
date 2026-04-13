@@ -89,4 +89,3 @@ export interface Offer {
     updatedAt: string;
 }
 export declare function isOfferCategory(value: string): value is OfferCategory;
-//# sourceMappingURL=offer.types.d.ts.map

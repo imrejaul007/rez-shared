@@ -70,4 +70,3 @@ export interface User {
     updatedAt: string;
 }
 export declare function isUserRole(value: string): value is UserRole;
-//# sourceMappingURL=user.types.d.ts.map

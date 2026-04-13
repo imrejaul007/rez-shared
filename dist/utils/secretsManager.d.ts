@@ -19,6 +19,8 @@ export type SecretSource = 'env' | 'aws' | 'vault';
 export declare class SecretsManager {
     private source;
     private redis?;
+    private secretsCache;
+    private cacheKey;
     constructor(source?: SecretSource, redis?: Redis);
     /**
      * Get a secret
@@ -75,4 +77,3 @@ export declare function auditSecrets(secretsManager: SecretsManager, requiredSec
  * Check for hardcoded secrets in environment (for debugging)
  */
 export declare function scanForHardcodedSecrets(): void;
-//# sourceMappingURL=secretsManager.d.ts.map

@@ -105,4 +105,3 @@ export interface AdCampaign {
 }
 export declare function isAdCampaign(campaign: PromoCampaign | AdCampaign): campaign is AdCampaign;
 export declare function isPromoCampaign(campaign: PromoCampaign | AdCampaign): campaign is PromoCampaign;
-//# sourceMappingURL=campaign.types.d.ts.map

@@ -16,4 +16,3 @@ function isValidPAN(pan) {
 function isValidUPI(upi) {
     return /^[a-zA-Z0-9._-]+@[a-zA-Z]{3,}$/.test(upi);
 }
-//# sourceMappingURL=validation.js.map

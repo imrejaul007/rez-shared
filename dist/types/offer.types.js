@@ -26,4 +26,3 @@ exports.OFFER_CATEGORIES = [
 function isOfferCategory(value) {
     return exports.OFFER_CATEGORIES.includes(value);
 }
-//# sourceMappingURL=offer.types.js.map

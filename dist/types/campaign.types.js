@@ -20,4 +20,3 @@ function isAdCampaign(campaign) {
 function isPromoCampaign(campaign) {
     return 'campaignId' in campaign && 'badge' in campaign;
 }
-//# sourceMappingURL=campaign.types.js.map

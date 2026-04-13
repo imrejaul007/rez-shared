@@ -16,4 +16,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./circuitBreaker"), exports);
 __exportStar(require("./secretsManager"), exports);
-//# sourceMappingURL=index.js.map
+__exportStar(require("./caseNormalization"), exports);
+__exportStar(require("./campaignFilter"), exports);
+__exportStar(require("./userNormalization"), exports);
+// TF-12: normalizeUserId is re-exported via userNormalization above

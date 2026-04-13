@@ -45,20 +45,24 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SECRET_KEYS = exports.SecretsManager = void 0;
 exports.auditSecrets = auditSecrets;
 exports.scanForHardcodedSecrets = scanForHardcodedSecrets;
-/**
- * Local secrets cache (with TTL)
- */
-const secretsCache = new Map();
+const axios_1 = __importDefault(require("axios"));
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 /**
  * Base secrets manager
  */
 class SecretsManager {
+    cacheKey(secretName) {
+        return `${this.source}:${secretName}`;
+    }
     constructor(source = 'env', redis) {
+        this.secretsCache = new Map();
         this.source = source;
         this.redis = redis;
     }
@@ -120,7 +124,7 @@ class SecretsManager {
      */
     async rotate(secretName, newValue) {
         // Clear cache
-        secretsCache.delete(secretName);
+        this.secretsCache.delete(this.cacheKey(secretName));
         switch (this.source) {
             case 'aws':
                 // Note: AWS requires separate API call
@@ -181,10 +185,9 @@ class SecretsManager {
     async getFromVault(secretName) {
         // Requires HashiCorp Vault
         try {
-            const axios = await Promise.resolve().then(() => __importStar(require('axios')));
             const vaultAddr = process.env.VAULT_ADDR || 'http://localhost:8200';
             const vaultToken = process.env.VAULT_TOKEN;
-            const response = await axios.default.get(`${vaultAddr}/v1/secret/data/${secretName}`, {
+            const response = await axios_1.default.get(`${vaultAddr}/v1/secret/data/${secretName}`, {
                 headers: { 'X-Vault-Token': vaultToken },
             });
             return response.data.data.data.value;
@@ -199,17 +202,17 @@ class SecretsManager {
         return secretName.replace(/-/g, '_').toUpperCase();
     }
     getFromCache(secretName) {
-        const cached = secretsCache.get(secretName);
+        const cached = this.secretsCache.get(this.cacheKey(secretName));
         if (!cached)
             return undefined;
         if (cached.expiresAt < Date.now()) {
-            secretsCache.delete(secretName);
+            this.secretsCache.delete(this.cacheKey(secretName));
             return undefined;
         }
         return cached.value;
     }
     setInCache(secretName, value) {
-        secretsCache.set(secretName, {
+        this.secretsCache.set(this.cacheKey(secretName), {
             value,
             expiresAt: Date.now() + CACHE_TTL,
         });
@@ -293,4 +296,3 @@ function scanForHardcodedSecrets() {
         console.warn('[SecretsManager] Move these to a secrets manager (AWS Secrets Manager, HashiCorp Vault, etc.)');
     }
 }
-//# sourceMappingURL=secretsManager.js.map

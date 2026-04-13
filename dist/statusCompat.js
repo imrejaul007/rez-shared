@@ -53,4 +53,3 @@ function normalizePaymentStatus(status) {
     return PAYMENT_STATUS_MAP[status] ?? status;
 }
 exports.default = { normalizeOrderStatus, normalizePaymentStatus };
-//# sourceMappingURL=statusCompat.js.map

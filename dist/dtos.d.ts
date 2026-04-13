@@ -23,7 +23,7 @@ export interface OrderItemDTO {
     totalPrice: number;
 }
 export interface OrderPaymentDTO {
-    method: 'cod' | 'online' | 'wallet' | 'mixed';
+    method: 'cod' | 'wallet' | 'card' | 'upi' | 'netbanking' | 'razorpay' | 'stripe';
     status: OrderPaymentStatus;
     transactionId?: string;
     gatewayOrderId?: string;
@@ -78,4 +78,3 @@ export interface PaginatedDtoResponse<T> {
 }
 /** @deprecated Use PaginatedResponse from types/api.ts */
 export type PaginatedResponse<T> = PaginatedDtoResponse<T>;
-//# sourceMappingURL=dtos.d.ts.map

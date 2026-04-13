@@ -74,8 +74,7 @@ function requestLogger(req, res, next) {
     res.setHeader('x-correlation-id', correlationId);
     res.setHeader('x-request-id', requestId);
     // Capture response
-    const originalSend = res.send;
-    res.send = function (data) {
+    res.on('finish', () => {
         const duration = Date.now() - startTime;
         logger({
             correlationId,
@@ -87,9 +86,7 @@ function requestLogger(req, res, next) {
             userId,
             merchantId,
         }, 'Request completed');
-        // Call original send
-        return originalSend.call(this, data);
-    };
+    });
     next();
 }
 /**
@@ -116,4 +113,3 @@ function attachLogger(req, res, next) {
     };
     next();
 }
-//# sourceMappingURL=requestLogger.js.map

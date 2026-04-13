@@ -40,4 +40,3 @@ export declare function createHealthCheckRouter(deps: HealthCheckDependencies): 
  * Middleware to attach health check functions to app
  */
 export declare function attachHealthChecks(app: any, deps: HealthCheckDependencies): void;
-//# sourceMappingURL=healthCheck.d.ts.map

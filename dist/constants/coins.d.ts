@@ -22,4 +22,3 @@ export declare const COIN_EXPIRY_DAYS: Record<CoinType, number>;
 export declare const COIN_DISPLAY_NAMES: Record<CoinType, string>;
 export declare const REWARD_TYPES: readonly ["store_payment", "bill_payment", "recharge", "referral_bonus", "streak_bonus", "prive_campaign", "mission_complete", "first_visit", "birthday_bonus"];
 export type RewardType = typeof REWARD_TYPES[number];
-//# sourceMappingURL=coins.d.ts.map

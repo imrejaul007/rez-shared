@@ -14,4 +14,3 @@ export * from './wallet.types';
 export * from './booking.types';
 export * from './campaign.types';
 export * from './api';
-//# sourceMappingURL=index.d.ts.map

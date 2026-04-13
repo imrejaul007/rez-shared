@@ -107,13 +107,15 @@ function createHealthCheckRouter(deps) {
         const isReady = uptime > 10; // Service needs 10 seconds to initialize
         if (isReady) {
             res.status(200).json({
-                status: 'ready',
+                status: 'healthy',
+                timestamp: new Date().toISOString(),
                 uptime,
             });
         }
         else {
             res.status(503).json({
-                status: 'starting',
+                status: 'unhealthy',
+                timestamp: new Date().toISOString(),
                 uptime,
                 expectedTime: '10s',
             });
@@ -145,4 +147,3 @@ function attachHealthChecks(app, deps) {
     const router = createHealthCheckRouter(deps);
     app.use(router);
 }
-//# sourceMappingURL=healthCheck.js.map

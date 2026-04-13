@@ -96,4 +96,3 @@ export declare function createDatabaseCircuitBreaker(fn: () => Promise<any>, nam
  * Batch circuit breaker status report
  */
 export declare function getCircuitBreakerStatus(breakers: Map<string, CircuitBreaker>): any[];
-//# sourceMappingURL=circuitBreaker.d.ts.map

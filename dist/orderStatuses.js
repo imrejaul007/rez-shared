@@ -71,4 +71,3 @@ function getOrderProgress(status) {
     const maxIndex = exports.STATUS_ORDER.length - 1; // 6 (delivered)
     return Math.round((index / maxIndex) * 100);
 }
-//# sourceMappingURL=orderStatuses.js.map
