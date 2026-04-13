@@ -64,7 +64,7 @@ export function createStatusUpdateRateLimiter(redis: Redis) {
   return createRateLimiter(redis, {
     windowMs: 60 * 1000,
     max: 60,
-    keyGenerator: (req: any) => `${req.merchantId}:status-update` || req.ip,
+    keyGenerator: (req: any) => req.merchantId ? `${req.merchantId}:status-update` : req.ip,
     message: 'Too many status updates. Please wait before updating order status again.',
   });
 }

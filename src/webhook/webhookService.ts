@@ -12,7 +12,7 @@
  * ```
  */
 
-import { createHmac } from 'crypto';
+import { createHmac, randomBytes } from 'crypto';
 import axios, { AxiosError } from 'axios';
 import type Redis from 'ioredis';
 import mongoose, { Schema, Document } from 'mongoose';
@@ -286,7 +286,7 @@ export class WebhookService {
    * Generate random secret
    */
   private generateSecret(): string {
-    return require('crypto').randomBytes(32).toString('hex');
+    return randomBytes(32).toString('hex');
   }
 
   /**

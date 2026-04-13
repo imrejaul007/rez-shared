@@ -24,6 +24,9 @@ export * from './types/api';
 export * from './utils/currency';
 export * from './utils/validation';
 export * from './utils/date';
+export * from './utils/caseNormalization';
+export * from './utils/campaignFilter';
+export * from './utils/userNormalization';
 
 // Constants
 export * from './constants/coins';

@@ -12,14 +12,11 @@
  * ```
  */
 
+import axios from 'axios';
 import type Redis from 'ioredis';
 
 export type SecretSource = 'env' | 'aws' | 'vault';
 
-/**
- * Local secrets cache (with TTL)
- */
-const secretsCache = new Map<string, { value: string; expiresAt: number }>();
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 /**
@@ -28,6 +25,11 @@ const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 export class SecretsManager {
   private source: SecretSource;
   private redis?: Redis;
+  private secretsCache = new Map<string, { value: string; expiresAt: number }>();
+
+  private cacheKey(secretName: string): string {
+    return `${this.source}:${secretName}`;
+  }
 
   constructor(source: SecretSource = 'env', redis?: Redis) {
     this.source = source;
@@ -102,7 +104,7 @@ export class SecretsManager {
    */
   async rotate(secretName: string, newValue: string): Promise<void> {
     // Clear cache
-    secretsCache.delete(secretName);
+    this.secretsCache.delete(this.cacheKey(secretName));
 
     switch (this.source) {
       case 'aws':
@@ -174,11 +176,10 @@ export class SecretsManager {
   private async getFromVault(secretName: string): Promise<string | undefined> {
     // Requires HashiCorp Vault
     try {
-      const axios = await import('axios');
       const vaultAddr = process.env.VAULT_ADDR || 'http://localhost:8200';
       const vaultToken = process.env.VAULT_TOKEN;
 
-      const response = await axios.default.get(
+      const response = await axios.get(
         `${vaultAddr}/v1/secret/data/${secretName}`,
         {
           headers: { 'X-Vault-Token': vaultToken },
@@ -198,11 +199,11 @@ export class SecretsManager {
   }
 
   private getFromCache(secretName: string): string | undefined {
-    const cached = secretsCache.get(secretName);
+    const cached = this.secretsCache.get(this.cacheKey(secretName));
 
     if (!cached) return undefined;
     if (cached.expiresAt < Date.now()) {
-      secretsCache.delete(secretName);
+      this.secretsCache.delete(this.cacheKey(secretName));
       return undefined;
     }
 
@@ -210,7 +211,7 @@ export class SecretsManager {
   }
 
   private setInCache(secretName: string, value: string): void {
-    secretsCache.set(secretName, {
+    this.secretsCache.set(this.cacheKey(secretName), {
       value,
       expiresAt: Date.now() + CACHE_TTL,
     });

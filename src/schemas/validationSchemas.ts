@@ -64,12 +64,14 @@ export const createOrderSchema = z.object({
     rezCoins: z.number().nonnegative().optional(),
     promoCoins: z.number().nonnegative().optional(),
     storePromoCoins: z.number().nonnegative().optional(),
+  }).refine(data => Object.values(data).some(v => typeof v === 'number' && v > 0), {
+    message: 'At least one coin type must have a positive value',
   }).optional(),
   idempotencyKey: z.string().uuid('Invalid idempotency key format'),
   fulfillmentDetails: z.object({
     tableNumber: z.string().optional(),
     storeAddress: z.string().optional(),
-    estimatedReadyTime: z.date().optional(),
+    estimatedReadyTime: z.string().datetime().optional().transform(v => v ? new Date(v) : undefined),
     pickupInstructions: z.string().optional(),
   }).optional(),
 });

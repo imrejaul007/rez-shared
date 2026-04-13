@@ -96,9 +96,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
   res.setHeader('x-request-id', requestId);
 
   // Capture response
-  const originalSend = res.send;
-
-  res.send = function (data) {
+  res.on('finish', () => {
     const duration = Date.now() - startTime;
 
     logger(
@@ -114,10 +112,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
       },
       'Request completed'
     );
-
-    // Call original send
-    return originalSend.call(this, data);
-  };
+  });
 
   next();
 }

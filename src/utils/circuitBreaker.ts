@@ -76,15 +76,30 @@ export class CircuitBreaker {
       }
     }
 
+    const timerRef: { id?: NodeJS.Timeout } = {};
+
     try {
-      const result = await Promise.race([
-        this.fn(),
-        this.timeout ? this.createTimeout() : Promise.resolve(null),
+      const [result] = await Promise.all([
+        this.fn().catch((e) => ({ error: e })),
+        new Promise<never>((_, reject) => {
+          timerRef.id = setTimeout(
+            () => reject(new Error(`[${this.name}] Request timeout after ${this.timeout}ms`)),
+            this.timeout
+          );
+        }),
       ]);
+
+      if (timerRef.id) clearTimeout(timerRef.id);
+
+      if ('error' in result) {
+        this.onFailure();
+        throw result.error;
+      }
 
       this.onSuccess();
       return result;
     } catch (error) {
+      if (timerRef.id) clearTimeout(timerRef.id);
       this.onFailure();
       throw error;
     }

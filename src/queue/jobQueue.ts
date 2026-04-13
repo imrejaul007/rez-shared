@@ -12,7 +12,8 @@
  * ```
  */
 
-import { Queue, Worker, Job, QueueEvents } from 'bullmq';
+import { Queue, Worker, QueueEvents } from 'bullmq';
+import type { Job } from 'bullmq';
 import type Redis from 'ioredis';
 
 export interface JobQueueOptions {
@@ -34,18 +35,18 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
   private queue: Queue<any, any, string>;
   private worker?: Worker<any, any, string>;
   private queueEvents?: QueueEvents;
+  private readonly redisConnection: object;
 
   constructor(
     name: string,
     redis: Redis,
     private options: JobQueueOptions = {}
   ) {
+    this.redisConnection = (redis as any).options || { host: 'localhost', port: 6379 };
+
     // Create queue
     this.queue = new Queue(name, {
-      connection: {
-        host: (redis as any).options?.host || 'localhost',
-        port: (redis as any).options?.port || 6379,
-      },
+      connection: this.redisConnection,
       defaultJobOptions: {
         attempts: options.maxRetries || 3,
         backoff: options.retryBackoff === 'fixed'
@@ -57,10 +58,7 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
 
     // Monitor queue events
     this.queueEvents = new QueueEvents(name, {
-      connection: {
-        host: (redis as any).options?.host || 'localhost',
-        port: (redis as any).options?.port || 6379,
-      },
+      connection: this.redisConnection,
     });
 
     this.queueEvents.on('failed', ({ jobId, failedReason }) => {
@@ -78,7 +76,7 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
   async add(data: T, options?: { priority?: number; delay?: number }): Promise<Job<any, any, string>> {
     return this.queue.add(data.type || 'job', data as any, {
       priority: options?.priority || 0,
-      delay: options?.delay || this.options.defaultDelay || 0,
+      delay: options?.delay ?? this.options.defaultDelay ?? 0,
     });
   }
 
@@ -119,7 +117,7 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
     concurrency: number = this.options.concurrency || 4
   ): void {
     this.worker = new Worker(this.queue.name, handler, {
-      connection: (this.queue as any).client.options,
+      connection: this.redisConnection,
       concurrency,
     });
 

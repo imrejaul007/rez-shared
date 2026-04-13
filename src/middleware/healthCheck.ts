@@ -131,12 +131,14 @@ export function createHealthCheckRouter(deps: HealthCheckDependencies): Router {
 
     if (isReady) {
       res.status(200).json({
-        status: 'ready',
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
         uptime,
       });
     } else {
       res.status(503).json({
-        status: 'starting',
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
         uptime,
         expectedTime: '10s',
       });
