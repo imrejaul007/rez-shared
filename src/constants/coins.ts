@@ -72,3 +72,60 @@ export const REWARD_TYPES = [
 ] as const;
 
 export type RewardType = typeof REWARD_TYPES[number];
+
+// ── P0-ENUM-2 FIX: Canonical CashbackStatus ──────────────────────────────────────
+// Source of truth: rezbackend/src/models/Cashback.ts (status field enum).
+// Canonical values are lowercase strings matching MongoDB document values.
+
+export const CASHBACK_STATUS = {
+  PENDING: 'pending',
+  UNDER_REVIEW: 'under_review',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+  CREDITED: 'credited',
+  PAID: 'paid',
+  EXPIRED: 'expired',
+  CANCELLED: 'cancelled',
+} as const;
+
+export type CashbackStatus = (typeof CASHBACK_STATUS)[keyof typeof CASHBACK_STATUS];
+
+/**
+ * Normalize any cashback status string to canonical lowercase form.
+ * Handles UPPERCASE, MixedCase, and legacy variations.
+ */
+export function normalizeCashbackStatus(status: string): CashbackStatus {
+  const canonical = CASHBACK_STATUS[status?.toUpperCase() as keyof typeof CASHBACK_STATUS];
+  return canonical || status;
+}
+
+// ── P0-ENUM-3 FIX: Canonical LoyaltyTier (lowercase) ─────────────────────────────
+// Handles the case mismatch between DB values (UPPERCASE) and business logic (lowercase).
+// DB referralTier field: 'STARTER' | 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM' | 'DIAMOND' | 'DIMAOND' (typo)
+// achievements.ts uses: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond'
+
+export const LOYALTY_TIER = {
+  BRONZE: 'bronze',
+  SILVER: 'silver',
+  GOLD: 'gold',
+  PLATINUM: 'platinum',
+  STARTER: 'bronze',   // 'STARTER' maps to 'bronze'
+  DIAMOND: 'platinum', // 'DIAMOND' maps to 'platinum'
+  DIMAOND: 'platinum', // 'DIMAOND' is the DB typo — normalize to 'platinum'
+} as const;
+
+export type LoyaltyTier = (typeof LOYALTY_TIER)[keyof typeof LOYALTY_TIER];
+
+/**
+ * Normalize any loyalty tier string to canonical lowercase form.
+ * Handles UPPERCASE, MixedCase, and the 'DIMAOND' typo.
+ */
+export function normalizeLoyaltyTier(tier: string): LoyaltyTier {
+  if (!tier) return 'bronze';
+  const upper = tier.toUpperCase();
+  const map: Record<string, LoyaltyTier> = {
+    'BRONZE': 'bronze', 'SILVER': 'silver', 'GOLD': 'gold', 'PLATINUM': 'platinum',
+    'STARTER': 'bronze', 'DIAMOND': 'platinum', 'DIMAOND': 'platinum',
+  };
+  return map[upper] || 'bronze';
+}
