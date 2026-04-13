@@ -32,9 +32,9 @@ export interface OrderItemDTO {
 
 // ── Order Payment Sub-document ─────────────────────────────────────────────────
 
-// TF-11 fix: 'online' and 'mixed' do not exist in DB Order.payment.method enum.
-// Canonical values: wallet, card, upi, cod, netbanking, razorpay, stripe.
 export interface OrderPaymentDTO {
+  // FM-30 FIX: Aligned with DB Order.payment.method enum and createOrderSchema.paymentMethod.
+  // 'online' and 'mixed' removed — not valid in DB or Zod schema.
   method: 'cod' | 'wallet' | 'card' | 'upi' | 'netbanking' | 'razorpay' | 'stripe';
   status: OrderPaymentStatus;
   transactionId?: string;
