@@ -1,2 +1,9 @@
 node_modules/
 *.log
+
+# Build artifacts
+dist/
+*.js
+!*.config.js
+src/**/*.d.ts
+*.tsbuildinfo
