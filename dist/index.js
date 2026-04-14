@@ -14,6 +14,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TRANSACTION_TYPES = void 0;
+// ── Canonical enums (consolidated from packages/shared-enums) ───────────────────
+// Re-export selectively to avoid duplicate exports with coins.ts:
+// coins.ts defines the canonical LoyaltyTier, USER_ROLES, UserRole, normalizeLoyaltyTier
+var enums_1 = require("./enums");
+Object.defineProperty(exports, "TRANSACTION_TYPES", { enumerable: true, get: function () { return enums_1.TRANSACTION_TYPES; } });
 // ── Phase 7: Order & Payment status contracts ──────────────────────────────────
 __exportStar(require("./orderStatuses"), exports);
 __exportStar(require("./paymentStatuses"), exports);

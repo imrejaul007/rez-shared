@@ -1,3 +1,4 @@
+export { TRANSACTION_TYPES, type TransactionType, } from './enums';
 export * from './orderStatuses';
 export * from './paymentStatuses';
 export { OrderItemDTO, OrderPaymentDTO, OrderDTO, PaginatedDtoResponse, DtoWalletCoinType } from './dtos';

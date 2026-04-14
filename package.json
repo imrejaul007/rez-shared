@@ -19,6 +19,11 @@
       "require": "./dist/types/index.js",
       "types": "./dist/types/index.d.ts"
     },
+    "./types/api": {
+      "import": "./dist/types/api.js",
+      "require": "./dist/types/api.js",
+      "types": "./dist/types/api.d.ts"
+    },
     "./middleware": {
       "import": "./dist/middleware/index.js",
       "require": "./dist/middleware/index.js",
