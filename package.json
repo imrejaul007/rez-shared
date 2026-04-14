@@ -42,6 +42,7 @@
   },
   "scripts": {
     "build": "node scripts/run-tsc.js",
+    "prepare": "npm run build",
     "test": "node --test test",
     "test:watch": "node --test --watch test"
   },
