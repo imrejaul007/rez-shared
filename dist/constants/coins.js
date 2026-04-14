@@ -5,8 +5,10 @@
  * Primary coin is 'rez' throughout the platform.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.REWARD_TYPES = exports.COIN_DISPLAY_NAMES = exports.COIN_EXPIRY_DAYS = exports.LEGACY_COIN_TYPE_MAP = exports.COIN_TYPE_ARRAY = exports.COIN_TYPES = void 0;
+exports.LOYALTY_TIER = exports.CASHBACK_STATUS = exports.REWARD_TYPES = exports.COIN_DISPLAY_NAMES = exports.COIN_EXPIRY_DAYS = exports.LEGACY_COIN_TYPE_MAP = exports.COIN_TYPE_ARRAY = exports.COIN_TYPES = void 0;
 exports.normalizeCoinType = normalizeCoinType;
+exports.normalizeCashbackStatus = normalizeCashbackStatus;
+exports.normalizeLoyaltyTier = normalizeLoyaltyTier;
 // ── Coin Type Constants ────────────────────────────────────────────────────────
 exports.COIN_TYPES = {
     PRIMARY: 'rez',
@@ -61,3 +63,51 @@ exports.REWARD_TYPES = [
     'referral_bonus', 'streak_bonus', 'prive_campaign',
     'mission_complete', 'first_visit', 'birthday_bonus',
 ];
+// ── P0-ENUM-2 FIX: Canonical CashbackStatus ──────────────────────────────────────
+// Source of truth: rezbackend/src/models/Cashback.ts (status field enum).
+// Canonical values are lowercase strings matching MongoDB document values.
+exports.CASHBACK_STATUS = {
+    PENDING: 'pending',
+    UNDER_REVIEW: 'under_review',
+    APPROVED: 'approved',
+    REJECTED: 'rejected',
+    CREDITED: 'credited',
+    PAID: 'paid',
+    EXPIRED: 'expired',
+    CANCELLED: 'cancelled',
+};
+/**
+ * Normalize any cashback status string to canonical lowercase form.
+ * Handles UPPERCASE, MixedCase, and legacy variations.
+ */
+function normalizeCashbackStatus(status) {
+    const canonical = exports.CASHBACK_STATUS[status?.toUpperCase()];
+    return (canonical ?? status);
+}
+// ── P0-ENUM-3 FIX: Canonical LoyaltyTier (lowercase) ─────────────────────────────
+// Handles the case mismatch between DB values (UPPERCASE) and business logic (lowercase).
+// DB referralTier field: 'STARTER' | 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM' | 'DIAMOND' | 'DIMAOND' (typo)
+// achievements.ts uses: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond'
+exports.LOYALTY_TIER = {
+    BRONZE: 'bronze',
+    SILVER: 'silver',
+    GOLD: 'gold',
+    PLATINUM: 'platinum',
+    STARTER: 'bronze', // 'STARTER' maps to 'bronze'
+    DIAMOND: 'platinum', // 'DIAMOND' maps to 'platinum'
+    DIMAOND: 'platinum', // 'DIMAOND' is the DB typo — normalize to 'platinum'
+};
+/**
+ * Normalize any loyalty tier string to canonical lowercase form.
+ * Handles UPPERCASE, MixedCase, and the 'DIMAOND' typo.
+ */
+function normalizeLoyaltyTier(tier) {
+    if (!tier)
+        return 'bronze';
+    const upper = tier.toUpperCase();
+    const map = {
+        'BRONZE': 'bronze', 'SILVER': 'silver', 'GOLD': 'gold', 'PLATINUM': 'platinum',
+        'STARTER': 'bronze', 'DIAMOND': 'platinum', 'DIMAOND': 'platinum',
+    };
+    return map[upper] || 'bronze';
+}

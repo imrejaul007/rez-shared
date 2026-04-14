@@ -22,3 +22,34 @@ export declare const COIN_EXPIRY_DAYS: Record<CoinType, number>;
 export declare const COIN_DISPLAY_NAMES: Record<CoinType, string>;
 export declare const REWARD_TYPES: readonly ["store_payment", "bill_payment", "recharge", "referral_bonus", "streak_bonus", "prive_campaign", "mission_complete", "first_visit", "birthday_bonus"];
 export type RewardType = typeof REWARD_TYPES[number];
+export declare const CASHBACK_STATUS: {
+    readonly PENDING: "pending";
+    readonly UNDER_REVIEW: "under_review";
+    readonly APPROVED: "approved";
+    readonly REJECTED: "rejected";
+    readonly CREDITED: "credited";
+    readonly PAID: "paid";
+    readonly EXPIRED: "expired";
+    readonly CANCELLED: "cancelled";
+};
+export type CashbackStatus = (typeof CASHBACK_STATUS)[keyof typeof CASHBACK_STATUS];
+/**
+ * Normalize any cashback status string to canonical lowercase form.
+ * Handles UPPERCASE, MixedCase, and legacy variations.
+ */
+export declare function normalizeCashbackStatus(status: string): CashbackStatus;
+export declare const LOYALTY_TIER: {
+    readonly BRONZE: "bronze";
+    readonly SILVER: "silver";
+    readonly GOLD: "gold";
+    readonly PLATINUM: "platinum";
+    readonly STARTER: "bronze";
+    readonly DIAMOND: "platinum";
+    readonly DIMAOND: "platinum";
+};
+export type LoyaltyTier = (typeof LOYALTY_TIER)[keyof typeof LOYALTY_TIER];
+/**
+ * Normalize any loyalty tier string to canonical lowercase form.
+ * Handles UPPERCASE, MixedCase, and the 'DIMAOND' typo.
+ */
+export declare function normalizeLoyaltyTier(tier: string): LoyaltyTier;

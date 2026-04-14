@@ -113,6 +113,7 @@ export interface CanonicalUserProfile {
     cartItemCount?: number;
     unreadNotificationCount?: number;
     createdAt?: string;
+    updatedAt?: string;
 }
 /**
  * Detect which shape a response matches and normalize it to CanonicalUserProfile.

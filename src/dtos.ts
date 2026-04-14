@@ -63,7 +63,7 @@ export interface OrderDTO {
   items: OrderItemDTO[];
   subtotal: number;
   tax: number;
-  deliveryFee: number;
+  delivery: number;
   discount: number;
   total: number;
   payment: OrderPaymentDTO;
