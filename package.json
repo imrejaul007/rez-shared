@@ -19,6 +19,8 @@
       "require": "./dist/types/index.js",
       "types": "./dist/types/index.d.ts"
     },
+    // NOTE: If you add imports in consumer packages (e.g. @rez/shared/types/api),
+    // you MUST add the matching export entry here, or Metro bundler will fail.
     "./types/api": {
       "import": "./dist/types/api.js",
       "require": "./dist/types/api.js",
