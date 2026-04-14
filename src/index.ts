@@ -1,3 +1,6 @@
+// ── Canonical enums (consolidated from packages/shared-enums) ───────────────────
+export * from './enums';
+
 // ── Phase 7: Order & Payment status contracts ──────────────────────────────────
 export * from './orderStatuses';
 export * from './paymentStatuses';
