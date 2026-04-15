@@ -8,6 +8,14 @@
 import { Request, Response, NextFunction } from 'express';
 import DOMPurify from 'isomorphic-dompurify';
 
+// Configure DOMPurify with explicit security settings
+const DOMPURIFY_CONFIG = {
+  ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'br', 'p', 'span', 'ul', 'ol', 'li'],
+  ALLOWED_ATTR: ['href', 'title'],
+  KEEP_CONTENT: true,
+  RETURN_TRUSTED_TYPE: false,
+};
+
 /**
  * Maximum lengths for common fields
  */
@@ -56,12 +64,22 @@ function sanitizeObject(obj: any, path = ''): any {
     }
 
     if (typeof value === 'string') {
-      // Sanitize HTML
-      let clean = DOMPurify.sanitize(value.trim());
+      // Sanitize HTML with explicit security config
+      let clean = DOMPurify.sanitize(value.trim(), DOMPURIFY_CONFIG as any);
 
-      // Enforce field length limits
+      // Enforce field length limits with structured logging
       const limit = (FIELD_LIMITS as any)[key];
       if (limit && clean.length > limit) {
+        // Log field truncation for observability
+        const logMessage = JSON.stringify({
+          level: 'warn',
+          timestamp: new Date().toISOString(),
+          event: 'field_truncation',
+          field: fieldPath,
+          limit,
+          originalLength: clean.length,
+        });
+        console.error(logMessage);
         clean = clean.substring(0, limit);
       }
 
