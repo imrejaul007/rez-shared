@@ -21,6 +21,7 @@ export interface JobQueueOptions {
   maxRetries?: number;
   retryBackoff?: 'exponential' | 'fixed';
   defaultDelay?: number;
+  retentionDays?: number; // Configure job retention for audit trails
 }
 
 export interface AsyncJobData {
@@ -45,6 +46,7 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
     this.redisConnection = (redis as any).options || { host: 'localhost', port: 6379 };
 
     // Create queue
+    const retentionSeconds = (options.retentionDays || 7) * 86400; // Default 7 days for audit trails
     this.queue = new Queue(name, {
       connection: this.redisConnection,
       defaultJobOptions: {
@@ -52,7 +54,7 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
         backoff: options.retryBackoff === 'fixed'
           ? { type: 'fixed', delay: 5000 }
           : { type: 'exponential', delay: 1000 },
-        removeOnComplete: { age: 3600 }, // Keep completed jobs for 1 hour
+        removeOnComplete: { age: retentionSeconds }, // Configurable retention for audit trails
       },
     });
 
@@ -238,10 +240,15 @@ export class JobQueueService {
   }
 
   /**
-   * Queue webhook call
+   * Queue webhook call with idempotency
    */
   async sendWebhook(url: string, event: string, payload: any, options?: any): Promise<void> {
-    await this.webhookQueue.add({
+    // Create idempotent key based on event ID to prevent duplicate deliveries
+    const eventId = (options?.eventId || payload.eventId) || `${event}:${Date.now()}`;
+    const webhookId = options?.webhookId || 'default';
+    const uniqueKey = `webhook:${webhookId}:${eventId}`;
+
+    await this.webhookQueue.addUnique(uniqueKey, {
       type: 'send-webhook',
       url,
       event,
