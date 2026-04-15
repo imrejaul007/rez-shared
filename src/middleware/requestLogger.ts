@@ -32,7 +32,7 @@ export function logger(context: Partial<LogContext>, message: string, data?: any
     message,
     ...(data && { data }),
   };
-  console.log(JSON.stringify(log));
+  logger.debug(JSON.stringify(log));
 }
 
 /**
@@ -47,7 +47,7 @@ export function logError(context: Partial<LogContext>, error: Error, data?: any)
     stack: error.stack,
     ...(data && { data }),
   };
-  console.error(JSON.stringify(log));
+  logger.error(JSON.stringify(log));
 }
 
 /**

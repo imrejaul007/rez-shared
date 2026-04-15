@@ -109,11 +109,11 @@ export class SecretsManager {
     switch (this.source) {
       case 'aws':
         // Note: AWS requires separate API call
-        console.warn(`[SecretsManager] AWS secret rotation requires AWS API call`);
+        logger.warn(`[SecretsManager] AWS secret rotation requires AWS API call`);
         break;
       case 'vault':
         // Note: HashiCorp Vault requires separate API call
-        console.warn(`[SecretsManager] Vault secret rotation requires Vault API call`);
+        logger.warn(`[SecretsManager] Vault secret rotation requires Vault API call`);
         break;
       case 'env':
       default:
@@ -142,12 +142,12 @@ export class SecretsManager {
           JSON.stringify(logEntry)
         );
       } catch (error) {
-        console.warn('[SecretsManager] Failed to log secret access:', error);
+        logger.warn('[SecretsManager] Failed to log secret access:', error);
       }
     }
 
     // Also log to console/logger
-    console.log('[SecretsManager] Secret accessed:', logEntry);
+    logger.debug('[SecretsManager] Secret accessed:', logEntry);
   }
 
   // ===== Private Methods =====
@@ -168,7 +168,7 @@ export class SecretsManager {
 
       return response.SecretString;
     } catch (error) {
-      console.error(`[SecretsManager] Failed to get AWS secret "${secretName}":`, error);
+      logger.error(`[SecretsManager] Failed to get AWS secret "${secretName}":`, error);
       return undefined;
     }
   }
@@ -188,7 +188,7 @@ export class SecretsManager {
 
       return response.data.data.data.value;
     } catch (error) {
-      console.error(`[SecretsManager] Failed to get Vault secret "${secretName}":`, error);
+      logger.error(`[SecretsManager] Failed to get Vault secret "${secretName}":`, error);
       return undefined;
     }
   }
@@ -259,7 +259,7 @@ export async function auditSecrets(
   secretsManager: SecretsManager,
   requiredSecrets: string[]
 ): Promise<void> {
-  console.log('[SecretsManager] Auditing required secrets...');
+  logger.debug('[SecretsManager] Auditing required secrets...');
 
   const results: Record<string, boolean> = {};
   for (const secret of requiredSecrets) {
@@ -272,7 +272,7 @@ export async function auditSecrets(
     .map(([name]) => name);
 
   if (missing.length > 0) {
-    console.error('[SecretsManager] ❌ Missing secrets:', missing);
+    logger.error('[SecretsManager] ❌ Missing secrets:', missing);
     throw new Error(`Missing required secrets: ${missing.join(', ')}`);
   }
 
@@ -280,7 +280,7 @@ export async function auditSecrets(
     .filter(([_, exists]) => exists)
     .map(([name]) => name);
 
-  console.log(`[SecretsManager] ✅ All ${configured.length} required secrets configured`);
+  logger.debug(`[SecretsManager] ✅ All ${configured.length} required secrets configured`);
 }
 
 /**
@@ -308,8 +308,8 @@ export function scanForHardcodedSecrets(): void {
   }
 
   if (Object.keys(found).length > 0) {
-    console.warn('[SecretsManager] ⚠️ Potential hardcoded secrets detected:');
-    console.warn(found);
-    console.warn('[SecretsManager] Move these to a secrets manager (AWS Secrets Manager, HashiCorp Vault, etc.)');
+    logger.warn('[SecretsManager] ⚠️ Potential hardcoded secrets detected:');
+    logger.warn(found);
+    logger.warn('[SecretsManager] Move these to a secrets manager (AWS Secrets Manager, HashiCorp Vault, etc.)');
   }
 }

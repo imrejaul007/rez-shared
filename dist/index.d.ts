@@ -1,3 +1,4 @@
+export { OrderStatus, PaymentStatus, UserRole, TransactionType, NotificationChannel, OrderStatusValues, PaymentStatusValues, UserRoleValues, isValidOrderStatus, isValidPaymentStatus, isValidUserRole } from '../enums/src/index';
 export * from './orderStatuses';
 export * from './paymentStatuses';
 export { OrderItemDTO, OrderPaymentDTO, OrderDTO, PaginatedDtoResponse, DtoWalletCoinType } from './dtos';

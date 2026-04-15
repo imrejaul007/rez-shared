@@ -12,7 +12,7 @@
  * ```
  */
 
-import { createHmac, randomBytes } from 'crypto';
+import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
 import axios, { AxiosError } from 'axios';
 import type Redis from 'ioredis';
 import mongoose, { Schema, Document } from 'mongoose';
@@ -171,10 +171,18 @@ export class WebhookService {
    * Deliver webhook (called by job processor)
    */
   async deliver(webhookId: string, event: string, payload: any, attempt: number = 1): Promise<boolean> {
+    const startTime = Date.now();
+    const timeoutMs = 15000; // 15 second timeout for entire delivery operation
+
     try {
       const webhook = await Webhook.findById(webhookId);
       if (!webhook || !webhook.isActive) {
         return false;
+      }
+
+      // Check if we've exceeded the total timeout
+      if (Date.now() - startTime > timeoutMs) {
+        throw new Error('Webhook delivery timeout');
       }
 
       // Prepare request
@@ -187,10 +195,11 @@ export class WebhookService {
         ...webhook.headers,
       };
 
-      // Send request
+      // Send request with timeout enforcement
+      const remainingTime = timeoutMs - (Date.now() - startTime);
       const response = await axios.post(webhook.targetUrl, payload, {
         headers,
-        timeout: 10000,
+        timeout: Math.min(10000, remainingTime),
       });
 
       // Log successful delivery
@@ -208,8 +217,10 @@ export class WebhookService {
     } catch (error) {
       const axiosError = error as AxiosError;
 
-      // Determine if retry is needed
-      const shouldRetry = this.shouldRetry(axiosError, attempt);
+      // Determine if retry is needed (using webhook's configured maxRetries)
+      const webhook = await Webhook.findById(webhookId).catch(() => null);
+      const maxRetries = webhook?.maxRetries || 5;
+      const shouldRetry = this.shouldRetry(axiosError, attempt, maxRetries);
 
       // Log failed delivery
       await WebhookDelivery.create({
@@ -225,7 +236,6 @@ export class WebhookService {
 
       // Queue retry if needed
       if (shouldRetry) {
-        const webhook = await Webhook.findById(webhookId);
         await this.jobQueue.add(
           {
             type: 'send-webhook',
@@ -280,6 +290,30 @@ export class WebhookService {
     return createHmac('sha256', secret)
       .update(payload)
       .digest('hex');
+  }
+
+  /**
+   * Verify webhook signature using constant-time comparison
+   * Prevents timing attacks on signature verification
+   */
+  verifySignature(payload: string, signature: string, secret: string): boolean {
+    try {
+      const expectedSignature = this.sign(payload, secret);
+
+      // Use timingSafeEqual to prevent timing attacks
+      // Both buffers must be the same length
+      if (expectedSignature.length !== signature.length) {
+        return false;
+      }
+
+      return timingSafeEqual(
+        Buffer.from(expectedSignature),
+        Buffer.from(signature)
+      );
+    } catch (error) {
+      logger.error('Signature verification error:', error);
+      return false;
+    }
   }
 
   /**

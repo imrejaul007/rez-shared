@@ -72,12 +72,20 @@ export function createStatusUpdateRateLimiter(redis: Redis) {
 /**
  * Rate limiter for KDS updates
  * Limit: 1000 updates per minute per store (high for real-time)
+ * Requires authentication - falls back to IP if storeId not available
  */
 export function createKdsRateLimiter(redis: Redis) {
   return createRateLimiter(redis, {
     windowMs: 60 * 1000,
     max: 1000,
-    keyGenerator: (req: any) => `${req.storeId}:kds` || req.ip,
+    keyGenerator: (req: any) => {
+      // Enforce per-store limiting if storeId available, otherwise per-IP
+      // This prevents spoofing of storeId and protects shared networks
+      if (req.storeId && req.merchantId) {
+        return `${req.storeId}:kds`;
+      }
+      return req.ip;
+    },
     message: 'KDS update rate limit exceeded.',
   });
 }
@@ -110,14 +118,11 @@ export function createGlobalRateLimiter(redis: Redis) {
 
 /**
  * Auth attempt rate limiter
- * Limit: 5 failed attempts per 15 minutes per IP
+ * Limit: 5 failed attempts per 15 minutes per IP/email
+ * Uses the shared createRateLimiter helper with custom prefix for auth
  */
 export function createAuthRateLimiter(redis: Redis) {
-  return rateLimit({
-    store: new RedisStore({
-      prefix: 'rate-limit:auth:',
-      sendCommand: (...args: string[]) => sendRedisCommand(redis, ...args),
-    }),
+  return createRateLimiter(redis, {
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // 5 attempts
     keyGenerator: (req: any) => req.body?.email || req.body?.phone || req.ip,

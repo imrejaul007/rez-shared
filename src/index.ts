@@ -1,5 +1,5 @@
-// ── Canonical enums (consolidated from packages/shared-enums) ───────────────────
-export * from './enums';
+// ── Canonical enums (Phase 0: Shared Artifacts) ────────────────────────────────
+export { OrderStatus, PaymentStatus, UserRole, TransactionType, NotificationChannel, OrderStatusValues, PaymentStatusValues, UserRoleValues, isValidOrderStatus, isValidPaymentStatus, isValidUserRole } from '../enums/src/index';
 
 // ── Phase 7: Order & Payment status contracts ──────────────────────────────────
 export * from './orderStatuses';

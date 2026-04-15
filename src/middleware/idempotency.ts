@@ -13,6 +13,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import type Redis from 'ioredis';
+import { randomUUID } from 'crypto';
 
 const IDEMPOTENCY_TTL = 3600; // 1 hour in seconds
 
@@ -55,14 +56,38 @@ export function idempotencyMiddleware(redis: Redis) {
       const merchantId = (req as any).merchantId;
       const cacheKeyPrefix = userId || merchantId || req.ip;
       const cacheKey = `idempotency:${cacheKeyPrefix}:${idempotencyKey}`;
+      const lockKey = `idempotency:lock:${cacheKey}`;
 
       // Check if request has been processed
-      const cached = await redis.get(cacheKey);
-
+      let cached = await redis.get(cacheKey);
       if (cached) {
-        // Return cached response
-        const cachedData = JSON.parse(cached);
-        return res.status(cachedData.statusCode).json(cachedData.body);
+        // Return cached response with safe JSON parsing
+        try {
+          const cachedData = JSON.parse(cached);
+          return res.status(cachedData.statusCode).json(cachedData.body);
+        } catch (parseError) {
+          logger.error('Malformed cache entry, skipping:', parseError);
+          // Continue to process request if cache is corrupted
+        }
+      }
+
+      // Acquire lock using SETNX to prevent concurrent execution
+      const lockAcquired = await redis.set(lockKey, '1', 'EX', 30, 'NX');
+
+      if (!lockAcquired) {
+        // Wait briefly and try to get cached response again
+        await new Promise(resolve => setTimeout(resolve, 100));
+        cached = await redis.get(cacheKey);
+        if (cached) {
+          try {
+            const cachedData = JSON.parse(cached);
+            return res.status(cachedData.statusCode).json(cachedData.body);
+          } catch (parseError) {
+            logger.error('Malformed cache entry after lock wait, skipping:', parseError);
+          }
+        }
+        // If still no cache, continue but release lock
+        await redis.del(lockKey).catch(() => {});
       }
 
       // Intercept response to cache it
@@ -76,9 +101,15 @@ export function idempotencyMiddleware(redis: Redis) {
             body: typeof data === 'string' ? JSON.parse(data) : data,
           };
 
-          redis.setex(cacheKey, IDEMPOTENCY_TTL, JSON.stringify(responseData)).catch((err: unknown) => {
-            console.error('Failed to cache idempotent response:', err);
-          });
+          redis.setex(cacheKey, IDEMPOTENCY_TTL, JSON.stringify(responseData))
+            .then(() => redis.del(lockKey))
+            .catch((err: unknown) => {
+              logger.error('Failed to cache idempotent response:', err);
+              redis.del(lockKey).catch(() => {});
+            });
+        } else {
+          // Release lock on non-cacheable responses
+          redis.del(lockKey).catch(() => {});
         }
 
         return originalSend.call(this, data);
@@ -86,7 +117,7 @@ export function idempotencyMiddleware(redis: Redis) {
 
       next();
     } catch (error) {
-      console.error('Idempotency middleware error:', error);
+      logger.error('Idempotency middleware error:', error);
       next();
     }
   };
@@ -118,7 +149,7 @@ export async function clearIdempotencyKey(redis: Redis, idempotencyKey: string):
 export function generateIdempotencyKey(): string {
   // UUID v4
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    const r = (Math.random() * 16) | 0;
+    const r = (randomUUID() * 16) | 0;
     const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });

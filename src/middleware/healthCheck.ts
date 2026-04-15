@@ -111,8 +111,15 @@ export function createHealthCheckRouter(deps: HealthCheckDependencies): Router {
         }
       }
 
-      // Return appropriate status code
-      const statusCode = status.status === 'healthy' ? 200 : status.status === 'degraded' ? 503 : 503;
+      // Return appropriate status code:
+      // 200: all systems healthy
+      // 503: degraded (one or more non-critical systems down)
+      // 500: unhealthy (critical systems down)
+      const statusCode = status.status === 'healthy'
+        ? 200
+        : status.status === 'degraded'
+          ? 503
+          : 500;
       res.status(statusCode).json(status);
     } catch (error) {
       status.status = 'unhealthy';

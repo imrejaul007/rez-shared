@@ -34,6 +34,7 @@ const emailSchema = z
 
 /**
  * Address schema
+ * Note: Backend enforces max 5 addresses per user (see address service)
  */
 export const addressSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -110,6 +111,10 @@ const createOfferSchemaBase = z.object({
   userSegments: z.array(z.string()).optional(),
 });
 
+/**
+ * Offer creation schema
+ * Note: Backend validates non-overlapping offers per merchant (see merchant service)
+ */
 export const createOfferSchema = createOfferSchemaBase.refine((data) => data.startDate < data.endDate, {
   message: 'startDate must be before endDate',
   path: ['endDate'],
@@ -156,9 +161,11 @@ export type MerchantLoginRequest = z.infer<typeof merchantLoginSchema>;
 
 /**
  * Coupon code validation schema
+ * Note: Case-insensitive validation is done at the backend (see coupon service)
+ * Do NOT transform to uppercase to preserve original code format
  */
 export const couponCodeSchema = z.object({
-  code: z.string().min(1, 'Code is required').max(20).toUpperCase(),
+  code: z.string().min(1, 'Code is required').max(20),
   orderAmount: z.number().positive(),
   userId: z.string().optional(),
 });

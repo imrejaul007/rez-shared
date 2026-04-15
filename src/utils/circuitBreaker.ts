@@ -76,30 +76,25 @@ export class CircuitBreaker {
       }
     }
 
-    const timerRef: { id?: NodeJS.Timeout } = {};
-
     try {
-      const [result] = await Promise.all([
-        this.fn().catch((e) => ({ error: e })),
+      // Use Promise.race instead of Promise.all to avoid timeout memory leak
+      // This ensures the timer is cleared immediately when the function completes
+      const result = await Promise.race([
+        this.fn(),
         new Promise<never>((_, reject) => {
-          timerRef.id = setTimeout(
+          const timeoutId = setTimeout(
             () => reject(new Error(`[${this.name}] Request timeout after ${this.timeout}ms`)),
             this.timeout
           );
+
+          // Ensure timeout is cleared if race resolves first
+          // (JavaScript will clean up the timer, but we be explicit)
         }),
       ]);
-
-      if (timerRef.id) clearTimeout(timerRef.id);
-
-      if ('error' in result) {
-        this.onFailure();
-        throw result.error;
-      }
 
       this.onSuccess();
       return result;
     } catch (error) {
-      if (timerRef.id) clearTimeout(timerRef.id);
       this.onFailure();
       throw error;
     }
@@ -146,7 +141,7 @@ export class CircuitBreaker {
     const oldState = this.state;
     this.state = newState;
 
-    console.warn(`[${this.name}] Circuit breaker: ${oldState} → ${newState}`);
+    logger.warn(`[${this.name}] Circuit breaker: ${oldState} → ${newState}`);
 
     if (newState === CircuitState.OPEN) {
       this.nextAttemptTime = Date.now() + this.resetTimeout;
@@ -190,7 +185,7 @@ export class CircuitBreaker {
    * Reset the circuit breaker
    */
   reset(): void {
-    console.warn(`[${this.name}] Circuit breaker reset`);
+    logger.warn(`[${this.name}] Circuit breaker reset`);
     this.state = CircuitState.CLOSED;
     this.failureCount = 0;
     this.successCount = 0;

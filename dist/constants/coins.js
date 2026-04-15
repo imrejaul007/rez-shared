@@ -82,7 +82,7 @@ exports.CASHBACK_STATUS = {
  */
 function normalizeCashbackStatus(status) {
     const canonical = exports.CASHBACK_STATUS[status?.toUpperCase()];
-    return (canonical ?? status);
+    return canonical || status;
 }
 // ── P0-ENUM-3 FIX: Canonical LoyaltyTier (lowercase) ─────────────────────────────
 // Handles the case mismatch between DB values (UPPERCASE) and business logic (lowercase).

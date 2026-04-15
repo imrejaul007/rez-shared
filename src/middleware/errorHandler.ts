@@ -142,13 +142,14 @@ export function globalErrorHandler(
 ): void {
   const requestId = (req as any).correlationId || 'unknown';
 
-  // Log error
+  // Log error with proper context
   console.error('[ERROR]', {
     requestId,
     path: req.path,
     method: req.method,
     error: error.message,
-    code: error.code,
+    code: error.code || error.constructor.name,
+    errorType: error.name || error.constructor.name,
     stack: error.stack,
   });
 
@@ -189,7 +190,8 @@ export function globalErrorHandler(
   // Handle validation errors (from Zod, Joi, etc.)
   if (error.isJoi || error.isZod) {
     const details = error.details ? error.details.reduce((acc: any, detail: any) => {
-      acc[detail.path.join('.')] = detail.message;
+      const fieldPath = Array.isArray(detail.path) ? detail.path.join('.') : String(detail.path || 'unknown');
+      acc[fieldPath] = detail.message;
       return acc;
     }, {}) : undefined;
 

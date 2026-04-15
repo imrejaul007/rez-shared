@@ -59,9 +59,10 @@ function sanitizeObject(obj: any, path = ''): any {
       // Sanitize HTML
       let clean = DOMPurify.sanitize(value.trim());
 
-      // Enforce field length limits
+      // Enforce field length limits with warning
       const limit = (FIELD_LIMITS as any)[key];
       if (limit && clean.length > limit) {
+        logger.warn(`[SANITIZER] Field ${key} truncated from ${clean.length} to ${limit} chars at path ${fieldPath}`);
         clean = clean.substring(0, limit);
       }
 
@@ -153,13 +154,14 @@ export function validateEmail(email: string): boolean {
 
 /**
  * Sanitize and validate delivery address
+ * Handles string fields and numeric coordinates without stringification
  */
 export function sanitizeAddress(address: any) {
   if (!address || typeof address !== 'object') {
     throw new Error('Invalid address object');
   }
 
-  const sanitized = {
+  const sanitized: any = {
     name: sanitizeString(address.name || '', 100),
     phone: sanitizeString(address.phone || '', 20),
     email: address.email ? sanitizeString(address.email, 100) : undefined,
@@ -172,6 +174,14 @@ export function sanitizeAddress(address: any) {
     landmark: address.landmark ? sanitizeString(address.landmark, 100) : undefined,
     addressType: address.addressType || 'home',
   };
+
+  // Preserve numeric coordinates without stringification
+  if (address.coordinates && typeof address.coordinates === 'object') {
+    const { latitude, longitude } = address.coordinates;
+    if (typeof latitude === 'number' && typeof longitude === 'number') {
+      sanitized.coordinates = { latitude, longitude };
+    }
+  }
 
   // Validate required fields
   if (!sanitized.name) throw new Error('Address name is required');

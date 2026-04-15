@@ -21,6 +21,14 @@ export interface JobQueueOptions {
   maxRetries?: number;
   retryBackoff?: 'exponential' | 'fixed';
   defaultDelay?: number;
+  /**
+   * Retention policy for completed jobs.
+   * - 'short': 1 hour (default for non-critical jobs)
+   * - 'medium': 24 hours (for audit trails)
+   * - 'long': 7 days (for critical operations, allows replay)
+   * - 'permanent': Never remove (for compliance/archival)
+   */
+  retentionPolicy?: 'short' | 'medium' | 'long' | 'permanent';
 }
 
 export interface AsyncJobData {
@@ -44,6 +52,9 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
   ) {
     this.redisConnection = (redis as any).options || { host: 'localhost', port: 6379 };
 
+    // Determine retention age in seconds based on policy
+    const retentionAgeSeconds = this.getRetentionAge(options.retentionPolicy || 'short');
+
     // Create queue
     this.queue = new Queue(name, {
       connection: this.redisConnection,
@@ -52,7 +63,7 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
         backoff: options.retryBackoff === 'fixed'
           ? { type: 'fixed', delay: 5000 }
           : { type: 'exponential', delay: 1000 },
-        removeOnComplete: { age: 3600 }, // Keep completed jobs for 1 hour
+        removeOnComplete: retentionAgeSeconds ? { age: retentionAgeSeconds } : false,
       },
     });
 
@@ -62,12 +73,30 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
     });
 
     this.queueEvents.on('failed', ({ jobId, failedReason }) => {
-      console.error(`[${name}] Job ${jobId} failed: ${failedReason}`);
+      logger.error(`[${name}] Job ${jobId} failed: ${failedReason}`);
     });
 
     this.queueEvents.on('completed', ({ jobId }) => {
-      console.log(`[${name}] Job ${jobId} completed`);
+      logger.debug(`[${name}] Job ${jobId} completed`);
     });
+  }
+
+  /**
+   * Get retention age in seconds based on policy
+   */
+  private getRetentionAge(policy: string): number | false {
+    switch (policy) {
+      case 'short':
+        return 3600; // 1 hour
+      case 'medium':
+        return 86400; // 24 hours
+      case 'long':
+        return 604800; // 7 days
+      case 'permanent':
+        return false; // Never remove
+      default:
+        return 3600;
+    }
   }
 
   /**
@@ -96,6 +125,7 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
 
   /**
    * Add job to be processed at specific time
+   * Note: If scheduledTime is in the past, the job will be executed immediately
    */
   async schedule(
     data: T,
@@ -103,6 +133,9 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
     options?: { priority?: number }
   ): Promise<Job<any, any, string>> {
     const delay = scheduledTime.getTime() - Date.now();
+    if (delay < 0) {
+      logger.warn(`[${this.queue.name}] Job scheduled for past time (${scheduledTime.toISOString()}), executing immediately`);
+    }
     return this.queue.add(data.type || 'job', data as any, {
       priority: options?.priority || 0,
       delay: Math.max(0, delay),
@@ -122,11 +155,11 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
     });
 
     this.worker.on('failed', (job, err) => {
-      console.error(`[${this.queue.name}] Worker failed:`, err);
+      logger.error(`[${this.queue.name}] Worker failed:`, err);
     });
 
     this.worker.on('error', (err) => {
-      console.error(`[${this.queue.name}] Worker error:`, err);
+      logger.error(`[${this.queue.name}] Worker error:`, err);
     });
   }
 

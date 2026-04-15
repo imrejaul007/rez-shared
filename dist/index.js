@@ -14,6 +14,20 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isValidUserRole = exports.isValidPaymentStatus = exports.isValidOrderStatus = exports.UserRoleValues = exports.PaymentStatusValues = exports.OrderStatusValues = exports.NotificationChannel = exports.TransactionType = exports.UserRole = exports.PaymentStatus = exports.OrderStatus = void 0;
+// ── Canonical enums (Phase 0: Shared Artifacts) ────────────────────────────────
+var index_1 = require("../enums/src/index");
+Object.defineProperty(exports, "OrderStatus", { enumerable: true, get: function () { return index_1.OrderStatus; } });
+Object.defineProperty(exports, "PaymentStatus", { enumerable: true, get: function () { return index_1.PaymentStatus; } });
+Object.defineProperty(exports, "UserRole", { enumerable: true, get: function () { return index_1.UserRole; } });
+Object.defineProperty(exports, "TransactionType", { enumerable: true, get: function () { return index_1.TransactionType; } });
+Object.defineProperty(exports, "NotificationChannel", { enumerable: true, get: function () { return index_1.NotificationChannel; } });
+Object.defineProperty(exports, "OrderStatusValues", { enumerable: true, get: function () { return index_1.OrderStatusValues; } });
+Object.defineProperty(exports, "PaymentStatusValues", { enumerable: true, get: function () { return index_1.PaymentStatusValues; } });
+Object.defineProperty(exports, "UserRoleValues", { enumerable: true, get: function () { return index_1.UserRoleValues; } });
+Object.defineProperty(exports, "isValidOrderStatus", { enumerable: true, get: function () { return index_1.isValidOrderStatus; } });
+Object.defineProperty(exports, "isValidPaymentStatus", { enumerable: true, get: function () { return index_1.isValidPaymentStatus; } });
+Object.defineProperty(exports, "isValidUserRole", { enumerable: true, get: function () { return index_1.isValidUserRole; } });
 // ── Phase 7: Order & Payment status contracts ──────────────────────────────────
 __exportStar(require("./orderStatuses"), exports);
 __exportStar(require("./paymentStatuses"), exports);
