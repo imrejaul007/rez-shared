@@ -70,18 +70,25 @@ export function createHealthCheckRouter(deps: HealthCheckDependencies): Router {
     };
 
     try {
-      // Check MongoDB
+      // Check MongoDB with actual query test
       if (deps.mongoose && deps.mongoose.connection) {
         const startTime = Date.now();
 
         try {
           if (deps.mongoose.connection.readyState !== 1) {
             status.checks.database = { status: 'down' };
-            status.errors?.push('Database not connected');
+            status.errors?.push('Database connection state is not CONNECTED');
             status.status = 'unhealthy';
           } else {
-            // Try a simple ping
-            await deps.mongoose.connection.db?.admin().ping();
+            // Execute actual query to ensure database is functional
+            const adminDb = deps.mongoose.connection.db?.admin();
+            if (!adminDb) {
+              throw new Error('Cannot access MongoDB admin interface');
+            }
+            const serverStatus = await adminDb.serverStatus();
+            if (!serverStatus) {
+              throw new Error('serverStatus returned null or undefined');
+            }
             status.checks.database = {
               status: 'up',
               latency: Date.now() - startTime,
