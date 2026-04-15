@@ -22,9 +22,8 @@ export const apiResponseSchema = z.object({
   meta: z.record(z.unknown()).optional(),
 });
 
-export type ApiResponse<T = unknown> = z.infer<typeof apiResponseSchema> & {
-  data?: T;
-};
+// Note: ApiResponse type already exists in types/api.ts
+// Schema-inferred type is intentionally not exported to avoid conflicts
 
 /**
  * User Profile Contract
@@ -73,7 +72,8 @@ export const userProfileSchema = z.object({
   updatedAt: z.string().datetime(),
 });
 
-export type UserProfile = z.infer<typeof userProfileSchema>;
+// Note: UserProfile type already exists in types/user.types.ts
+// Schema-inferred type is intentionally not exported to avoid conflicts
 
 /**
  * Profile Update Request
@@ -214,7 +214,8 @@ export const paginationSchema = z.object({
   hasPrev: z.boolean(),
 });
 
-export type Pagination = z.infer<typeof paginationSchema>;
+// Note: Pagination type already exists in types/api.ts
+// Schema-inferred type is intentionally not exported to avoid conflicts
 
 /**
  * Generic Paginated Response
@@ -256,6 +257,251 @@ export type AdminAuthResponse = z.infer<typeof adminAuthResponseSchema>;
 export const idempotencyKeyHeaderSchema = z.object({
   'Idempotency-Key': z.string().uuid('Invalid idempotency key UUID format'),
 });
+
+/**
+ * Gamification Streak Contract
+ * Used by: GET /gamification/streak, GET /gamification/streaks
+ * Returns user's current or historical streak data for loyalty tracking
+ */
+export const streakSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  type: z.enum(['purchase', 'visit', 'referral', 'engagement']),
+  current: z.number().nonnegative(),
+  longest: z.number().nonnegative(),
+  lastActivityAt: z.string().datetime(),
+  nextMilestoneAt: z.string().datetime().optional(),
+  rewards: z.object({
+    pointsPerDay: z.number().nonnegative(),
+    bonusAt: z.array(z.number()).optional(),
+  }).optional(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export type Streak = z.infer<typeof streakSchema>;
+
+/**
+ * Coupon/Discount Contract
+ * Used by: GET /coupons/{id}, GET /coupons, POST /coupons/apply
+ * Represents available coupons and discount codes
+ */
+export const couponSchema = z.object({
+  id: z.string(),
+  code: z.string().toUpperCase(),
+  type: z.enum(['percentage', 'fixed', 'bogo', 'freeshipping']),
+  value: z.number().positive(),
+  currency: z.string().default('INR'),
+  description: z.string().optional(),
+  minPurchaseAmount: z.number().nonnegative().optional(),
+  maxDiscount: z.number().nonnegative().optional(),
+  usageLimit: z.number().positive().optional(),
+  usageCount: z.number().nonnegative(),
+  userUsageLimit: z.number().positive().optional(),
+  validFrom: z.string().datetime(),
+  validUntil: z.string().datetime(),
+  applicableCategories: z.array(z.string()).optional(),
+  excludedCategories: z.array(z.string()).optional(),
+  isActive: z.boolean(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export type Coupon = z.infer<typeof couponSchema>;
+
+/**
+ * Coupon Application Request
+ * Used by: POST /coupons/apply
+ * Applies a coupon code to a cart/order and returns discount breakdown
+ */
+export const couponApplySchema = z.object({
+  code: z.string().toUpperCase(),
+  cartTotal: z.number().positive(),
+  items: z.array(z.object({
+    id: z.string(),
+    price: z.number().positive(),
+    quantity: z.number().positive(),
+    category: z.string(),
+  })).optional(),
+});
+
+export type CouponApply = z.infer<typeof couponApplySchema>;
+
+/**
+ * Coupon Application Response
+ * Returned by: POST /coupons/apply
+ * Contains coupon validity and discount details
+ */
+export const couponApplicationResponseSchema = z.object({
+  success: z.boolean(),
+  couponId: z.string().optional(),
+  code: z.string().optional(),
+  isValid: z.boolean(),
+  discountAmount: z.number().nonnegative(),
+  discountPercentage: z.number().nonnegative().max(100).optional(),
+  newTotal: z.number().nonnegative(),
+  savings: z.number().nonnegative(),
+  message: z.string().optional(),
+  errors: z.array(z.string()).optional(),
+});
+
+export type CouponApplicationResponse = z.infer<typeof couponApplicationResponseSchema>;
+
+/**
+ * Referral Contract
+ * Used by: GET /referrals/me, GET /referrals/code, POST /referrals/send
+ * Tracks user's referral code, referred users, and rewards
+ */
+export const referralSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  referralCode: z.string().toUpperCase(),
+  referrerName: z.string().optional(),
+  totalReferred: z.number().nonnegative(),
+  successfulReferrals: z.number().nonnegative(),
+  pendingReferrals: z.number().nonnegative(),
+  totalEarnings: z.number().nonnegative(),
+  rewardsPerReferral: z.number().nonnegative(),
+  referredUsers: z.array(z.object({
+    userId: z.string(),
+    name: z.string().optional(),
+    email: z.string().email(),
+    signupDate: z.string().datetime(),
+    status: z.enum(['pending', 'completed', 'cancelled']),
+    earnings: z.number().nonnegative(),
+  })).optional(),
+  shareUrl: z.string().url().optional(),
+  termsAccepted: z.boolean(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export type Referral = z.infer<typeof referralSchema>;
+
+/**
+ * Notification Contract
+ * Used by: GET /notifications, GET /notifications/{id}, POST /notifications/mark-read
+ * Represents user notifications across all channels
+ */
+export const notificationSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  type: z.enum([
+    'order_status',
+    'payment_received',
+    'promotion',
+    'system_alert',
+    'delivery_update',
+    'referral_success',
+    'gamification_milestone'
+  ]),
+  channel: z.enum(['push', 'email', 'sms', 'in_app']),
+  title: z.string(),
+  message: z.string(),
+  icon: z.string().optional(),
+  actionUrl: z.string().url().optional(),
+  actionLabel: z.string().optional(),
+  read: z.boolean(),
+  archived: z.boolean().optional(),
+  metadata: z.record(z.unknown()).optional(),
+  sentAt: z.string().datetime(),
+  readAt: z.string().datetime().optional(),
+  createdAt: z.string().datetime(),
+});
+
+export type Notification = z.infer<typeof notificationSchema>;
+
+/**
+ * Campaign Contract
+ * Used by: GET /campaigns, GET /campaigns/{id}, GET /campaigns/active
+ * Represents marketing/promotional campaigns available to users
+ */
+export const campaignSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().optional(),
+  type: z.enum(['seasonal', 'flash_sale', 'loyalty', 'referral', 'first_purchase']),
+  bannerUrl: z.string().url().optional(),
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime(),
+  isActive: z.boolean(),
+  targetSegments: z.array(z.string()).optional(),
+  eligibilityRules: z.object({
+    minPurchaseAmount: z.number().nonnegative().optional(),
+    maxDiscount: z.number().nonnegative().optional(),
+    applicableCategories: z.array(z.string()).optional(),
+    excludedCategories: z.array(z.string()).optional(),
+    firstTimeUsersOnly: z.boolean().optional(),
+  }).optional(),
+  rewards: z.object({
+    points: z.number().nonnegative().optional(),
+    cashback: z.number().nonnegative().optional(),
+    discount: z.number().nonnegative().optional(),
+  }).optional(),
+  metadata: z.record(z.unknown()).optional(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export type Campaign = z.infer<typeof campaignSchema>;
+
+/**
+ * Search Request Contract
+ * Used by: GET /search, GET /search/autocomplete
+ * Standardized search parameters across all services
+ */
+export const searchRequestSchema = z.object({
+  query: z.string().min(1).max(200),
+  type: z.enum(['product', 'merchant', 'category', 'all']).optional(),
+  limit: z.number().positive().max(50).default(20),
+  offset: z.number().nonnegative().default(0),
+  filters: z.object({
+    category: z.array(z.string()).optional(),
+    priceRange: z.tuple([z.number().nonnegative(), z.number().nonnegative()]).optional(),
+    rating: z.number().min(0).max(5).optional(),
+    inStock: z.boolean().optional(),
+    sortBy: z.enum(['relevance', 'price_asc', 'price_desc', 'rating', 'newest']).optional(),
+  }).optional(),
+});
+
+export type SearchRequest = z.infer<typeof searchRequestSchema>;
+
+/**
+ * Search Result Contract
+ * Returned by: GET /search
+ * Contains unified search results from all indexes
+ */
+export const searchResultItemSchema = z.object({
+  id: z.string(),
+  type: z.enum(['product', 'merchant', 'category']),
+  name: z.string(),
+  description: z.string().optional(),
+  image: z.string().url().optional(),
+  rating: z.number().min(0).max(5).optional(),
+  reviewCount: z.number().nonnegative().optional(),
+  price: z.number().nonnegative().optional(),
+  discount: z.number().nonnegative().max(100).optional(),
+  inStock: z.boolean().optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+export type SearchResultItem = z.infer<typeof searchResultItemSchema>;
+
+/**
+ * Autocomplete Result Contract
+ * Returned by: GET /search/autocomplete
+ * Lightweight suggestions for search-as-you-type
+ */
+export const autocompleteResultSchema = z.object({
+  success: z.literal(true),
+  suggestions: z.array(z.object({
+    text: z.string(),
+    type: z.enum(['recent', 'trending', 'popular', 'category']),
+    metadata: z.record(z.unknown()).optional(),
+  })),
+});
+
+export type AutocompleteResult = z.infer<typeof autocompleteResultSchema>;
 
 /**
  * Validation helper: Ensure API response conforms to contract
