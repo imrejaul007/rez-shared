@@ -31,6 +31,29 @@ const PAYMENT_STATUS_MAP: Record<string, string> = {
   initiated: 'awaiting_payment',
 };
 
+// ── PaymentStatus ↔ OrderPaymentStatus bridge ──────────────────────────────────
+//
+// Two FSM domains exist for different purposes:
+//   1. PaymentStatus (standalone Payment model): Financial lifecycle
+//      Values: pending | processing | completed | failed | cancelled |
+//              expired | refund_initiated | refund_processing | refunded | refund_failed
+//   2. OrderPaymentStatus (Order.payment subdoc): Consumer-facing state
+//      Values: pending | awaiting_payment | processing | authorized | paid |
+//              partially_refunded | failed | refunded
+//
+// Map standalone → subdoc (lossy — some states have no subdoc equivalent):
+const PAYMENT_TO_ORDER_STATUS: Partial<Record<string, string>> = {
+  pending:          'pending',
+  processing:      'processing',
+  completed:       'paid',
+  failed:          'failed',
+  cancelled:       'failed',
+  refunded:        'refunded',
+  partially_refunded: 'partially_refunded',
+  // expired, refund_initiated, refund_processing, refund_failed
+  // have no OrderPaymentStatus equivalent — callers should handle null
+};
+
 /**
  * Normalize a legacy order status string to its canonical Phase 3 equivalent.
  * Returns the input unchanged if it is already canonical.
@@ -55,4 +78,21 @@ export function normalizePaymentStatus(status: string): string {
   return PAYMENT_STATUS_MAP[status] ?? status;
 }
 
-export default { normalizeOrderStatus, normalizePaymentStatus };
+/**
+ * Bridge: convert standalone PaymentStatus to OrderPaymentStatus.
+ * Returns null for states that have no OrderPaymentStatus equivalent
+ * (expired, refund_initiated, refund_processing, refund_failed).
+ *
+ * Decision (TF-05): Both FSMs are kept as canonical for their domain.
+ * Use this bridge when rendering consumer-facing payment state from
+ * the financial Payment model.
+ *
+ * @example
+ *   paymentStatusToOrderPayment('completed')  // → 'paid'
+ *   paymentStatusToOrderPayment('expired')   // → null
+ */
+export function paymentStatusToOrderPayment(status: string): string | null {
+  return PAYMENT_TO_ORDER_STATUS[status] ?? null;
+}
+
+export default { normalizeOrderStatus, normalizePaymentStatus, paymentStatusToOrderPayment };

@@ -1,6 +1,6 @@
 {
-  "name": "@rez/shared",
-  "version": "1.2.0",
+  "name": "@karim4987498/shared",
+  "version": "1.0.0",
   "description": "Shared utilities and canonical type definitions for all REZ services and apps",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,6 +18,11 @@
       "import": "./dist/types/index.js",
       "require": "./dist/types/index.js",
       "types": "./dist/types/index.d.ts"
+    },
+    "./types/api": {
+      "import": "./dist/types/api.js",
+      "require": "./dist/types/api.js",
+      "types": "./dist/types/api.d.ts"
     },
     "./middleware": {
       "import": "./dist/middleware/index.js",
@@ -38,46 +43,6 @@
       "import": "./dist/webhook/index.js",
       "require": "./dist/webhook/index.js",
       "types": "./dist/webhook/index.d.ts"
-    },
-    "./enums": {
-      "import": "./enums/dist/index.js",
-      "require": "./enums/dist/index.js",
-      "types": "./enums/dist/index.d.ts"
-    },
-    "./state": {
-      "import": "./state/dist/index.js",
-      "require": "./state/dist/index.js",
-      "types": "./state/dist/index.d.ts"
-    },
-    "./idempotency": {
-      "import": "./idempotency/dist/index.js",
-      "require": "./idempotency/dist/index.js",
-      "types": "./idempotency/dist/index.d.ts"
-    },
-    "./telemetry": {
-      "import": "./telemetry/dist/index.js",
-      "require": "./telemetry/dist/index.js",
-      "types": "./telemetry/dist/index.d.ts"
-    },
-    "./audit": {
-      "import": "./audit/dist/index.js",
-      "require": "./audit/dist/index.js",
-      "types": "./audit/dist/index.d.ts"
-    },
-    "./api-contracts": {
-      "import": "./api-contracts/dist/index.js",
-      "require": "./api-contracts/dist/index.js",
-      "types": "./api-contracts/dist/index.d.ts"
-    },
-    "./flags": {
-      "import": "./flags/dist/index.js",
-      "require": "./flags/dist/index.js",
-      "types": "./flags/dist/index.d.ts"
-    },
-    "./auth": {
-      "import": "./auth/dist/index.js",
-      "require": "./auth/dist/index.js",
-      "types": "./auth/dist/index.d.ts"
     }
   },
   "scripts": {

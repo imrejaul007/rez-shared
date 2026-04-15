@@ -96,7 +96,13 @@ export type CashbackStatus = (typeof CASHBACK_STATUS)[keyof typeof CASHBACK_STAT
  */
 export function normalizeCashbackStatus(status: string): CashbackStatus {
   const canonical = CASHBACK_STATUS[status?.toUpperCase() as keyof typeof CASHBACK_STATUS];
-  return canonical || status;
+  if (!canonical) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(`[normalizeCashbackStatus] Unknown status "${status}" — defaulting to pending`);
+    }
+    return 'pending';
+  }
+  return canonical;
 }
 
 // ── P0-ENUM-3 FIX: Canonical LoyaltyTier (lowercase) ─────────────────────────────

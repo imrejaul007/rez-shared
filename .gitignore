@@ -1,2 +1,9 @@
 node_modules/
 *.log
+
+# Build artifacts — dist/ must NOT be ignored so git installs ship compiled output
+dist/
+*.js
+!*.config.js
+src/**/*.d.ts
+*.tsbuildinfo

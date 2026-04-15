@@ -1,5 +1,10 @@
-// ── Canonical enums (Phase 0: Shared Artifacts) ────────────────────────────────
-export { OrderStatus, PaymentStatus, UserRole, TransactionType, NotificationChannel, OrderStatusValues, PaymentStatusValues, UserRoleValues, isValidOrderStatus, isValidPaymentStatus, isValidUserRole } from '../enums/src/index';
+// ── Canonical enums (consolidated from packages/shared-enums) ───────────────────
+// Re-export selectively to avoid duplicate exports with coins.ts:
+// coins.ts defines the canonical LoyaltyTier, USER_ROLES, UserRole, normalizeLoyaltyTier
+export {
+  TRANSACTION_TYPES,
+  type TransactionType,
+} from './enums';
 
 // ── Phase 7: Order & Payment status contracts ──────────────────────────────────
 export * from './orderStatuses';
