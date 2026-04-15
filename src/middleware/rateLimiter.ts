@@ -98,7 +98,7 @@ export function createOfferRateLimiter(redis: Redis) {
   return createRateLimiter(redis, {
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 10,
-    keyGenerator: (req: any) => `${req.merchantId}:offer-create` || req.ip,
+    keyGenerator: (req: any) => req.merchantId ? `${req.merchantId}:offer-create` : req.ip,
     message: 'Too many offers created. Please wait before creating more offers.',
   });
 }
