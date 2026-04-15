@@ -7,6 +7,9 @@
 
 import { Request, Response, NextFunction } from 'express';
 import DOMPurify from 'isomorphic-dompurify';
+import { createServiceLogger } from '../config/logger';
+
+const logger = createServiceLogger('sanitizer-middleware');
 
 /**
  * Maximum lengths for common fields
@@ -56,8 +59,12 @@ function sanitizeObject(obj: any, path = ''): any {
     }
 
     if (typeof value === 'string') {
-      // Sanitize HTML
-      let clean = DOMPurify.sanitize(value.trim());
+      // Sanitize HTML with explicit configuration to prevent XSS vectors
+      let clean = DOMPurify.sanitize(value.trim(), {
+        ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li'],
+        ALLOWED_ATTR: ['href', 'title'],
+        KEEP_CONTENT: true,
+      });
 
       // Enforce field length limits with warning
       const limit = (FIELD_LIMITS as any)[key];
@@ -119,7 +126,11 @@ export function sanitizeString(value: string, maxLength?: number): string {
     return '';
   }
 
-  let clean = DOMPurify.sanitize(value.trim());
+  let clean = DOMPurify.sanitize(value.trim(), {
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li'],
+    ALLOWED_ATTR: ['href', 'title'],
+    KEEP_CONTENT: true,
+  });
   if (maxLength && clean.length > maxLength) {
     clean = clean.substring(0, maxLength);
   }

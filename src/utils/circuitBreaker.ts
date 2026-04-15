@@ -15,6 +15,10 @@
  * ```
  */
 
+import { createServiceLogger } from '../config/logger';
+
+const logger = createServiceLogger('circuit-breaker');
+
 export enum CircuitState {
   CLOSED = 'CLOSED', // Normal operation
   OPEN = 'OPEN', // Service failing, reject requests

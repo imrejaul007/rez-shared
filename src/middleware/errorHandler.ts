@@ -151,6 +151,7 @@ export function globalErrorHandler(
     code: error.code || error.constructor.name,
     errorType: error.name || error.constructor.name,
     stack: error.stack,
+    statusCode: error.statusCode || 500,
   });
 
   // Handle AppError
@@ -190,7 +191,11 @@ export function globalErrorHandler(
   // Handle validation errors (from Zod, Joi, etc.)
   if (error.isJoi || error.isZod) {
     const details = error.details ? error.details.reduce((acc: any, detail: any) => {
-      const fieldPath = Array.isArray(detail.path) ? detail.path.join('.') : String(detail.path || 'unknown');
+      // Defensive check: ensure path is an array before calling join()
+      let fieldPath = 'unknown';
+      if (detail.path) {
+        fieldPath = Array.isArray(detail.path) ? detail.path.join('.') : String(detail.path);
+      }
       acc[fieldPath] = detail.message;
       return acc;
     }, {}) : undefined;

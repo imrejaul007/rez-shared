@@ -65,7 +65,7 @@ export const createOrderSchema = z.object({
     rezCoins: z.number().nonnegative().optional(),
     promoCoins: z.number().nonnegative().optional(),
     storePromoCoins: z.number().nonnegative().optional(),
-  }).refine(data => Object.values(data).some(v => typeof v === 'number' && v > 0), {
+  }).strict().refine(data => Object.values(data).some(v => typeof v === 'number' && v > 0), {
     message: 'At least one coin type must have a positive value',
   }).optional(),
   idempotencyKey: z.string().uuid('Invalid idempotency key format'),
@@ -198,6 +198,37 @@ export function validateRequest(schema: z.ZodSchema) {
     }
 
     req.validatedBody = result.data;
+    next();
+  };
+}
+
+/**
+ * Validate URL parameters
+ * Prevents injection attacks via URL parameters (e.g., /orders/:id where id is a MongoDB ObjectId)
+ */
+export function validateParams(schema: z.ZodSchema) {
+  return (req: any, res: any, next: any) => {
+    const result = schema.safeParse(req.params);
+
+    if (!result.success) {
+      const errors = result.error.errors.reduce((acc: any, err) => {
+        const path = err.path.join('.');
+        acc[path] = err.message;
+        return acc;
+      }, {});
+
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'URL parameter validation failed',
+          statusCode: 400,
+          details: errors,
+        },
+      });
+    }
+
+    req.validatedParams = result.data;
     next();
   };
 }

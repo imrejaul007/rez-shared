@@ -14,6 +14,9 @@
 import { Request, Response, NextFunction } from 'express';
 import type Redis from 'ioredis';
 import { randomUUID } from 'crypto';
+import { createServiceLogger } from '../config/logger';
+
+const logger = createServiceLogger('idempotency-middleware');
 
 const IDEMPOTENCY_TTL = 3600; // 1 hour in seconds
 
@@ -65,8 +68,9 @@ export function idempotencyMiddleware(redis: Redis) {
         try {
           const cachedData = JSON.parse(cached);
           return res.status(cachedData.statusCode).json(cachedData.body);
-        } catch (parseError) {
-          logger.error('Malformed cache entry, skipping:', parseError);
+        } catch (parseError: any) {
+          // Malformed cache entry — skip cache and process normally
+          logger.error('Malformed cache entry, skipping:', parseError.message);
           // Continue to process request if cache is corrupted
         }
       }
