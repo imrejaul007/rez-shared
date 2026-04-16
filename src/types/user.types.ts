@@ -13,7 +13,7 @@ export interface UserProfile {
   avatar?: string;
   bio?: string;
   dateOfBirth?: string;           // ISO date string
-  gender?: 'male' | 'female' | 'other';
+  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
   location?: {
     address?: string;
     city?: string;

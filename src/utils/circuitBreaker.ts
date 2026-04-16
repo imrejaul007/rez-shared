@@ -81,18 +81,17 @@ export class CircuitBreaker {
     }
 
     try {
-      // Use Promise.race instead of Promise.all to avoid timeout memory leak
-      // This ensures the timer is cleared immediately when the function completes
+      // Use Promise.race with proper timeout cleanup
+      let timeoutId: NodeJS.Timeout | null = null;
       const result = await Promise.race([
-        this.fn(),
+        this.fn().finally(() => {
+          if (timeoutId) clearTimeout(timeoutId);
+        }),
         new Promise<never>((_, reject) => {
-          const timeoutId = setTimeout(
+          timeoutId = setTimeout(
             () => reject(new Error(`[${this.name}] Request timeout after ${this.timeout}ms`)),
             this.timeout
           );
-
-          // Ensure timeout is cleared if race resolves first
-          // (JavaScript will clean up the timer, but we be explicit)
         }),
       ]);
 

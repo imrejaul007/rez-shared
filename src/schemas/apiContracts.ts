@@ -40,7 +40,7 @@ export const userProfileSchema = z.object({
     avatar: z.string().optional(),
     bio: z.string().optional(),
     dateOfBirth: z.string().datetime().optional(),
-    gender: z.enum(['male', 'female', 'other']).optional(),
+    gender: z.enum(['male', 'female', 'other', 'prefer_not_to_say']).optional(),
     location: z.object({
       address: z.string().optional(),
       city: z.string().optional(),
@@ -87,7 +87,7 @@ export const profileUpdateSchema = z.object({
     avatar: z.string().optional(),
     bio: z.string().optional(),
     dateOfBirth: z.string().datetime().optional(),
-    gender: z.enum(['male', 'female', 'other']).optional(),
+    gender: z.enum(['male', 'female', 'other', 'prefer_not_to_say']).optional(),
     location: z.object({
       address: z.string().optional(),
       city: z.string().optional(),
@@ -241,7 +241,7 @@ export const adminAuthResponseSchema = z.object({
       id: z.string(),
       email: z.string().email(),
       name: z.string(),
-      role: z.enum(['admin', 'superadmin', 'support']),
+      role: z.enum(['admin', 'super_admin', 'support']),
       permissions: z.array(z.string()).optional(),
     }),
   }),
