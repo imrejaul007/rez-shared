@@ -94,17 +94,10 @@ export function idempotencyMiddleware(redis: Redis) {
         await redis.del(lockKey).catch(() => {});
       }
 
-      // Intercept response to cache it
-      const originalSend = res.send;
-
-      res.send = function (data) {
-        // Only cache successful responses (2xx, 3xx)
-        if (res.statusCode >= 200 && res.statusCode < 400) {
-          const responseData = {
-            statusCode: res.statusCode,
-            body: typeof data === 'string' ? JSON.parse(data) : data,
-          };
-
+      // Helper to cache the response
+      const cacheResponse = (statusCode: number, body: any) => {
+        if (statusCode >= 200 && statusCode < 400) {
+          const responseData = { statusCode, body };
           redis.setex(cacheKey, IDEMPOTENCY_TTL, JSON.stringify(responseData))
             .then(() => redis.del(lockKey))
             .catch((err: unknown) => {
@@ -112,11 +105,22 @@ export function idempotencyMiddleware(redis: Redis) {
               redis.del(lockKey).catch(() => {});
             });
         } else {
-          // Release lock on non-cacheable responses
           redis.del(lockKey).catch(() => {});
         }
+      };
 
+      // Intercept response to cache it — both send() and json()
+      const originalSend = res.send;
+      const originalJson = res.json;
+
+      res.send = function (data) {
+        cacheResponse(res.statusCode, typeof data === 'string' ? (() => { try { return JSON.parse(data); } catch { return data; } })() : data);
         return originalSend.call(this, data);
+      };
+
+      res.json = function (data) {
+        cacheResponse(res.statusCode, data);
+        return originalJson.call(this, data);
       };
 
       next();
@@ -151,10 +155,5 @@ export async function clearIdempotencyKey(redis: Redis, idempotencyKey: string):
  * Helper to add idempotency key to outgoing requests
  */
 export function generateIdempotencyKey(): string {
-  // UUID v4
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    const r = (randomUUID() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+  return randomUUID();
 }
