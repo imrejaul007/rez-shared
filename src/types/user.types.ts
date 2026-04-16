@@ -21,6 +21,7 @@ export interface UserProfile {
     pincode?: string;
     coordinates?: [number, number]; // [longitude, latitude]
   };
+  verificationStatus?: 'pending' | 'approved' | 'rejected';
 }
 
 // ── Preferences ──────────────────────────────────────────────────────────────
@@ -44,13 +45,8 @@ export interface UserAuth {
 }
 
 // ── Wallet ────────────────────────────────────────────────────────────────────
-
-export interface UserWallet {
-  balance: number;
-  totalEarned: number;
-  totalSpent: number;
-  pendingAmount: number;
-}
+// NOTE: User.wallet sub-doc removed (DM-L4). Wallet data lives in the Wallet collection.
+// Fetch via GET /wallet/balance — do NOT read from user.wallet or user.walletBalance.
 
 // ── Role ─────────────────────────────────────────────────────────────────────
 
@@ -60,7 +56,8 @@ export type UserRole =
   | 'merchant'
   | 'support'
   | 'operator'
-  | 'super_admin';
+  | 'super_admin'
+  | 'consumer';
 
 export const USER_ROLES: readonly UserRole[] = [
   'user',
@@ -69,6 +66,7 @@ export const USER_ROLES: readonly UserRole[] = [
   'support',
   'operator',
   'super_admin',
+  'consumer',
 ] as const;
 
 // ── Tier / Zone ───────────────────────────────────────────────────────────────
@@ -86,19 +84,26 @@ export interface User {
   email?: string;
   profile: UserProfile;
   preferences?: UserPreferences;
-  wallet?: UserWallet;
   auth: UserAuth;
   role: UserRole;
   isActive: boolean;
   isSuspended?: boolean;
 
   // Convenience / denormalized fields
-  walletBalance?: number;       // Direct access to wallet.balance
   referralCode?: string;
   fullName?: string;            // Computed: profile.firstName + profile.lastName
   username?: string;
   isPremium?: boolean;
   rezPlusTier?: RezPlusTier;
+
+  // Status / suspension (mirrors isActive/isSuspended — kept in sync by suspension-sync pre-save hook)
+  status?: 'active' | 'suspended' | 'inactive';
+  suspendedAt?: string;         // ISO date string
+  suspendReason?: string;
+
+  // Membership / referral
+  referralTier?: 'starter' | 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
+  premiumExpiresAt?: string;    // ISO date string
   /** @deprecated use rezPlusTier */
   nuqtaPlusTier?: NuqtaPlusTier;
   priveTier?: PriveTier;

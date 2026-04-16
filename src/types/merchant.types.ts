@@ -26,6 +26,9 @@ export interface MerchantBusinessAddress {
   state: string;
   zipCode: string;
   country: string;
+  // NOTE: Merchant.businessAddress.coordinates uses object format {latitude, longitude}.
+  // This differs from Store.location.coordinates which uses array format [longitude, latitude].
+  // Be careful to use the correct format when querying or writing geo data.
   coordinates?: {
     latitude: number;
     longitude: number;
@@ -45,8 +48,14 @@ export interface Merchant {
   website?: string;
   businessAddress: MerchantBusinessAddress;
   verificationStatus: MerchantVerificationStatus;
-  /** Computed status — may reflect onboarding stage before full verification */
-  computedStatus?: string;
+  /**
+   * Derived status computed from verificationStatus + isActive.
+   * - verificationStatus='rejected' → 'rejected'
+   * - verificationStatus='verified' + isActive=true → 'approved'
+   * - verificationStatus='verified' + isActive=false → 'suspended'
+   * - otherwise → 'pending'
+   */
+  computedStatus?: 'pending' | 'approved' | 'suspended' | 'rejected';
   isActive: boolean;
   isFeatured?: boolean;
   categories?: string[];
@@ -136,7 +145,17 @@ export interface Store {
   isActive: boolean;
   isFeatured: boolean;
   isVerified: boolean;
+  /**
+   * MongoDB ObjectId serialized as a 24-character hex string in JSON responses.
+   * Always call `.populate('merchantId')` in backend queries before returning to clients.
+   */
   merchantId?: string;
+  /**
+   * Cross-service alias for `merchantId` — used by `rez-merchant-service` when
+   * writing to the shared `stores` collection. Both fields are kept in sync by
+   * a pre-save hook on the backend Store model.
+   */
+  merchant?: string;
   serviceCapabilities?: StoreServiceCapabilities;
 
   // Booking type configuration

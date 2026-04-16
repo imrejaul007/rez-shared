@@ -20,6 +20,7 @@ export const STATUS_ORDER = [
 ] as const;
 
 // All valid order statuses (including terminal branches)
+// NOTE: 'failed_delivery', 'return_requested', 'return_rejected' added — present in backend FSM
 export const ORDER_STATUSES = [
   'placed',
   'confirmed',
@@ -27,9 +28,12 @@ export const ORDER_STATUSES = [
   'ready',
   'dispatched',
   'out_for_delivery',
+  'failed_delivery',
   'delivered',
-  'cancelled',
   'cancelling',
+  'cancelled',
+  'return_requested',
+  'return_rejected',
   'returned',
   'refunded',
 ] as const;
@@ -37,11 +41,11 @@ export const ORDER_STATUSES = [
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 export type LinearOrderStatus = (typeof STATUS_ORDER)[number];
 
-// Terminal statuses — no further forward progress
-export const TERMINAL_ORDER_STATUSES = ['cancelled', 'returned', 'refunded'] as const;
+// Terminal statuses — no further forward progress (order complete/closed)
+export const TERMINAL_ORDER_STATUSES = ['cancelled', 'returned', 'refunded', 'return_rejected'] as const;
 export type TerminalOrderStatus = (typeof TERMINAL_ORDER_STATUSES)[number];
 
-// Active statuses — order is in progress
+// Active statuses — order is in progress (not yet delivered/cancelled/refunded)
 export const ACTIVE_ORDER_STATUSES = [
   'placed',
   'confirmed',
@@ -49,12 +53,14 @@ export const ACTIVE_ORDER_STATUSES = [
   'ready',
   'dispatched',
   'out_for_delivery',
+  'failed_delivery',
   'cancelling',
+  'return_requested',
 ] as const;
 export type ActiveOrderStatus = (typeof ACTIVE_ORDER_STATUSES)[number];
 
-// Past statuses — order is complete in some way
-export const PAST_ORDER_STATUSES = ['delivered', 'cancelled', 'returned', 'refunded'] as const;
+// Past statuses — order reached a notable endpoint (delivered, failed, or cancelled)
+export const PAST_ORDER_STATUSES = ['delivered', 'failed_delivery', 'return_rejected'] as const;
 export type PastOrderStatus = (typeof PAST_ORDER_STATUSES)[number];
 
 /**
@@ -70,6 +76,9 @@ export function isOrderStatus(value: string): value is OrderStatus {
  */
 export function getOrderProgress(status: string): number {
   if (status === 'delivered') return 100;
+  // Post-delivery states: return flow is 100% delivered progress (item was delivered)
+  if (status === 'failed_delivery' || status === 'return_requested' || status === 'return_rejected') return 100;
+  // Cancelled/refunded: no progress
   if (status === 'cancelled' || status === 'refunded' || status === 'returned') return 0;
 
   const index = (STATUS_ORDER as readonly string[]).indexOf(status);

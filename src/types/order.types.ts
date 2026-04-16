@@ -52,7 +52,9 @@ export interface OrderTotals {
 
 export interface OrderItem {
   _id?: string;
+  /** MongoDB ObjectId serialized as a string (populate required for display). */
   product: string;
+  /** MongoDB ObjectId serialized as a string (populate required for display). */
   store: string;
   storeName?: string;
   name: string;
@@ -139,7 +141,15 @@ export interface Order {
   _id: string;
   orderNumber: string;
   status: OrderStatus;
+  /**
+   * MongoDB ObjectId serialized as a 24-character hex string in JSON responses.
+   * Always call `.populate('user')` in backend queries before returning to clients.
+   */
   user: string;
+  /**
+   * MongoDB ObjectId serialized as a 24-character hex string in JSON responses.
+   * Always call `.populate('store')` in backend queries before returning to clients.
+   */
   store?: string;
   fulfillmentType: FulfillmentType;
   items: OrderItem[];
