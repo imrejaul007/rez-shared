@@ -45,10 +45,12 @@ export const TRANSACTION_TYPES = {
 export type TransactionType = typeof TRANSACTION_TYPES[keyof typeof TRANSACTION_TYPES];
 
 // User Roles
+// 2026-04-16: CONSUMER added to match canonical shared-types/UserRole (7 values).
 export const USER_ROLES = {
   USER: 'user',
-  ADMIN: 'admin',
+  CONSUMER: 'consumer',
   MERCHANT: 'merchant',
+  ADMIN: 'admin',
   SUPPORT: 'support',
   OPERATOR: 'operator',
   SUPER_ADMIN: 'super_admin',

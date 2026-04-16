@@ -7,19 +7,22 @@
 // ── Coin Type Constants ────────────────────────────────────────────────────────
 
 export const COIN_TYPES = {
-  PRIMARY:  'rez'      as const,
-  PRIVE:    'prive'    as const,
-  BRANDED:  'branded'  as const,
+  // 2026-04-16: Keys reordered to match canonical shared-types/CoinType enum order.
+  // Canonical priority order: PROMO → BRANDED → PRIVE → CASHBACK → REFERRAL → REZ
+  // Also renamed PRIMARY → REZ to align with canonical enum key name.
   PROMO:    'promo'    as const,
+  BRANDED:  'branded'  as const,
+  PRIVE:    'prive'    as const,
   CASHBACK: 'cashback' as const,
   REFERRAL: 'referral' as const,
+  REZ:      'rez'      as const,
 } as const;
 
 export type CoinType = typeof COIN_TYPES[keyof typeof COIN_TYPES];
 
-/** Array form for iteration and validation */
+/** Array form for iteration and validation (canonical priority order: PROMO → BRANDED → PRIVE → CASHBACK → REFERRAL → REZ) */
 export const COIN_TYPE_ARRAY: readonly CoinType[] = [
-  'rez', 'prive', 'promo', 'branded', 'cashback', 'referral',
+  'promo', 'branded', 'prive', 'cashback', 'referral', 'rez',
 ] as const;
 
 // ── Legacy Compatibility ───────────────────────────────────────────────────────
