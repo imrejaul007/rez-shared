@@ -28,6 +28,7 @@ export declare function createStatusUpdateRateLimiter(redis: Redis): import("exp
 /**
  * Rate limiter for KDS updates
  * Limit: 1000 updates per minute per store (high for real-time)
+ * Requires authentication - falls back to IP if storeId not available
  */
 export declare function createKdsRateLimiter(redis: Redis): import("express-rate-limit").RateLimitRequestHandler;
 /**
@@ -42,6 +43,7 @@ export declare function createOfferRateLimiter(redis: Redis): import("express-ra
 export declare function createGlobalRateLimiter(redis: Redis): import("express-rate-limit").RateLimitRequestHandler;
 /**
  * Auth attempt rate limiter
- * Limit: 5 failed attempts per 15 minutes per IP
+ * Limit: 5 failed attempts per 15 minutes per IP/email
+ * Uses the shared createRateLimiter helper with custom prefix for auth
  */
 export declare function createAuthRateLimiter(redis: Redis): import("express-rate-limit").RateLimitRequestHandler;

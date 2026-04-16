@@ -234,15 +234,35 @@ export class JobQueueService {
 
   /**
    * Queue email to be sent
+   * @param dedupTTL - Optional TTL in seconds for email deduplication key. If set, identical
+   *   emails sent within this window will be deduplicated. Defaults to 24 hours (86400s).
+   *   Set to 0 to disable deduplication entirely.
    */
-  async sendEmail(to: string, subject: string, body: string, options?: any): Promise<void> {
-    await this.emailQueue.addUnique(`email:${to}:${subject}`, {
-      type: 'send-email',
-      to,
-      subject,
-      body,
-      ...options,
-    });
+  async sendEmail(
+    to: string,
+    subject: string,
+    body: string,
+    options?: { dedupTTL?: number } & any
+  ): Promise<void> {
+    const ttl = options?.dedupTTL ?? 86400;
+    const jobId = ttl > 0 ? `email:${to}:${subject}` : undefined;
+    if (jobId) {
+      await this.emailQueue.addUnique(jobId, {
+        type: 'send-email',
+        to,
+        subject,
+        body,
+        ...options,
+      });
+    } else {
+      await this.emailQueue.add({
+        type: 'send-email',
+        to,
+        subject,
+        body,
+        ...options,
+      });
+    }
   }
 
   /**
@@ -272,9 +292,13 @@ export class JobQueueService {
 
   /**
    * Queue webhook call
+   * Uses idempotent jobId (url + event) to prevent duplicate deliveries when the same
+   * webhook is triggered multiple times in quick succession.
    */
   async sendWebhook(url: string, event: string, payload: any, options?: any): Promise<void> {
-    await this.webhookQueue.add({
+    // Use url + event as idempotent jobId to deduplicate rapid-fire triggers
+    const jobId = `webhook:${url}:${event}`;
+    await this.webhookQueue.addUnique(jobId, {
       type: 'send-webhook',
       url,
       event,

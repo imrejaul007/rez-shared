@@ -34,6 +34,7 @@ const emailSchema = zod_1.z
     .optional();
 /**
  * Address schema
+ * Note: Backend enforces max 5 addresses per user (see address service)
  */
 exports.addressSchema = zod_1.z.object({
     name: zod_1.z.string().min(1, 'Name is required').max(100),
@@ -100,6 +101,10 @@ const createOfferSchemaBase = zod_1.z.object({
     applicableProducts: zod_1.z.array(zod_1.z.string().max(24)).optional(),
     userSegments: zod_1.z.array(zod_1.z.string()).optional(),
 });
+/**
+ * Offer creation schema
+ * Note: Backend validates non-overlapping offers per merchant (see merchant service)
+ */
 exports.createOfferSchema = createOfferSchemaBase.refine((data) => data.startDate < data.endDate, {
     message: 'startDate must be before endDate',
     path: ['endDate'],
@@ -134,9 +139,11 @@ exports.merchantLoginSchema = zod_1.z.object({
 });
 /**
  * Coupon code validation schema
+ * Note: Case-insensitive validation is done at the backend (see coupon service)
+ * Do NOT transform to uppercase to preserve original code format
  */
 exports.couponCodeSchema = zod_1.z.object({
-    code: zod_1.z.string().min(1, 'Code is required').max(20).toUpperCase(),
+    code: zod_1.z.string().min(1, 'Code is required').max(20),
     orderAmount: zod_1.z.number().positive(),
     userId: zod_1.z.string().optional(),
 });

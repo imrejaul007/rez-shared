@@ -27,17 +27,6 @@ export declare function validatePincode(pincode: string): boolean;
 export declare function validateEmail(email: string): boolean;
 /**
  * Sanitize and validate delivery address
+ * Handles string fields and numeric coordinates without stringification
  */
-export declare function sanitizeAddress(address: any): {
-    name: string;
-    phone: string;
-    email: string;
-    addressLine1: string;
-    addressLine2: string;
-    city: string;
-    state: string;
-    pincode: string;
-    country: string;
-    landmark: string;
-    addressType: any;
-};
+export declare function sanitizeAddress(address: any): any;

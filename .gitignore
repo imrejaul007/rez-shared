@@ -7,3 +7,8 @@ dist/
 !*.config.js
 src/**/*.d.ts
 *.tsbuildinfo
+
+# Environment variables
+.env
+.env.*
+!.env.example

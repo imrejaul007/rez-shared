@@ -10,6 +10,7 @@
 import { z } from 'zod';
 /**
  * Address schema
+ * Note: Backend enforces max 5 addresses per user (see address service)
  */
 export declare const addressSchema: z.ZodObject<{
     name: z.ZodString;
@@ -208,6 +209,10 @@ export declare const updateOrderStatusSchema: z.ZodObject<{
     note?: string;
 }>;
 export type UpdateOrderStatusRequest = z.infer<typeof updateOrderStatusSchema>;
+/**
+ * Offer creation schema
+ * Note: Backend validates non-overlapping offers per merchant (see merchant service)
+ */
 export declare const createOfferSchema: z.ZodEffects<z.ZodObject<{
     title: z.ZodString;
     description: z.ZodOptional<z.ZodString>;
@@ -458,6 +463,8 @@ export declare const merchantLoginSchema: z.ZodObject<{
 export type MerchantLoginRequest = z.infer<typeof merchantLoginSchema>;
 /**
  * Coupon code validation schema
+ * Note: Case-insensitive validation is done at the backend (see coupon service)
+ * Do NOT transform to uppercase to preserve original code format
  */
 export declare const couponCodeSchema: z.ZodObject<{
     code: z.ZodString;

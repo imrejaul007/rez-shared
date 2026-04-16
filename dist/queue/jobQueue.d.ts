@@ -18,6 +18,14 @@ export interface JobQueueOptions {
     maxRetries?: number;
     retryBackoff?: 'exponential' | 'fixed';
     defaultDelay?: number;
+    /**
+     * Retention policy for completed jobs.
+     * - 'short': 1 hour (default for non-critical jobs)
+     * - 'medium': 24 hours (for audit trails)
+     * - 'long': 7 days (for critical operations, allows replay)
+     * - 'permanent': Never remove (for compliance/archival)
+     */
+    retentionPolicy?: 'short' | 'medium' | 'long' | 'permanent';
 }
 export interface AsyncJobData {
     type?: string;
@@ -34,6 +42,10 @@ export declare class JobQueue<T extends AsyncJobData = AsyncJobData> {
     private readonly redisConnection;
     constructor(name: string, redis: Redis, options?: JobQueueOptions);
     /**
+     * Get retention age in seconds based on policy
+     */
+    private getRetentionAge;
+    /**
      * Add job to queue
      */
     add(data: T, options?: {
@@ -48,6 +60,7 @@ export declare class JobQueue<T extends AsyncJobData = AsyncJobData> {
     }): Promise<Job<any, any, string>>;
     /**
      * Add job to be processed at specific time
+     * Note: If scheduledTime is in the past, the job will be executed immediately
      */
     schedule(data: T, scheduledTime: Date, options?: {
         priority?: number;

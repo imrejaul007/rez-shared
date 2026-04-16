@@ -22,6 +22,8 @@ class JobQueue {
     constructor(name, redis, options = {}) {
         this.options = options;
         this.redisConnection = redis.options || { host: 'localhost', port: 6379 };
+        // Determine retention age in seconds based on policy
+        const retentionAgeSeconds = this.getRetentionAge(options.retentionPolicy || 'short');
         // Create queue
         this.queue = new bullmq_1.Queue(name, {
             connection: this.redisConnection,
@@ -30,7 +32,7 @@ class JobQueue {
                 backoff: options.retryBackoff === 'fixed'
                     ? { type: 'fixed', delay: 5000 }
                     : { type: 'exponential', delay: 1000 },
-                removeOnComplete: { age: 3600 }, // Keep completed jobs for 1 hour
+                removeOnComplete: retentionAgeSeconds ? { age: retentionAgeSeconds } : false,
             },
         });
         // Monitor queue events
@@ -38,11 +40,28 @@ class JobQueue {
             connection: this.redisConnection,
         });
         this.queueEvents.on('failed', ({ jobId, failedReason }) => {
-            console.error(`[${name}] Job ${jobId} failed: ${failedReason}`);
+            logger.error(`[${name}] Job ${jobId} failed: ${failedReason}`);
         });
         this.queueEvents.on('completed', ({ jobId }) => {
-            console.log(`[${name}] Job ${jobId} completed`);
+            logger.debug(`[${name}] Job ${jobId} completed`);
         });
+    }
+    /**
+     * Get retention age in seconds based on policy
+     */
+    getRetentionAge(policy) {
+        switch (policy) {
+            case 'short':
+                return 3600; // 1 hour
+            case 'medium':
+                return 86400; // 24 hours
+            case 'long':
+                return 604800; // 7 days
+            case 'permanent':
+                return false; // Never remove
+            default:
+                return 3600;
+        }
     }
     /**
      * Add job to queue
@@ -64,9 +83,13 @@ class JobQueue {
     }
     /**
      * Add job to be processed at specific time
+     * Note: If scheduledTime is in the past, the job will be executed immediately
      */
     async schedule(data, scheduledTime, options) {
         const delay = scheduledTime.getTime() - Date.now();
+        if (delay < 0) {
+            logger.warn(`[${this.queue.name}] Job scheduled for past time (${scheduledTime.toISOString()}), executing immediately`);
+        }
         return this.queue.add(data.type || 'job', data, {
             priority: options?.priority || 0,
             delay: Math.max(0, delay),
@@ -81,10 +104,10 @@ class JobQueue {
             concurrency,
         });
         this.worker.on('failed', (job, err) => {
-            console.error(`[${this.queue.name}] Worker failed:`, err);
+            logger.error(`[${this.queue.name}] Worker failed:`, err);
         });
         this.worker.on('error', (err) => {
-            console.error(`[${this.queue.name}] Worker error:`, err);
+            logger.error(`[${this.queue.name}] Worker error:`, err);
         });
     }
     /**

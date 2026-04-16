@@ -21,7 +21,7 @@ function normalizeLoyaltyTier(tier) {
         return 'bronze';
     const map = {
         BRONZE: 'bronze', SILVER: 'silver', GOLD: 'gold', PLATINUM: 'platinum',
-        STARTER: 'bronze', DIAMOND: 'platinum', DIMAOND: 'platinum',
+        STARTER: 'bronze', DIAMOND: 'platinum',
     };
     return map[tier.toUpperCase()] || 'bronze';
 }

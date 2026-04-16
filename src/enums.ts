@@ -19,7 +19,7 @@ export function normalizeLoyaltyTier(tier: string): LoyaltyTier {
   if (!tier) return 'bronze';
   const map: Record<string, LoyaltyTier> = {
     BRONZE: 'bronze', SILVER: 'silver', GOLD: 'gold', PLATINUM: 'platinum',
-    STARTER: 'bronze', DIAMOND: 'platinum', DIMAOND: 'platinum',
+    STARTER: 'bronze', DIAMOND: 'platinum',
   };
   return map[tier.toUpperCase()] || 'bronze';
 }

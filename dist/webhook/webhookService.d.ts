@@ -118,6 +118,11 @@ export declare class WebhookService {
      */
     private sign;
     /**
+     * Verify webhook signature using constant-time comparison
+     * Prevents timing attacks on signature verification
+     */
+    verifySignature(payload: string, signature: string, secret: string): boolean;
+    /**
      * Generate random secret
      */
     private generateSecret;

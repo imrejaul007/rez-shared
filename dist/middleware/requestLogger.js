@@ -22,7 +22,7 @@ function logger(context, message, data) {
         message,
         ...(data && { data }),
     };
-    console.log(JSON.stringify(log));
+    logger.debug(JSON.stringify(log));
 }
 /**
  * Structured logger for errors
@@ -36,7 +36,7 @@ function logError(context, error, data) {
         stack: error.stack,
         ...(data && { data }),
     };
-    console.error(JSON.stringify(log));
+    logger.error(JSON.stringify(log));
 }
 /**
  * Request logging middleware

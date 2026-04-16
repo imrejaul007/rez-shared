@@ -153,10 +153,16 @@ class WebhookService {
      * Deliver webhook (called by job processor)
      */
     async deliver(webhookId, event, payload, attempt = 1) {
+        const startTime = Date.now();
+        const timeoutMs = 15000; // 15 second timeout for entire delivery operation
         try {
             const webhook = await exports.Webhook.findById(webhookId);
             if (!webhook || !webhook.isActive) {
                 return false;
+            }
+            // Check if we've exceeded the total timeout
+            if (Date.now() - startTime > timeoutMs) {
+                throw new Error('Webhook delivery timeout');
             }
             // Prepare request
             const signature = this.sign(JSON.stringify(payload), webhook.secret);
@@ -167,10 +173,11 @@ class WebhookService {
                 'X-Webhook-Delivery': new Date().toISOString(),
                 ...webhook.headers,
             };
-            // Send request
+            // Send request with timeout enforcement
+            const remainingTime = timeoutMs - (Date.now() - startTime);
             const response = await axios_1.default.post(webhook.targetUrl, payload, {
                 headers,
-                timeout: 10000,
+                timeout: Math.min(10000, remainingTime),
             });
             // Log successful delivery
             await exports.WebhookDelivery.create({
@@ -186,8 +193,10 @@ class WebhookService {
         }
         catch (error) {
             const axiosError = error;
-            // Determine if retry is needed
-            const shouldRetry = this.shouldRetry(axiosError, attempt);
+            // Determine if retry is needed (using webhook's configured maxRetries)
+            const webhook = await exports.Webhook.findById(webhookId).catch(() => null);
+            const maxRetries = webhook?.maxRetries || 5;
+            const shouldRetry = this.shouldRetry(axiosError, attempt, maxRetries);
             // Log failed delivery
             await exports.WebhookDelivery.create({
                 webhook: webhookId,
@@ -201,7 +210,6 @@ class WebhookService {
             });
             // Queue retry if needed
             if (shouldRetry) {
-                const webhook = await exports.Webhook.findById(webhookId);
                 await this.jobQueue.add({
                     type: 'send-webhook',
                     webhookId,
@@ -248,6 +256,25 @@ class WebhookService {
         return (0, crypto_1.createHmac)('sha256', secret)
             .update(payload)
             .digest('hex');
+    }
+    /**
+     * Verify webhook signature using constant-time comparison
+     * Prevents timing attacks on signature verification
+     */
+    verifySignature(payload, signature, secret) {
+        try {
+            const expectedSignature = this.sign(payload, secret);
+            // Use timingSafeEqual to prevent timing attacks
+            // Both buffers must be the same length
+            if (expectedSignature.length !== signature.length) {
+                return false;
+            }
+            return (0, crypto_1.timingSafeEqual)(Buffer.from(expectedSignature), Buffer.from(signature));
+        }
+        catch (error) {
+            logger.error('Signature verification error:', error);
+            return false;
+        }
     }
     /**
      * Generate random secret
