@@ -10,6 +10,21 @@
 
 import { z } from 'zod';
 import { ORDER_STATUSES } from '../orderStatuses';
+import Joi from 'joi';
+
+/**
+ * Product cashback subdocument schema (Joi)
+ * Field names match the backend Product.cashback subdocument shape
+ */
+export const productCashbackSchema = Joi.object({
+  percentage: Joi.number().min(0).max(100),
+  maxAmount: Joi.number().min(0),
+  minPurchase: Joi.number().min(0),
+  validUntil: Joi.date().iso(),
+  terms: Joi.string(),
+  isActive: Joi.boolean(),
+  conditions: Joi.array().items(Joi.string()),
+});
 
 /**
  * Phone number validation (India)
@@ -154,6 +169,57 @@ export const createCashbackOfferSchema = createOfferSchemaBase.extend({
 });
 
 export type CreateCashbackOfferRequest = z.infer<typeof createCashbackOfferSchema>;
+
+/**
+ * Update offer schema — all fields optional (Zod equivalent of updateOfferSchema)
+ */
+export const updateOfferSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  image: z.string().url().optional(),
+  category: z.enum(['food','retail','travel','healthcare','entertainment','beauty','wellness','fitness','groceries','pharmacy','other']).optional(),
+  cashbackPercentage: z.number().min(0).max(100).optional(),
+  validity: z.object({
+    startDate: z.date(),
+    endDate: z.date(),
+  }).optional(),
+  restrictions: z.object({
+    minOrderValue: z.number().min(0).optional(),
+    usageLimit: z.number().int().min(1).optional(),
+    usageLimitPerUser: z.number().int().min(1).optional(),
+    applicableOn: z.array(z.string()).optional(),
+    excludedProducts: z.array(z.string()).optional(),
+    ageRestriction: z.object({
+      minAge: z.number().int().min(0).optional(),
+      maxAge: z.number().int().min(0).optional(),
+    }).optional(),
+  }).optional(),
+  isActive: z.boolean().optional(),
+});
+
+export type UpdateOfferRequest = z.infer<typeof updateOfferSchema>;
+
+/**
+ * Create product schema (Zod equivalent of createProductSchema)
+ */
+export const createProductSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  description: z.string().optional(),
+  pricing: z.object({
+    original: z.number().min(0).optional(),
+    selling: z.number().min(0),
+    discount: z.number().min(0).optional(),
+  }),
+  inventory: z.object({
+    stock: z.number().int().min(0).optional(),
+    inStock: z.boolean().optional(),
+  }).optional(),
+  category: z.string().optional(),
+  images: z.array(z.string()).optional(),
+  cashback: productCashbackSchema.optional(),
+});
+
+export type CreateProductRequest = z.infer<typeof createProductSchema>;
 
 /**
  * Merchant login schema

@@ -166,7 +166,7 @@ export interface Store {
     cashback?: number;
     minOrderAmount?: number;
     maxCashback?: number;
-    isPartner: boolean;
+    isPartner?: boolean;
     partnerLevel?: 'bronze' | 'silver' | 'gold' | 'platinum';
   };
 
