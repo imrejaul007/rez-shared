@@ -6,6 +6,9 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
+import { createServiceLogger } from '../config/logger';
+
+const logger = createServiceLogger('error-handler');
 
 /**
  * Standard error codes used across the platform
@@ -143,7 +146,7 @@ export function globalErrorHandler(
   const requestId = (req as any).correlationId || 'unknown';
 
   // Log error with proper context
-  console.error('[ERROR]', {
+  logger.error('[ERROR]', {
     requestId,
     path: req.path,
     method: req.method,

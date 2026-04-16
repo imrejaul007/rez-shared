@@ -24,7 +24,7 @@ export interface LogContext {
 /**
  * Structured logger
  */
-export function logger(context: Partial<LogContext>, message: string, data?: any) {
+export function structuredLog(context: Partial<LogContext>, message: string, data?: any) {
   const log = {
     timestamp: new Date().toISOString(),
     level: 'info',
@@ -32,7 +32,7 @@ export function logger(context: Partial<LogContext>, message: string, data?: any
     message,
     ...(data && { data }),
   };
-  logger.debug(JSON.stringify(log));
+  console.log(JSON.stringify(log));
 }
 
 /**
@@ -47,7 +47,7 @@ export function logError(context: Partial<LogContext>, error: Error, data?: any)
     stack: error.stack,
     ...(data && { data }),
   };
-  logger.error(JSON.stringify(log));
+  console.error(JSON.stringify(log));
 }
 
 /**
@@ -75,7 +75,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
   const merchantId = (req as any).merchantId;
 
   // Log incoming request
-  logger(
+  structuredLog(
     {
       correlationId,
       requestId,
@@ -99,7 +99,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
   res.on('finish', () => {
     const duration = Date.now() - startTime;
 
-    logger(
+    structuredLog(
       {
         correlationId,
         requestId,
@@ -123,7 +123,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
 export function attachLogger(req: Request, res: Response, next: NextFunction) {
   (req as any).logger = {
     info: (message: string, data?: any) =>
-      logger(
+      structuredLog(
         {
           correlationId: (req as any).correlationId,
           requestId: (req as any).requestId,
