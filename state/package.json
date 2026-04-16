@@ -9,7 +9,7 @@
     "test": "node --test test"
   },
   "dependencies": {
-    "@rez/enums": "workspace:*"
+    "@rez/shared-enums": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
