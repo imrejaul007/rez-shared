@@ -64,6 +64,8 @@ export interface OfferRestrictions {
     minAge?: number;
     maxAge?: number;
   };
+  /** Product IDs excluded from this offer — products that should NOT qualify even if other conditions are met */
+  excludedProducts?: string[];
 }
 
 // ── Offer Engagement ─────────────────────────────────────────────────────────
@@ -150,6 +152,9 @@ export interface Offer {
    * Computed from validity.isActive + adminApproved on the backend before serialization.
    */
   status?: 'active' | 'inactive' | 'pending_approval' | 'rejected';
+
+  /** User ID of the admin/merchant who created this offer */
+  createdBy: string;
 
   createdAt: string;
   updatedAt: string;

@@ -22,6 +22,13 @@ export const COIN_TYPE_ARRAY: readonly CoinType[] = [
   'rez', 'prive', 'promo', 'branded', 'cashback', 'referral',
 ] as const;
 
+/**
+ * Canonical coin type values for use in Mongoose schema enums and runtime validation.
+ * Mirrors the backend's COIN_TYPE_VALUES but is defined here in the shared canonical source.
+ * WALLET-03 fix: exported so rez-backend can import from @rez/shared instead of maintaining a duplicate.
+ */
+export const COIN_TYPE_VALUES = COIN_TYPE_ARRAY;
+
 // ── Legacy Compatibility ───────────────────────────────────────────────────────
 
 /** Maps legacy 'nuqta' to canonical 'rez'. All other types pass through. */

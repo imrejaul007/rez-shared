@@ -9,6 +9,7 @@
  */
 
 import { z } from 'zod';
+import { ORDER_STATUSES } from '../orderStatuses';
 
 /**
  * Phone number validation (India)
@@ -83,11 +84,7 @@ export type CreateOrderRequest = z.infer<typeof createOrderSchema>;
  * Order status update schema
  */
 export const updateOrderStatusSchema = z.object({
-  status: z.enum([
-    'placed', 'confirmed', 'preparing', 'ready',
-    'dispatched', 'out_for_delivery', 'delivered',
-    'cancelled', 'cancelling', 'returned', 'refunded'
-  ]),
+  status: z.enum(ORDER_STATUSES as unknown as [string, ...string[]]),
   note: z.string().max(500).optional(),
 });
 
@@ -95,16 +92,25 @@ export type UpdateOrderStatusRequest = z.infer<typeof updateOrderStatusSchema>;
 
 /**
  * Offer creation schema (base)
+ * Field names match the rez-backend Offer model canonical shape:
+ *   type, cashbackPercentage, restrictions.minOrderValue,
+ *   restrictions.usageLimit, restrictions.usageLimitPerUser
  */
 const createOfferSchemaBase = z.object({
   title: z.string().min(1, 'Title is required').max(200),
   description: z.string().max(1000).optional(),
-  offerType: z.enum(['discount', 'cashback', 'voucher', 'combo', 'special', 'walk_in']),
-  startDate: z.date(),
-  endDate: z.date(),
-  minOrderAmount: z.number().nonnegative().optional(),
-  maxRedemptions: z.number().positive().optional(),
-  maxRedemptionsPerUser: z.number().positive().optional(),
+  type: z.enum(['discount', 'cashback', 'voucher', 'combo', 'special', 'walk_in']), // B03 fix: was offerType
+  validity: z.object({
+    startDate: z.date(),
+    endDate: z.date(),
+  }),
+  // B05 fix: restrictions.minOrderValue (was flat minOrderAmount)
+  // B06 fix: restrictions.usageLimit / restrictions.usageLimitPerUser (were flat maxRedemptions/*)
+  restrictions: z.object({
+    minOrderValue: z.number().nonnegative().optional(),
+    usageLimit: z.number().positive().optional(),
+    usageLimitPerUser: z.number().positive().optional(),
+  }).optional(),
   isActive: z.boolean().default(true),
   applicableCategories: z.array(z.string().max(24)).optional(),
   applicableProducts: z.array(z.string().max(24)).optional(),
@@ -115,9 +121,9 @@ const createOfferSchemaBase = z.object({
  * Offer creation schema
  * Note: Backend validates non-overlapping offers per merchant (see merchant service)
  */
-export const createOfferSchema = createOfferSchemaBase.refine((data) => data.startDate < data.endDate, {
+export const createOfferSchema = createOfferSchemaBase.refine((data) => data.validity.startDate < data.validity.endDate, {
   message: 'startDate must be before endDate',
-  path: ['endDate'],
+  path: ['validity.endDate'],
 });
 
 export type CreateOfferRequest = z.infer<typeof createOfferSchema>;
@@ -129,9 +135,9 @@ export const createDiscountOfferSchema = createOfferSchemaBase.extend({
   discountType: z.enum(['percentage', 'fixed']),
   discountValue: z.number().positive('Discount value must be positive'),
   maxDiscountAmount: z.number().nonnegative().optional(),
-}).refine((data) => data.startDate < data.endDate, {
+}).refine((data) => data.validity.startDate < data.validity.endDate, {
   message: 'startDate must be before endDate',
-  path: ['endDate'],
+  path: ['validity.endDate'],
 });
 
 export type CreateDiscountOfferRequest = z.infer<typeof createDiscountOfferSchema>;
@@ -141,10 +147,10 @@ export type CreateDiscountOfferRequest = z.infer<typeof createDiscountOfferSchem
  */
 export const createCashbackOfferSchema = createOfferSchemaBase.extend({
   cashbackType: z.enum(['coins', 'wallet']),
-  cashbackValue: z.number().positive('Cashback value must be positive'),
-}).refine((data) => data.startDate < data.endDate, {
+  cashbackPercentage: z.number().positive('Cashback percentage must be positive'), // B04 fix: was cashbackValue
+}).refine((data) => data.validity.startDate < data.validity.endDate, {
   message: 'startDate must be before endDate',
-  path: ['endDate'],
+  path: ['validity.endDate'],
 });
 
 export type CreateCashbackOfferRequest = z.infer<typeof createCashbackOfferSchema>;
