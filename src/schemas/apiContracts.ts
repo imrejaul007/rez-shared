@@ -65,7 +65,7 @@ export const userProfileSchema = z.object({
   verificationSegment: z.string().optional(),
   verifications: z.record(z.unknown()).optional(),
   activeZones: z.array(z.string()).optional(),
-  role: z.enum(['user', 'admin', 'merchant']),
+  role: z.enum(['user', 'admin', 'merchant', 'customer', 'driver', 'support', 'manager', 'owner']),
   isVerified: z.boolean(),
   isOnboarded: z.boolean(),
   createdAt: z.string().datetime(),

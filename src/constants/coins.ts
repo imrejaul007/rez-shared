@@ -47,7 +47,7 @@ export const LEGACY_COIN_TYPE_MAP: Record<string, CoinType> = {
 
 /** Normalize any coin type string to canonical CoinType. Falls back to 'rez'. */
 export function normalizeCoinType(type: string): CoinType {
-  return (LEGACY_COIN_TYPE_MAP[type] ?? 'rez') as CoinType;
+  return (LEGACY_COIN_TYPE_MAP[type.toLowerCase()] ?? 'rez') as CoinType;
 }
 
 // ── Coin Configuration ────────────────────────────────────────────────────────
