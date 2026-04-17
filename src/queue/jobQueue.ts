@@ -15,6 +15,9 @@
 import { Queue, Worker, QueueEvents } from 'bullmq';
 import type { Job } from 'bullmq';
 import type Redis from 'ioredis';
+import { createServiceLogger } from '../config/logger';
+
+const logger = createServiceLogger('JobQueue');
 
 export interface JobQueueOptions {
   concurrency?: number;
@@ -155,11 +158,11 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
     });
 
     this.worker.on('failed', (job, err) => {
-      logger.error(`[${this.queue.name}] Worker failed:`, err);
+      logger.error(`[${this.queue.name}] Worker failed`, { error: err });
     });
 
     this.worker.on('error', (err) => {
-      logger.error(`[${this.queue.name}] Worker error:`, err);
+      logger.error(`[${this.queue.name}] Worker error`, { error: err });
     });
   }
 

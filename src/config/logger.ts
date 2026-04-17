@@ -27,9 +27,9 @@ const serviceLogger = winston.createLogger({
  */
 export function createServiceLogger(component: string) {
   return {
-    info: (message: string, meta?: unknown) => serviceLogger.info(message, { component, ...meta }),
-    warn: (message: string, meta?: unknown) => serviceLogger.warn(message, { component, ...meta }),
-    error: (message: string, meta?: unknown) => serviceLogger.error(message, { component, ...meta }),
-    debug: (message: string, meta?: unknown) => serviceLogger.debug(message, { component, ...meta }),
+    info: (message: string, meta?: Record<string, unknown>) => serviceLogger.info(message, { component, ...meta }),
+    warn: (message: string, meta?: Record<string, unknown>) => serviceLogger.warn(message, { component, ...meta }),
+    error: (message: string, meta?: Record<string, unknown>) => serviceLogger.error(message, { component, ...meta }),
+    debug: (message: string, meta?: Record<string, unknown>) => serviceLogger.debug(message, { component, ...meta }),
   };
 }

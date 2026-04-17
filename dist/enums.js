@@ -12,8 +12,9 @@
 // paymentStatuses.ts, and statusCompat.ts. Do NOT re-export them here to avoid
 // duplicate identifier errors.
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.USER_ROLES = exports.TRANSACTION_TYPES = exports.LOYALTY_TIERS = void 0;
+exports.USER_ROLES = exports.TRANSACTION_TYPES = exports.LOYALTY_TIER_PERKS = exports.LOYALTY_TIERS = void 0;
 exports.normalizeLoyaltyTier = normalizeLoyaltyTier;
+exports.getLoyaltyTierPerks = getLoyaltyTierPerks;
 // Loyalty Tiers
 exports.LOYALTY_TIERS = ['bronze', 'silver', 'gold', 'platinum', 'diamond'];
 function normalizeLoyaltyTier(tier) {
@@ -28,6 +29,17 @@ function normalizeLoyaltyTier(tier) {
         DIAMOND: 'diamond', DIMAOND: 'platinum',
     };
     return map[tier.toUpperCase()] ?? (exports.LOYALTY_TIERS.includes(tier.toLowerCase()) ? tier.toLowerCase() : 'bronze');
+}
+exports.LOYALTY_TIER_PERKS = {
+    bronze: { tier: 'bronze', cashbackRate: 0.01, freeDeliveryMinOrder: 999, prioritySupport: false, exclusiveOffers: false, earlyAccess: false },
+    silver: { tier: 'silver', cashbackRate: 0.015, freeDeliveryMinOrder: 500, prioritySupport: false, exclusiveOffers: false, earlyAccess: false },
+    gold: { tier: 'gold', cashbackRate: 0.02, freeDeliveryMinOrder: 300, prioritySupport: true, exclusiveOffers: false, earlyAccess: false },
+    platinum: { tier: 'platinum', cashbackRate: 0.03, freeDeliveryMinOrder: 0, prioritySupport: true, exclusiveOffers: true, earlyAccess: false },
+    diamond: { tier: 'diamond', cashbackRate: 0.05, freeDeliveryMinOrder: 0, prioritySupport: true, exclusiveOffers: true, earlyAccess: true },
+};
+function getLoyaltyTierPerks(tier) {
+    const normalized = normalizeLoyaltyTier(tier);
+    return exports.LOYALTY_TIER_PERKS[normalized];
 }
 // Transaction Types
 // NOTE: Backend wallet service only supports 6 types (earned|spent|expired|refunded|bonus|branded_award).

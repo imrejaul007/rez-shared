@@ -9,10 +9,34 @@
  */
 import { z } from 'zod';
 /**
- * Product cashback subdocument schema (Joi)
+ * Product cashback subdocument schema (Zod)
  * Field names match the backend Product.cashback subdocument shape
  */
-export declare const productCashbackSchema: any;
+export declare const productCashbackSchema: z.ZodObject<{
+    percentage: z.ZodOptional<z.ZodNumber>;
+    maxAmount: z.ZodOptional<z.ZodNumber>;
+    minPurchase: z.ZodOptional<z.ZodNumber>;
+    validUntil: z.ZodOptional<z.ZodString>;
+    terms: z.ZodOptional<z.ZodString>;
+    isActive: z.ZodOptional<z.ZodBoolean>;
+    conditions: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+}, "strip", z.ZodTypeAny, {
+    isActive?: boolean;
+    percentage?: number;
+    validUntil?: string;
+    maxAmount?: number;
+    minPurchase?: number;
+    terms?: string;
+    conditions?: string[];
+}, {
+    isActive?: boolean;
+    percentage?: number;
+    validUntil?: string;
+    maxAmount?: number;
+    minPurchase?: number;
+    terms?: string;
+    conditions?: string[];
+}>;
 /**
  * Address schema
  * Note: Backend enforces max 5 addresses per user (see address service)
@@ -688,25 +712,77 @@ export declare const createProductSchema: z.ZodObject<{
     }>>;
     category: z.ZodOptional<z.ZodString>;
     images: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
-    cashback: any;
+    cashback: z.ZodOptional<z.ZodObject<{
+        percentage: z.ZodOptional<z.ZodNumber>;
+        maxAmount: z.ZodOptional<z.ZodNumber>;
+        minPurchase: z.ZodOptional<z.ZodNumber>;
+        validUntil: z.ZodOptional<z.ZodString>;
+        terms: z.ZodOptional<z.ZodString>;
+        isActive: z.ZodOptional<z.ZodBoolean>;
+        conditions: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+    }, "strip", z.ZodTypeAny, {
+        isActive?: boolean;
+        percentage?: number;
+        validUntil?: string;
+        maxAmount?: number;
+        minPurchase?: number;
+        terms?: string;
+        conditions?: string[];
+    }, {
+        isActive?: boolean;
+        percentage?: number;
+        validUntil?: string;
+        maxAmount?: number;
+        minPurchase?: number;
+        terms?: string;
+        conditions?: string[];
+    }>>;
 }, "strip", z.ZodTypeAny, {
-    [x: string]: any;
-    name?: unknown;
-    description?: unknown;
-    pricing?: unknown;
-    inventory?: unknown;
-    category?: unknown;
-    images?: unknown;
-    cashback?: unknown;
+    cashback?: {
+        isActive?: boolean;
+        percentage?: number;
+        validUntil?: string;
+        maxAmount?: number;
+        minPurchase?: number;
+        terms?: string;
+        conditions?: string[];
+    };
+    name?: string;
+    description?: string;
+    category?: string;
+    pricing?: {
+        discount?: number;
+        original?: number;
+        selling?: number;
+    };
+    inventory?: {
+        inStock?: boolean;
+        stock?: number;
+    };
+    images?: string[];
 }, {
-    [x: string]: any;
-    name?: unknown;
-    description?: unknown;
-    pricing?: unknown;
-    inventory?: unknown;
-    category?: unknown;
-    images?: unknown;
-    cashback?: unknown;
+    cashback?: {
+        isActive?: boolean;
+        percentage?: number;
+        validUntil?: string;
+        maxAmount?: number;
+        minPurchase?: number;
+        terms?: string;
+        conditions?: string[];
+    };
+    name?: string;
+    description?: string;
+    category?: string;
+    pricing?: {
+        discount?: number;
+        original?: number;
+        selling?: number;
+    };
+    inventory?: {
+        inStock?: boolean;
+        stock?: number;
+    };
+    images?: string[];
 }>;
 export type CreateProductRequest = z.infer<typeof createProductSchema>;
 /**

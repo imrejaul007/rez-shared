@@ -8,9 +8,6 @@
  * const { success, data, error } = createOrderSchema.safeParse(req.body);
  * ```
  */
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.couponCodeSchema = exports.merchantLoginSchema = exports.createProductSchema = exports.updateOfferSchema = exports.createCashbackOfferSchema = exports.createDiscountOfferSchema = exports.createOfferSchema = exports.updateOrderStatusSchema = exports.createOrderSchema = exports.addressSchema = exports.productCashbackSchema = void 0;
 exports.validateRequest = validateRequest;
@@ -18,19 +15,18 @@ exports.validateParams = validateParams;
 exports.validateQuery = validateQuery;
 const zod_1 = require("zod");
 const orderStatuses_1 = require("../orderStatuses");
-const joi_1 = __importDefault(require("joi"));
 /**
- * Product cashback subdocument schema (Joi)
+ * Product cashback subdocument schema (Zod)
  * Field names match the backend Product.cashback subdocument shape
  */
-exports.productCashbackSchema = joi_1.default.object({
-    percentage: joi_1.default.number().min(0).max(100),
-    maxAmount: joi_1.default.number().min(0),
-    minPurchase: joi_1.default.number().min(0),
-    validUntil: joi_1.default.date().iso(),
-    terms: joi_1.default.string(),
-    isActive: joi_1.default.boolean(),
-    conditions: joi_1.default.array().items(joi_1.default.string()),
+exports.productCashbackSchema = zod_1.z.object({
+    percentage: zod_1.z.number().min(0).max(100).optional(),
+    maxAmount: zod_1.z.number().min(0).optional(),
+    minPurchase: zod_1.z.number().min(0).optional(),
+    validUntil: zod_1.z.string().datetime().optional(),
+    terms: zod_1.z.string().optional(),
+    isActive: zod_1.z.boolean().optional(),
+    conditions: zod_1.z.array(zod_1.z.string()).optional(),
 });
 /**
  * Phone number validation (India)

@@ -1,6 +1,16 @@
 export declare const LOYALTY_TIERS: readonly ["bronze", "silver", "gold", "platinum", "diamond"];
 export type LoyaltyTier = typeof LOYALTY_TIERS[number];
 export declare function normalizeLoyaltyTier(tier: string): LoyaltyTier;
+export interface LoyaltyTierPerks {
+    tier: LoyaltyTier;
+    cashbackRate: number;
+    freeDeliveryMinOrder: number;
+    prioritySupport: boolean;
+    exclusiveOffers: boolean;
+    earlyAccess: boolean;
+}
+export declare const LOYALTY_TIER_PERKS: Record<LoyaltyTier, LoyaltyTierPerks>;
+export declare function getLoyaltyTierPerks(tier: string): LoyaltyTierPerks;
 export declare const TRANSACTION_TYPES: {
     readonly EARNED: "earned";
     readonly SPENT: "spent";

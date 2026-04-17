@@ -10,20 +10,19 @@
 
 import { z } from 'zod';
 import { ORDER_STATUSES } from '../orderStatuses';
-import Joi from 'joi';
 
 /**
- * Product cashback subdocument schema (Joi)
+ * Product cashback subdocument schema (Zod)
  * Field names match the backend Product.cashback subdocument shape
  */
-export const productCashbackSchema = Joi.object({
-  percentage: Joi.number().min(0).max(100),
-  maxAmount: Joi.number().min(0),
-  minPurchase: Joi.number().min(0),
-  validUntil: Joi.date().iso(),
-  terms: Joi.string(),
-  isActive: Joi.boolean(),
-  conditions: Joi.array().items(Joi.string()),
+export const productCashbackSchema = z.object({
+  percentage: z.number().min(0).max(100).optional(),
+  maxAmount: z.number().min(0).optional(),
+  minPurchase: z.number().min(0).optional(),
+  validUntil: z.string().datetime().optional(),
+  terms: z.string().optional(),
+  isActive: z.boolean().optional(),
+  conditions: z.array(z.string()).optional(),
 });
 
 /**

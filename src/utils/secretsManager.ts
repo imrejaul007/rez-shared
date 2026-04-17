@@ -14,6 +14,9 @@
 
 import axios from 'axios';
 import type Redis from 'ioredis';
+import { createServiceLogger } from '../config/logger';
+
+const logger = createServiceLogger('SecretsManager');
 
 export type SecretSource = 'env' | 'aws' | 'vault';
 
@@ -272,7 +275,7 @@ export async function auditSecrets(
     .map(([name]) => name);
 
   if (missing.length > 0) {
-    logger.error('[SecretsManager] ❌ Missing secrets:', missing);
+    logger.error('[SecretsManager] Missing secrets', { missing });
     throw new Error(`Missing required secrets: ${missing.join(', ')}`);
   }
 
@@ -308,8 +311,7 @@ export function scanForHardcodedSecrets(): void {
   }
 
   if (Object.keys(found).length > 0) {
-    logger.warn('[SecretsManager] ⚠️ Potential hardcoded secrets detected:');
-    logger.warn(found);
+    logger.warn('[SecretsManager] Potential hardcoded secrets detected', { found });
     logger.warn('[SecretsManager] Move these to a secrets manager (AWS Secrets Manager, HashiCorp Vault, etc.)');
   }
 }

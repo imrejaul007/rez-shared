@@ -21,6 +21,7 @@
  * Use normalizeCoinType() from '@rez/shared' to canonicalize any legacy values
  * (e.g. 'nuqta') found in existing MongoDB docs.
  */
+import type { CoinType } from '../constants/coins';
 export type { CoinType } from '../constants/coins';
 
 // ── Coin Balance (full) ───────────────────────────────────────────────────────

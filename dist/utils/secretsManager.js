@@ -53,6 +53,8 @@ exports.SECRET_KEYS = exports.SecretsManager = void 0;
 exports.auditSecrets = auditSecrets;
 exports.scanForHardcodedSecrets = scanForHardcodedSecrets;
 const axios_1 = __importDefault(require("axios"));
+const logger_1 = require("../config/logger");
+const logger = (0, logger_1.createServiceLogger)('SecretsManager');
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 /**
  * Base secrets manager
@@ -260,7 +262,7 @@ async function auditSecrets(secretsManager, requiredSecrets) {
         .filter(([_, exists]) => !exists)
         .map(([name]) => name);
     if (missing.length > 0) {
-        logger.error('[SecretsManager] ❌ Missing secrets:', missing);
+        logger.error('[SecretsManager] Missing secrets', { missing });
         throw new Error(`Missing required secrets: ${missing.join(', ')}`);
     }
     const configured = Object.entries(results)
@@ -291,8 +293,7 @@ function scanForHardcodedSecrets() {
         }
     }
     if (Object.keys(found).length > 0) {
-        logger.warn('[SecretsManager] ⚠️ Potential hardcoded secrets detected:');
-        logger.warn(found);
+        logger.warn('[SecretsManager] Potential hardcoded secrets detected', { found });
         logger.warn('[SecretsManager] Move these to a secrets manager (AWS Secrets Manager, HashiCorp Vault, etc.)');
     }
 }

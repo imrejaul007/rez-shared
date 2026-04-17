@@ -18,6 +18,9 @@ import type Redis from 'ioredis';
 import mongoose, { Schema, Document } from 'mongoose';
 import { Job } from 'bullmq';
 import { JobQueue } from '../queue/jobQueue';
+import { createServiceLogger } from '../config/logger';
+
+const logger = createServiceLogger('WebhookService');
 
 export enum WebhookEventType {
   // Order events

@@ -54,6 +54,8 @@ exports.setupWebhookProcessor = setupWebhookProcessor;
 const crypto_1 = require("crypto");
 const axios_1 = __importDefault(require("axios"));
 const mongoose_1 = __importStar(require("mongoose"));
+const logger_1 = require("../config/logger");
+const logger = (0, logger_1.createServiceLogger)('WebhookService');
 var WebhookEventType;
 (function (WebhookEventType) {
     // Order events

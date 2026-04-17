@@ -94,7 +94,7 @@ function idempotencyMiddleware(redis) {
                     redis.setex(cacheKey, IDEMPOTENCY_TTL, JSON.stringify(responseData))
                         .then(() => redis.del(lockKey))
                         .catch((err) => {
-                        logger.error('Failed to cache idempotent response:', err);
+                        logger.error('Failed to cache idempotent response', { error: err });
                         redis.del(lockKey).catch(() => { });
                     });
                 }

@@ -15,6 +15,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JobQueueService = exports.JobQueue = void 0;
 const bullmq_1 = require("bullmq");
+const logger_1 = require("../config/logger");
+const logger = (0, logger_1.createServiceLogger)('JobQueue');
 /**
  * Generic job queue wrapper
  */
@@ -104,10 +106,10 @@ class JobQueue {
             concurrency,
         });
         this.worker.on('failed', (job, err) => {
-            logger.error(`[${this.queue.name}] Worker failed:`, err);
+            logger.error(`[${this.queue.name}] Worker failed`, { error: err });
         });
         this.worker.on('error', (err) => {
-            logger.error(`[${this.queue.name}] Worker error:`, err);
+            logger.error(`[${this.queue.name}] Worker error`, { error: err });
         });
     }
     /**
