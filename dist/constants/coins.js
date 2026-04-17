@@ -5,9 +5,10 @@
  * Primary coin is 'rez' throughout the platform.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LOYALTY_TIER = exports.CASHBACK_STATUS = exports.REWARD_TYPES = exports.COIN_DISPLAY_NAMES = exports.COIN_EXPIRY_DAYS = exports.LEGACY_COIN_TYPE_MAP = exports.COIN_TYPE_VALUES = exports.COIN_TYPE_ARRAY = exports.COIN_TYPES = void 0;
+exports.LOYALTY_TIER = exports.COIN_EARNING_RATE = exports.CASHBACK_STATUS = exports.REWARD_TYPES = exports.COIN_DISPLAY_NAMES = exports.COIN_EXPIRY_DAYS = exports.LEGACY_COIN_TYPE_MAP = exports.COIN_TYPE_VALUES = exports.COIN_TYPE_ARRAY = exports.COIN_TYPES = void 0;
 exports.normalizeCoinType = normalizeCoinType;
 exports.normalizeCashbackStatus = normalizeCashbackStatus;
+exports.coinsEarned = coinsEarned;
 exports.normalizeLoyaltyTier = normalizeLoyaltyTier;
 // ── Coin Type Constants ────────────────────────────────────────────────────────
 exports.COIN_TYPES = {
@@ -99,18 +100,52 @@ function normalizeCashbackStatus(status) {
     }
     return canonical;
 }
-// ── P0-ENUM-3 FIX: Canonical LoyaltyTier (lowercase) ─────────────────────────────
+// ── P0-ENUM-3 FIX + E-T5: Canonical LoyaltyTier (lowercase) ─────────────────────
 // Handles the case mismatch between DB values (UPPERCASE) and business logic (lowercase).
 // DB referralTier field: 'STARTER' | 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM' | 'DIAMOND' | 'DIMAOND' (typo)
 // achievements.ts uses: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond'
+//
+// E-T5 FIX: The conflict was that rez-shared/src/enums.ts treats 'diamond' as a DISTINCT
+// tier (5 tiers total), but this file was normalizing 'DIAMOND' → 'platinum'. The correct
+// behavior is: 'DIAMOND' (DB UPPERCASE) → 'diamond' (canonical lowercase, distinct tier).
+// Only the 'DIMAOND' typo should map to 'platinum' (to handle a DB entry error).
+//
+// Canonical LOYALTY_TIERS from enums.ts: ['bronze', 'silver', 'gold', 'platinum', 'diamond']
+// ── Coin Earning Rate ─────────────────────────────────────────────────────────
+// CRITICAL-010 FIX: Canonical coin earning rate.
+// 1 REZ coin earned per ₹1 of transaction value.
+// Used for earning calculations. For dynamic rates, services should use DB-backed WalletConfig.
+// The display/redemption rate (coin → rupee) is COIN_TO_RUPEE_RATE (1.0 by default).
+exports.COIN_EARNING_RATE = {
+    /** Coins earned per ₹1 spent. Default: 1 coin per ₹1. */
+    PER_RUPEE: 1,
+    /** Minimum transaction value (₹) before coins are earned. 0 = all transactions earn. */
+    MIN_TRANSACTION: 0,
+    /** Daily coin earning cap per user. 0 = no cap. */
+    DAILY_CAP: 500,
+    /** Coin earning cap per transaction. 0 = no cap. */
+    PER_TRANSACTION_CAP: 200,
+};
+/**
+ * Compute coins earned for a given rupee amount.
+ * Uses COIN_EARNING_RATE.PER_RUPEE as the base rate.
+ *
+ * @param rupees - Transaction value in rupees
+ * @param cap - Optional per-transaction cap override
+ */
+function coinsEarned(rupees, cap) {
+    const earned = Math.floor(rupees * exports.COIN_EARNING_RATE.PER_RUPEE);
+    const effectiveCap = cap ?? exports.COIN_EARNING_RATE.PER_TRANSACTION_CAP;
+    return effectiveCap > 0 ? Math.min(earned, effectiveCap) : earned;
+}
 exports.LOYALTY_TIER = {
     BRONZE: 'bronze',
     SILVER: 'silver',
     GOLD: 'gold',
     PLATINUM: 'platinum',
     STARTER: 'bronze', // 'STARTER' maps to 'bronze'
-    DIAMOND: 'platinum', // 'DIAMOND' maps to 'platinum'
-    DIMAOND: 'platinum', // 'DIMAOND' is the DB typo — normalize to 'platinum'
+    DIAMOND: 'diamond', // E-T5 FIX: 'DIAMOND' is a distinct tier, not an alias for 'platinum'
+    DIMAOND: 'platinum', // 'DIMAOND' is the DB typo — normalize to 'platinum' (DB error)
 };
 /**
  * Normalize any loyalty tier string to canonical lowercase form.
@@ -122,7 +157,9 @@ function normalizeLoyaltyTier(tier) {
     const upper = tier.toUpperCase();
     const map = {
         'BRONZE': 'bronze', 'SILVER': 'silver', 'GOLD': 'gold', 'PLATINUM': 'platinum',
-        'STARTER': 'bronze', 'DIAMOND': 'platinum', 'DIMAOND': 'platinum',
+        'STARTER': 'bronze',
+        // E-T5 FIX: 'diamond' is a distinct tier. Only 'DIMAOND' (typo) → 'platinum'.
+        'DIAMOND': 'diamond', 'DIMAOND': 'platinum',
     };
     return map[upper] || 'bronze';
 }

@@ -30,6 +30,30 @@ export function normalizeLoyaltyTier(tier: string): LoyaltyTier {
   return map[tier.toUpperCase()] ?? (LOYALTY_TIERS.includes(tier.toLowerCase() as LoyaltyTier) ? tier.toLowerCase() as LoyaltyTier : 'bronze');
 }
 
+// Loyalty Tier Perks — defines tangible benefits per tier
+// Used by checkout flow (cashback multiplier), delivery (free threshold), support routing
+export interface LoyaltyTierPerks {
+  tier: LoyaltyTier;
+  cashbackRate: number;       // % cashback on orders (e.g., 0.01 = 1%)
+  freeDeliveryMinOrder: number; // minimum order for free delivery (0 = always free)
+  prioritySupport: boolean;
+  exclusiveOffers: boolean;
+  earlyAccess: boolean;
+}
+
+export const LOYALTY_TIER_PERKS: Record<LoyaltyTier, LoyaltyTierPerks> = {
+  bronze:   { tier: 'bronze',   cashbackRate: 0.01, freeDeliveryMinOrder: 999, prioritySupport: false, exclusiveOffers: false, earlyAccess: false },
+  silver:   { tier: 'silver',   cashbackRate: 0.015, freeDeliveryMinOrder: 500, prioritySupport: false, exclusiveOffers: false, earlyAccess: false },
+  gold:     { tier: 'gold',     cashbackRate: 0.02, freeDeliveryMinOrder: 300, prioritySupport: true,  exclusiveOffers: false, earlyAccess: false },
+  platinum: { tier: 'platinum', cashbackRate: 0.03, freeDeliveryMinOrder: 0,   prioritySupport: true,  exclusiveOffers: true,  earlyAccess: false },
+  diamond:  { tier: 'diamond',  cashbackRate: 0.05, freeDeliveryMinOrder: 0,   prioritySupport: true,  exclusiveOffers: true,  earlyAccess: true  },
+};
+
+export function getLoyaltyTierPerks(tier: string): LoyaltyTierPerks {
+  const normalized = normalizeLoyaltyTier(tier);
+  return LOYALTY_TIER_PERKS[normalized];
+}
+
 // Transaction Types
 // NOTE: Backend wallet service only supports 6 types (earned|spent|expired|refunded|bonus|branded_award).
 // 'transfer' and 'gift' are NOT in the backend type definition. Do NOT add them to
