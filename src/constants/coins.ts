@@ -127,6 +127,36 @@ export function normalizeCashbackStatus(status: string): CashbackStatus {
 //
 // Canonical LOYALTY_TIERS from enums.ts: ['bronze', 'silver', 'gold', 'platinum', 'diamond']
 
+// ── Coin Earning Rate ─────────────────────────────────────────────────────────
+
+// CRITICAL-010 FIX: Canonical coin earning rate.
+// 1 REZ coin earned per ₹1 of transaction value.
+// Used for earning calculations. For dynamic rates, services should use DB-backed WalletConfig.
+// The display/redemption rate (coin → rupee) is COIN_TO_RUPEE_RATE (1.0 by default).
+export const COIN_EARNING_RATE = {
+  /** Coins earned per ₹1 spent. Default: 1 coin per ₹1. */
+  PER_RUPEE: 1,
+  /** Minimum transaction value (₹) before coins are earned. 0 = all transactions earn. */
+  MIN_TRANSACTION: 0,
+  /** Daily coin earning cap per user. 0 = no cap. */
+  DAILY_CAP: 500,
+  /** Coin earning cap per transaction. 0 = no cap. */
+  PER_TRANSACTION_CAP: 200,
+} as const;
+
+/**
+ * Compute coins earned for a given rupee amount.
+ * Uses COIN_EARNING_RATE.PER_RUPEE as the base rate.
+ *
+ * @param rupees - Transaction value in rupees
+ * @param cap - Optional per-transaction cap override
+ */
+export function coinsEarned(rupees: number, cap?: number): number {
+  const earned = Math.floor(rupees * COIN_EARNING_RATE.PER_RUPEE);
+  const effectiveCap = cap ?? COIN_EARNING_RATE.PER_TRANSACTION_CAP;
+  return effectiveCap > 0 ? Math.min(earned, effectiveCap) : earned;
+}
+
 export const LOYALTY_TIER = {
   BRONZE: 'bronze',
   SILVER: 'silver',
