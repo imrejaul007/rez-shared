@@ -21,6 +21,8 @@ exports.createRedisCircuitBreaker = createRedisCircuitBreaker;
 exports.createHttpCircuitBreaker = createHttpCircuitBreaker;
 exports.createDatabaseCircuitBreaker = createDatabaseCircuitBreaker;
 exports.getCircuitBreakerStatus = getCircuitBreakerStatus;
+const logger_1 = require("../config/logger");
+const logger = (0, logger_1.createServiceLogger)('circuit-breaker');
 var CircuitState;
 (function (CircuitState) {
     CircuitState["CLOSED"] = "CLOSED";
@@ -58,14 +60,15 @@ class CircuitBreaker {
             }
         }
         try {
-            // Use Promise.race instead of Promise.all to avoid timeout memory leak
-            // This ensures the timer is cleared immediately when the function completes
+            // Use Promise.race with proper timeout cleanup
+            let timeoutId = null;
             const result = await Promise.race([
-                this.fn(),
+                this.fn().finally(() => {
+                    if (timeoutId)
+                        clearTimeout(timeoutId);
+                }),
                 new Promise((_, reject) => {
-                    const timeoutId = setTimeout(() => reject(new Error(`[${this.name}] Request timeout after ${this.timeout}ms`)), this.timeout);
-                    // Ensure timeout is cleared if race resolves first
-                    // (JavaScript will clean up the timer, but we be explicit)
+                    timeoutId = setTimeout(() => reject(new Error(`[${this.name}] Request timeout after ${this.timeout}ms`)), this.timeout);
                 }),
             ]);
             this.onSuccess();

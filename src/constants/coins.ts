@@ -115,19 +115,26 @@ export function normalizeCashbackStatus(status: string): CashbackStatus {
   return canonical;
 }
 
-// ── P0-ENUM-3 FIX: Canonical LoyaltyTier (lowercase) ─────────────────────────────
+// ── P0-ENUM-3 FIX + E-T5: Canonical LoyaltyTier (lowercase) ─────────────────────
 // Handles the case mismatch between DB values (UPPERCASE) and business logic (lowercase).
 // DB referralTier field: 'STARTER' | 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM' | 'DIAMOND' | 'DIMAOND' (typo)
 // achievements.ts uses: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond'
+//
+// E-T5 FIX: The conflict was that rez-shared/src/enums.ts treats 'diamond' as a DISTINCT
+// tier (5 tiers total), but this file was normalizing 'DIAMOND' → 'platinum'. The correct
+// behavior is: 'DIAMOND' (DB UPPERCASE) → 'diamond' (canonical lowercase, distinct tier).
+// Only the 'DIMAOND' typo should map to 'platinum' (to handle a DB entry error).
+//
+// Canonical LOYALTY_TIERS from enums.ts: ['bronze', 'silver', 'gold', 'platinum', 'diamond']
 
 export const LOYALTY_TIER = {
   BRONZE: 'bronze',
   SILVER: 'silver',
   GOLD: 'gold',
   PLATINUM: 'platinum',
-  STARTER: 'bronze',   // 'STARTER' maps to 'bronze'
-  DIAMOND: 'platinum', // 'DIAMOND' maps to 'platinum'
-  DIMAOND: 'platinum', // 'DIMAOND' is the DB typo — normalize to 'platinum'
+  STARTER: 'bronze',    // 'STARTER' maps to 'bronze'
+  DIAMOND: 'diamond',   // E-T5 FIX: 'DIAMOND' is a distinct tier, not an alias for 'platinum'
+  DIMAOND: 'platinum',  // 'DIMAOND' is the DB typo — normalize to 'platinum' (DB error)
 } as const;
 
 export type LoyaltyTier = (typeof LOYALTY_TIER)[keyof typeof LOYALTY_TIER];
@@ -141,7 +148,9 @@ export function normalizeLoyaltyTier(tier: string): LoyaltyTier {
   const upper = tier.toUpperCase();
   const map: Record<string, LoyaltyTier> = {
     'BRONZE': 'bronze', 'SILVER': 'silver', 'GOLD': 'gold', 'PLATINUM': 'platinum',
-    'STARTER': 'bronze', 'DIAMOND': 'platinum', 'DIMAOND': 'platinum',
+    'STARTER': 'bronze',
+    // E-T5 FIX: 'diamond' is a distinct tier. Only 'DIMAOND' (typo) → 'platinum'.
+    'DIAMOND': 'diamond', 'DIMAOND': 'platinum',
   };
   return map[upper] || 'bronze';
 }

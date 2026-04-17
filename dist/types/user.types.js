@@ -15,6 +15,7 @@ exports.USER_ROLES = [
     'support',
     'operator',
     'super_admin',
+    'consumer',
 ];
 // ── Type guards ───────────────────────────────────────────────────────────────
 function isUserRole(value) {

@@ -9,6 +9,11 @@
  */
 import { z } from 'zod';
 /**
+ * Product cashback subdocument schema (Joi)
+ * Field names match the backend Product.cashback subdocument shape
+ */
+export declare const productCashbackSchema: any;
+/**
  * Address schema
  * Note: Backend enforces max 5 addresses per user (see address service)
  */
@@ -28,11 +33,11 @@ export declare const addressSchema: z.ZodObject<{
     name?: string;
     email?: string;
     phone?: string;
-    addressLine1?: string;
-    addressLine2?: string;
     city?: string;
     state?: string;
     pincode?: string;
+    addressLine1?: string;
+    addressLine2?: string;
     country?: string;
     landmark?: string;
     addressType?: "other" | "home" | "work";
@@ -40,11 +45,11 @@ export declare const addressSchema: z.ZodObject<{
     name?: string;
     email?: string;
     phone?: string;
-    addressLine1?: string;
-    addressLine2?: string;
     city?: string;
     state?: string;
     pincode?: string;
+    addressLine1?: string;
+    addressLine2?: string;
     country?: string;
     landmark?: string;
     addressType?: "other" | "home" | "work";
@@ -70,11 +75,11 @@ export declare const createOrderSchema: z.ZodObject<{
         name?: string;
         email?: string;
         phone?: string;
-        addressLine1?: string;
-        addressLine2?: string;
         city?: string;
         state?: string;
         pincode?: string;
+        addressLine1?: string;
+        addressLine2?: string;
         country?: string;
         landmark?: string;
         addressType?: "other" | "home" | "work";
@@ -82,11 +87,11 @@ export declare const createOrderSchema: z.ZodObject<{
         name?: string;
         email?: string;
         phone?: string;
-        addressLine1?: string;
-        addressLine2?: string;
         city?: string;
         state?: string;
         pincode?: string;
+        addressLine1?: string;
+        addressLine2?: string;
         country?: string;
         landmark?: string;
         addressType?: "other" | "home" | "work";
@@ -99,7 +104,7 @@ export declare const createOrderSchema: z.ZodObject<{
         rezCoins: z.ZodOptional<z.ZodNumber>;
         promoCoins: z.ZodOptional<z.ZodNumber>;
         storePromoCoins: z.ZodOptional<z.ZodNumber>;
-    }, "strip", z.ZodTypeAny, {
+    }, "strict", z.ZodTypeAny, {
         rezCoins?: number;
         promoCoins?: number;
         storePromoCoins?: number;
@@ -134,20 +139,21 @@ export declare const createOrderSchema: z.ZodObject<{
         pickupInstructions?: string;
     }>>;
 }, "strip", z.ZodTypeAny, {
+    paymentMethod?: "cod" | "wallet" | "card" | "upi" | "netbanking" | "razorpay";
+    idempotencyKey?: string;
     deliveryAddress?: {
         name?: string;
         email?: string;
         phone?: string;
-        addressLine1?: string;
-        addressLine2?: string;
         city?: string;
         state?: string;
         pincode?: string;
+        addressLine1?: string;
+        addressLine2?: string;
         country?: string;
         landmark?: string;
         addressType?: "other" | "home" | "work";
     };
-    paymentMethod?: "cod" | "wallet" | "card" | "upi" | "netbanking" | "razorpay";
     fulfillmentType?: "delivery" | "pickup" | "drive_thru" | "dine_in";
     specialInstructions?: string;
     couponCode?: string;
@@ -156,7 +162,6 @@ export declare const createOrderSchema: z.ZodObject<{
         promoCoins?: number;
         storePromoCoins?: number;
     };
-    idempotencyKey?: string;
     fulfillmentDetails?: {
         tableNumber?: string;
         storeAddress?: string;
@@ -164,20 +169,21 @@ export declare const createOrderSchema: z.ZodObject<{
         pickupInstructions?: string;
     };
 }, {
+    paymentMethod?: "cod" | "wallet" | "card" | "upi" | "netbanking" | "razorpay";
+    idempotencyKey?: string;
     deliveryAddress?: {
         name?: string;
         email?: string;
         phone?: string;
-        addressLine1?: string;
-        addressLine2?: string;
         city?: string;
         state?: string;
         pincode?: string;
+        addressLine1?: string;
+        addressLine2?: string;
         country?: string;
         landmark?: string;
         addressType?: "other" | "home" | "work";
     };
-    paymentMethod?: "cod" | "wallet" | "card" | "upi" | "netbanking" | "razorpay";
     fulfillmentType?: "delivery" | "pickup" | "drive_thru" | "dine_in";
     specialInstructions?: string;
     couponCode?: string;
@@ -186,7 +192,6 @@ export declare const createOrderSchema: z.ZodObject<{
         promoCoins?: number;
         storePromoCoins?: number;
     };
-    idempotencyKey?: string;
     fulfillmentDetails?: {
         tableNumber?: string;
         storeAddress?: string;
@@ -199,13 +204,13 @@ export type CreateOrderRequest = z.infer<typeof createOrderSchema>;
  * Order status update schema
  */
 export declare const updateOrderStatusSchema: z.ZodObject<{
-    status: z.ZodEnum<["placed", "confirmed", "preparing", "ready", "dispatched", "out_for_delivery", "delivered", "cancelled", "cancelling", "returned", "refunded"]>;
+    status: z.ZodEnum<[string, ...string[]]>;
     note: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    status?: "placed" | "confirmed" | "preparing" | "ready" | "dispatched" | "out_for_delivery" | "delivered" | "cancelled" | "cancelling" | "returned" | "refunded";
+    status?: string;
     note?: string;
 }, {
-    status?: "placed" | "confirmed" | "preparing" | "ready" | "dispatched" | "out_for_delivery" | "delivered" | "cancelled" | "cancelling" | "returned" | "refunded";
+    status?: string;
     note?: string;
 }>;
 export type UpdateOrderStatusRequest = z.infer<typeof updateOrderStatusSchema>;
@@ -216,66 +221,100 @@ export type UpdateOrderStatusRequest = z.infer<typeof updateOrderStatusSchema>;
 export declare const createOfferSchema: z.ZodEffects<z.ZodObject<{
     title: z.ZodString;
     description: z.ZodOptional<z.ZodString>;
-    offerType: z.ZodEnum<["discount", "cashback", "voucher", "combo", "special", "walk_in"]>;
-    startDate: z.ZodDate;
-    endDate: z.ZodDate;
-    minOrderAmount: z.ZodOptional<z.ZodNumber>;
-    maxRedemptions: z.ZodOptional<z.ZodNumber>;
-    maxRedemptionsPerUser: z.ZodOptional<z.ZodNumber>;
+    type: z.ZodEnum<["discount", "cashback", "voucher", "combo", "special", "walk_in"]>;
+    validity: z.ZodObject<{
+        startDate: z.ZodDate;
+        endDate: z.ZodDate;
+    }, "strip", z.ZodTypeAny, {
+        startDate?: Date;
+        endDate?: Date;
+    }, {
+        startDate?: Date;
+        endDate?: Date;
+    }>;
+    restrictions: z.ZodOptional<z.ZodObject<{
+        minOrderValue: z.ZodOptional<z.ZodNumber>;
+        usageLimit: z.ZodOptional<z.ZodNumber>;
+        usageLimitPerUser: z.ZodOptional<z.ZodNumber>;
+    }, "strip", z.ZodTypeAny, {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    }, {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    }>>;
     isActive: z.ZodDefault<z.ZodBoolean>;
     applicableCategories: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     applicableProducts: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     userSegments: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
     isActive?: boolean;
-    startDate?: Date;
-    endDate?: Date;
-    title?: string;
+    type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
-    offerType?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
-    minOrderAmount?: number;
-    maxRedemptions?: number;
-    maxRedemptionsPerUser?: number;
     applicableCategories?: string[];
+    title?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    };
     applicableProducts?: string[];
     userSegments?: string[];
 }, {
     isActive?: boolean;
-    startDate?: Date;
-    endDate?: Date;
-    title?: string;
+    type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
-    offerType?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
-    minOrderAmount?: number;
-    maxRedemptions?: number;
-    maxRedemptionsPerUser?: number;
     applicableCategories?: string[];
+    title?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    };
     applicableProducts?: string[];
     userSegments?: string[];
 }>, {
     isActive?: boolean;
-    startDate?: Date;
-    endDate?: Date;
-    title?: string;
+    type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
-    offerType?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
-    minOrderAmount?: number;
-    maxRedemptions?: number;
-    maxRedemptionsPerUser?: number;
     applicableCategories?: string[];
+    title?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    };
     applicableProducts?: string[];
     userSegments?: string[];
 }, {
     isActive?: boolean;
-    startDate?: Date;
-    endDate?: Date;
-    title?: string;
+    type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
-    offerType?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
-    minOrderAmount?: number;
-    maxRedemptions?: number;
-    maxRedemptionsPerUser?: number;
     applicableCategories?: string[];
+    title?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    };
     applicableProducts?: string[];
     userSegments?: string[];
 }>;
@@ -286,12 +325,30 @@ export type CreateOfferRequest = z.infer<typeof createOfferSchema>;
 export declare const createDiscountOfferSchema: z.ZodEffects<z.ZodObject<{
     title: z.ZodString;
     description: z.ZodOptional<z.ZodString>;
-    offerType: z.ZodEnum<["discount", "cashback", "voucher", "combo", "special", "walk_in"]>;
-    startDate: z.ZodDate;
-    endDate: z.ZodDate;
-    minOrderAmount: z.ZodOptional<z.ZodNumber>;
-    maxRedemptions: z.ZodOptional<z.ZodNumber>;
-    maxRedemptionsPerUser: z.ZodOptional<z.ZodNumber>;
+    type: z.ZodEnum<["discount", "cashback", "voucher", "combo", "special", "walk_in"]>;
+    validity: z.ZodObject<{
+        startDate: z.ZodDate;
+        endDate: z.ZodDate;
+    }, "strip", z.ZodTypeAny, {
+        startDate?: Date;
+        endDate?: Date;
+    }, {
+        startDate?: Date;
+        endDate?: Date;
+    }>;
+    restrictions: z.ZodOptional<z.ZodObject<{
+        minOrderValue: z.ZodOptional<z.ZodNumber>;
+        usageLimit: z.ZodOptional<z.ZodNumber>;
+        usageLimitPerUser: z.ZodOptional<z.ZodNumber>;
+    }, "strip", z.ZodTypeAny, {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    }, {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    }>>;
     isActive: z.ZodDefault<z.ZodBoolean>;
     applicableCategories: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     applicableProducts: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
@@ -303,66 +360,82 @@ export declare const createDiscountOfferSchema: z.ZodEffects<z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     discountValue?: number;
     isActive?: boolean;
-    startDate?: Date;
-    endDate?: Date;
-    title?: string;
+    type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
-    offerType?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
-    minOrderAmount?: number;
-    maxRedemptions?: number;
-    maxRedemptionsPerUser?: number;
     applicableCategories?: string[];
+    title?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    };
     applicableProducts?: string[];
     userSegments?: string[];
-    discountType?: "fixed" | "percentage";
+    discountType?: "percentage" | "fixed";
     maxDiscountAmount?: number;
 }, {
     discountValue?: number;
     isActive?: boolean;
-    startDate?: Date;
-    endDate?: Date;
-    title?: string;
+    type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
-    offerType?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
-    minOrderAmount?: number;
-    maxRedemptions?: number;
-    maxRedemptionsPerUser?: number;
     applicableCategories?: string[];
+    title?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    };
     applicableProducts?: string[];
     userSegments?: string[];
-    discountType?: "fixed" | "percentage";
+    discountType?: "percentage" | "fixed";
     maxDiscountAmount?: number;
 }>, {
     discountValue?: number;
     isActive?: boolean;
-    startDate?: Date;
-    endDate?: Date;
-    title?: string;
+    type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
-    offerType?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
-    minOrderAmount?: number;
-    maxRedemptions?: number;
-    maxRedemptionsPerUser?: number;
     applicableCategories?: string[];
+    title?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    };
     applicableProducts?: string[];
     userSegments?: string[];
-    discountType?: "fixed" | "percentage";
+    discountType?: "percentage" | "fixed";
     maxDiscountAmount?: number;
 }, {
     discountValue?: number;
     isActive?: boolean;
-    startDate?: Date;
-    endDate?: Date;
-    title?: string;
+    type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
-    offerType?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
-    minOrderAmount?: number;
-    maxRedemptions?: number;
-    maxRedemptionsPerUser?: number;
     applicableCategories?: string[];
+    title?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    };
     applicableProducts?: string[];
     userSegments?: string[];
-    discountType?: "fixed" | "percentage";
+    discountType?: "percentage" | "fixed";
     maxDiscountAmount?: number;
 }>;
 export type CreateDiscountOfferRequest = z.infer<typeof createDiscountOfferSchema>;
@@ -372,81 +445,270 @@ export type CreateDiscountOfferRequest = z.infer<typeof createDiscountOfferSchem
 export declare const createCashbackOfferSchema: z.ZodEffects<z.ZodObject<{
     title: z.ZodString;
     description: z.ZodOptional<z.ZodString>;
-    offerType: z.ZodEnum<["discount", "cashback", "voucher", "combo", "special", "walk_in"]>;
-    startDate: z.ZodDate;
-    endDate: z.ZodDate;
-    minOrderAmount: z.ZodOptional<z.ZodNumber>;
-    maxRedemptions: z.ZodOptional<z.ZodNumber>;
-    maxRedemptionsPerUser: z.ZodOptional<z.ZodNumber>;
+    type: z.ZodEnum<["discount", "cashback", "voucher", "combo", "special", "walk_in"]>;
+    validity: z.ZodObject<{
+        startDate: z.ZodDate;
+        endDate: z.ZodDate;
+    }, "strip", z.ZodTypeAny, {
+        startDate?: Date;
+        endDate?: Date;
+    }, {
+        startDate?: Date;
+        endDate?: Date;
+    }>;
+    restrictions: z.ZodOptional<z.ZodObject<{
+        minOrderValue: z.ZodOptional<z.ZodNumber>;
+        usageLimit: z.ZodOptional<z.ZodNumber>;
+        usageLimitPerUser: z.ZodOptional<z.ZodNumber>;
+    }, "strip", z.ZodTypeAny, {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    }, {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    }>>;
     isActive: z.ZodDefault<z.ZodBoolean>;
     applicableCategories: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     applicableProducts: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     userSegments: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 } & {
     cashbackType: z.ZodEnum<["coins", "wallet"]>;
-    cashbackValue: z.ZodNumber;
+    cashbackPercentage: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
+    cashbackPercentage?: number;
     isActive?: boolean;
-    startDate?: Date;
-    endDate?: Date;
-    title?: string;
+    type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
-    offerType?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
-    minOrderAmount?: number;
-    maxRedemptions?: number;
-    maxRedemptionsPerUser?: number;
     applicableCategories?: string[];
+    title?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    };
     applicableProducts?: string[];
     userSegments?: string[];
     cashbackType?: "wallet" | "coins";
-    cashbackValue?: number;
 }, {
+    cashbackPercentage?: number;
     isActive?: boolean;
-    startDate?: Date;
-    endDate?: Date;
-    title?: string;
+    type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
-    offerType?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
-    minOrderAmount?: number;
-    maxRedemptions?: number;
-    maxRedemptionsPerUser?: number;
     applicableCategories?: string[];
+    title?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    };
     applicableProducts?: string[];
     userSegments?: string[];
     cashbackType?: "wallet" | "coins";
-    cashbackValue?: number;
 }>, {
+    cashbackPercentage?: number;
     isActive?: boolean;
-    startDate?: Date;
-    endDate?: Date;
-    title?: string;
+    type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
-    offerType?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
-    minOrderAmount?: number;
-    maxRedemptions?: number;
-    maxRedemptionsPerUser?: number;
     applicableCategories?: string[];
+    title?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    };
     applicableProducts?: string[];
     userSegments?: string[];
     cashbackType?: "wallet" | "coins";
-    cashbackValue?: number;
 }, {
+    cashbackPercentage?: number;
     isActive?: boolean;
-    startDate?: Date;
-    endDate?: Date;
-    title?: string;
+    type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
-    offerType?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
-    minOrderAmount?: number;
-    maxRedemptions?: number;
-    maxRedemptionsPerUser?: number;
     applicableCategories?: string[];
+    title?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+    };
     applicableProducts?: string[];
     userSegments?: string[];
     cashbackType?: "wallet" | "coins";
-    cashbackValue?: number;
 }>;
 export type CreateCashbackOfferRequest = z.infer<typeof createCashbackOfferSchema>;
+/**
+ * Update offer schema — all fields optional (Zod equivalent of updateOfferSchema)
+ */
+export declare const updateOfferSchema: z.ZodObject<{
+    title: z.ZodOptional<z.ZodString>;
+    description: z.ZodOptional<z.ZodString>;
+    image: z.ZodOptional<z.ZodString>;
+    category: z.ZodOptional<z.ZodEnum<["food", "retail", "travel", "healthcare", "entertainment", "beauty", "wellness", "fitness", "groceries", "pharmacy", "other"]>>;
+    cashbackPercentage: z.ZodOptional<z.ZodNumber>;
+    validity: z.ZodOptional<z.ZodObject<{
+        startDate: z.ZodDate;
+        endDate: z.ZodDate;
+    }, "strip", z.ZodTypeAny, {
+        startDate?: Date;
+        endDate?: Date;
+    }, {
+        startDate?: Date;
+        endDate?: Date;
+    }>>;
+    restrictions: z.ZodOptional<z.ZodObject<{
+        minOrderValue: z.ZodOptional<z.ZodNumber>;
+        usageLimit: z.ZodOptional<z.ZodNumber>;
+        usageLimitPerUser: z.ZodOptional<z.ZodNumber>;
+        applicableOn: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+        excludedProducts: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+        ageRestriction: z.ZodOptional<z.ZodObject<{
+            minAge: z.ZodOptional<z.ZodNumber>;
+            maxAge: z.ZodOptional<z.ZodNumber>;
+        }, "strip", z.ZodTypeAny, {
+            minAge?: number;
+            maxAge?: number;
+        }, {
+            minAge?: number;
+            maxAge?: number;
+        }>>;
+    }, "strip", z.ZodTypeAny, {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+        applicableOn?: string[];
+        excludedProducts?: string[];
+        ageRestriction?: {
+            minAge?: number;
+            maxAge?: number;
+        };
+    }, {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+        applicableOn?: string[];
+        excludedProducts?: string[];
+        ageRestriction?: {
+            minAge?: number;
+            maxAge?: number;
+        };
+    }>>;
+    isActive: z.ZodOptional<z.ZodBoolean>;
+}, "strip", z.ZodTypeAny, {
+    cashbackPercentage?: number;
+    isActive?: boolean;
+    description?: string;
+    category?: "other" | "food" | "entertainment" | "beauty" | "wellness" | "healthcare" | "retail" | "travel" | "fitness" | "groceries" | "pharmacy";
+    title?: string;
+    image?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+        applicableOn?: string[];
+        excludedProducts?: string[];
+        ageRestriction?: {
+            minAge?: number;
+            maxAge?: number;
+        };
+    };
+}, {
+    cashbackPercentage?: number;
+    isActive?: boolean;
+    description?: string;
+    category?: "other" | "food" | "entertainment" | "beauty" | "wellness" | "healthcare" | "retail" | "travel" | "fitness" | "groceries" | "pharmacy";
+    title?: string;
+    image?: string;
+    validity?: {
+        startDate?: Date;
+        endDate?: Date;
+    };
+    restrictions?: {
+        usageLimit?: number;
+        minOrderValue?: number;
+        usageLimitPerUser?: number;
+        applicableOn?: string[];
+        excludedProducts?: string[];
+        ageRestriction?: {
+            minAge?: number;
+            maxAge?: number;
+        };
+    };
+}>;
+export type UpdateOfferRequest = z.infer<typeof updateOfferSchema>;
+/**
+ * Create product schema (Zod equivalent of createProductSchema)
+ */
+export declare const createProductSchema: z.ZodObject<{
+    name: z.ZodString;
+    description: z.ZodOptional<z.ZodString>;
+    pricing: z.ZodObject<{
+        original: z.ZodOptional<z.ZodNumber>;
+        selling: z.ZodNumber;
+        discount: z.ZodOptional<z.ZodNumber>;
+    }, "strip", z.ZodTypeAny, {
+        discount?: number;
+        original?: number;
+        selling?: number;
+    }, {
+        discount?: number;
+        original?: number;
+        selling?: number;
+    }>;
+    inventory: z.ZodOptional<z.ZodObject<{
+        stock: z.ZodOptional<z.ZodNumber>;
+        inStock: z.ZodOptional<z.ZodBoolean>;
+    }, "strip", z.ZodTypeAny, {
+        inStock?: boolean;
+        stock?: number;
+    }, {
+        inStock?: boolean;
+        stock?: number;
+    }>>;
+    category: z.ZodOptional<z.ZodString>;
+    images: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+    cashback: any;
+}, "strip", z.ZodTypeAny, {
+    [x: string]: any;
+    name?: unknown;
+    description?: unknown;
+    pricing?: unknown;
+    inventory?: unknown;
+    category?: unknown;
+    images?: unknown;
+    cashback?: unknown;
+}, {
+    [x: string]: any;
+    name?: unknown;
+    description?: unknown;
+    pricing?: unknown;
+    inventory?: unknown;
+    category?: unknown;
+    images?: unknown;
+    cashback?: unknown;
+}>;
+export type CreateProductRequest = z.infer<typeof createProductSchema>;
 /**
  * Merchant login schema
  */
@@ -471,12 +733,12 @@ export declare const couponCodeSchema: z.ZodObject<{
     orderAmount: z.ZodNumber;
     userId: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    userId?: string;
     code?: string;
+    userId?: string;
     orderAmount?: number;
 }, {
-    userId?: string;
     code?: string;
+    userId?: string;
     orderAmount?: number;
 }>;
 export type CouponCodeRequest = z.infer<typeof couponCodeSchema>;
@@ -484,6 +746,11 @@ export type CouponCodeRequest = z.infer<typeof couponCodeSchema>;
  * Validation middleware factory
  */
 export declare function validateRequest(schema: z.ZodSchema): (req: any, res: any, next: any) => any;
+/**
+ * Validate URL parameters
+ * Prevents injection attacks via URL parameters (e.g., /orders/:id where id is a MongoDB ObjectId)
+ */
+export declare function validateParams(schema: z.ZodSchema): (req: any, res: any, next: any) => any;
 /**
  * Validate query parameters
  */

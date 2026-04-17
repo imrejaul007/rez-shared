@@ -5,23 +5,32 @@
  * Primary coin is 'rez' throughout the platform.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LOYALTY_TIER = exports.CASHBACK_STATUS = exports.REWARD_TYPES = exports.COIN_DISPLAY_NAMES = exports.COIN_EXPIRY_DAYS = exports.LEGACY_COIN_TYPE_MAP = exports.COIN_TYPE_ARRAY = exports.COIN_TYPES = void 0;
+exports.LOYALTY_TIER = exports.CASHBACK_STATUS = exports.REWARD_TYPES = exports.COIN_DISPLAY_NAMES = exports.COIN_EXPIRY_DAYS = exports.LEGACY_COIN_TYPE_MAP = exports.COIN_TYPE_VALUES = exports.COIN_TYPE_ARRAY = exports.COIN_TYPES = void 0;
 exports.normalizeCoinType = normalizeCoinType;
 exports.normalizeCashbackStatus = normalizeCashbackStatus;
 exports.normalizeLoyaltyTier = normalizeLoyaltyTier;
 // ── Coin Type Constants ────────────────────────────────────────────────────────
 exports.COIN_TYPES = {
-    PRIMARY: 'rez',
-    PRIVE: 'prive',
-    BRANDED: 'branded',
+    // 2026-04-16: Keys reordered to match canonical shared-types/CoinType enum order.
+    // Canonical priority order: PROMO → BRANDED → PRIVE → CASHBACK → REFERRAL → REZ
+    // Also renamed PRIMARY → REZ to align with canonical enum key name.
     PROMO: 'promo',
+    BRANDED: 'branded',
+    PRIVE: 'prive',
     CASHBACK: 'cashback',
     REFERRAL: 'referral',
+    REZ: 'rez',
 };
-/** Array form for iteration and validation */
+/** Array form for iteration and validation (canonical priority order: PROMO → BRANDED → PRIVE → CASHBACK → REFERRAL → REZ) */
 exports.COIN_TYPE_ARRAY = [
-    'rez', 'prive', 'promo', 'branded', 'cashback', 'referral',
+    'promo', 'branded', 'prive', 'cashback', 'referral', 'rez',
 ];
+/**
+ * Canonical coin type values for use in Mongoose schema enums and runtime validation.
+ * Mirrors the backend's COIN_TYPE_VALUES but is defined here in the shared canonical source.
+ * WALLET-03 fix: exported so rez-backend can import from @rez/shared instead of maintaining a duplicate.
+ */
+exports.COIN_TYPE_VALUES = exports.COIN_TYPE_ARRAY;
 // ── Legacy Compatibility ───────────────────────────────────────────────────────
 /** Maps legacy 'nuqta' to canonical 'rez'. All other types pass through. */
 exports.LEGACY_COIN_TYPE_MAP = {

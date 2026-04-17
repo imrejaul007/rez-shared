@@ -16,6 +16,8 @@ exports.validatePincode = validatePincode;
 exports.validateEmail = validateEmail;
 exports.sanitizeAddress = sanitizeAddress;
 const isomorphic_dompurify_1 = __importDefault(require("isomorphic-dompurify"));
+const logger_1 = require("../config/logger");
+const logger = (0, logger_1.createServiceLogger)('sanitizer-middleware');
 /**
  * Maximum lengths for common fields
  */
@@ -56,8 +58,12 @@ function sanitizeObject(obj, path = '') {
             continue;
         }
         if (typeof value === 'string') {
-            // Sanitize HTML
-            let clean = isomorphic_dompurify_1.default.sanitize(value.trim());
+            // Sanitize HTML with explicit configuration to prevent XSS vectors
+            let clean = isomorphic_dompurify_1.default.sanitize(value.trim(), {
+                ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li'],
+                ALLOWED_ATTR: ['href', 'title'],
+                KEEP_CONTENT: true,
+            });
             // Enforce field length limits with warning
             const limit = FIELD_LIMITS[key];
             if (limit && clean.length > limit) {
@@ -113,7 +119,11 @@ function sanitizeString(value, maxLength) {
     if (typeof value !== 'string') {
         return '';
     }
-    let clean = isomorphic_dompurify_1.default.sanitize(value.trim());
+    let clean = isomorphic_dompurify_1.default.sanitize(value.trim(), {
+        ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li'],
+        ALLOWED_ATTR: ['href', 'title'],
+        KEEP_CONTENT: true,
+    });
     if (maxLength && clean.length > maxLength) {
         clean = clean.substring(0, maxLength);
     }

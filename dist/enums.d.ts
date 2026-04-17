@@ -1,4 +1,4 @@
-export declare const LOYALTY_TIERS: readonly ["bronze", "silver", "gold", "platinum"];
+export declare const LOYALTY_TIERS: readonly ["bronze", "silver", "gold", "platinum", "diamond"];
 export type LoyaltyTier = typeof LOYALTY_TIERS[number];
 export declare function normalizeLoyaltyTier(tier: string): LoyaltyTier;
 export declare const TRANSACTION_TYPES: {
@@ -8,14 +8,13 @@ export declare const TRANSACTION_TYPES: {
     readonly REFUNDED: "refunded";
     readonly BONUS: "bonus";
     readonly BRANDED_AWARD: "branded_award";
-    readonly TRANSFER: "transfer";
-    readonly GIFT: "gift";
 };
 export type TransactionType = typeof TRANSACTION_TYPES[keyof typeof TRANSACTION_TYPES];
 export declare const USER_ROLES: {
     readonly USER: "user";
-    readonly ADMIN: "admin";
+    readonly CONSUMER: "consumer";
     readonly MERCHANT: "merchant";
+    readonly ADMIN: "admin";
     readonly SUPPORT: "support";
     readonly OPERATOR: "operator";
     readonly SUPER_ADMIN: "super_admin";

@@ -55,7 +55,8 @@ function normalizeUserResponse(raw) {
         };
     }
     // Shape 2: has phoneNumber + nested profile (GET /api/user/auth/me)
-    if ('phoneNumber' in raw || ('profile' in raw && !('wallet' in raw) && !('itemCount' in raw.cart))) {
+    // Note: wallet sub-doc removed from User (DM-L4) — wallet data comes from GET /wallet/balance
+    if ('phoneNumber' in raw || ('profile' in raw && !('itemCount' in raw.cart))) {
         const s = raw;
         const prof = s.profile ?? {};
         return {
@@ -74,7 +75,8 @@ function normalizeUserResponse(raw) {
         };
     }
     // Shape 3: boot response with grouped profile/wallet/cart (GET /api/user/boot)
-    if ('profile' in raw && ('wallet' in raw || 'cart' in raw || 'notifications' in raw)) {
+    // Note: wallet sub-doc removed from User (DM-L4) — wallet data comes from GET /wallet/balance
+    if ('profile' in raw && ('cart' in raw || 'notifications' in raw)) {
         const s = raw;
         const prof = s.profile ?? {};
         const isVerified = prof.auth?.isVerified ?? prof.subscription?.tier != null;
@@ -87,8 +89,8 @@ function normalizeUserResponse(raw) {
             isVerified: isVerified,
             isOnboarded: prof.isOnboarded ?? false,
             loyaltyTier: prof.subscription?.tier,
-            walletBalance: s.wallet?.balance?.total,
-            coinBalance: s.wallet?.coins?.find((c) => c.type === 'rez')?.amount,
+            walletBalance: undefined, // wallet sub-doc removed (DM-L4) — fetch from GET /wallet/balance
+            coinBalance: undefined, // wallet sub-doc removed (DM-L4) — fetch from GET /wallet/balance
             cartItemCount: s.cart?.itemCount,
             unreadNotificationCount: s.notifications?.unreadCount,
         };

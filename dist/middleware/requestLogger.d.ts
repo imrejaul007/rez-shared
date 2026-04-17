@@ -20,7 +20,7 @@ export interface LogContext {
 /**
  * Structured logger
  */
-export declare function logger(context: Partial<LogContext>, message: string, data?: any): void;
+export declare function structuredLog(context: Partial<LogContext>, message: string, data?: any): void;
 /**
  * Structured logger for errors
  */

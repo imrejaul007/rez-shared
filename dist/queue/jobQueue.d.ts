@@ -108,8 +108,13 @@ export declare class JobQueueService {
     constructor(redis: Redis);
     /**
      * Queue email to be sent
+     * @param dedupTTL - Optional TTL in seconds for email deduplication key. If set, identical
+     *   emails sent within this window will be deduplicated. Defaults to 24 hours (86400s).
+     *   Set to 0 to disable deduplication entirely.
      */
-    sendEmail(to: string, subject: string, body: string, options?: any): Promise<void>;
+    sendEmail(to: string, subject: string, body: string, options?: {
+        dedupTTL?: number;
+    } & any): Promise<void>;
     /**
      * Queue SMS to be sent
      */
@@ -120,6 +125,8 @@ export declare class JobQueueService {
     sendPush(userId: string, title: string, body: string, options?: any): Promise<void>;
     /**
      * Queue webhook call
+     * Uses idempotent jobId (url + event) to prevent duplicate deliveries when the same
+     * webhook is triggered multiple times in quick succession.
      */
     sendWebhook(url: string, event: string, payload: any, options?: any): Promise<void>;
     /**

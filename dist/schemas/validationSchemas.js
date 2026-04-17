@@ -8,11 +8,30 @@
  * const { success, data, error } = createOrderSchema.safeParse(req.body);
  * ```
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.couponCodeSchema = exports.merchantLoginSchema = exports.createCashbackOfferSchema = exports.createDiscountOfferSchema = exports.createOfferSchema = exports.updateOrderStatusSchema = exports.createOrderSchema = exports.addressSchema = void 0;
+exports.couponCodeSchema = exports.merchantLoginSchema = exports.createProductSchema = exports.updateOfferSchema = exports.createCashbackOfferSchema = exports.createDiscountOfferSchema = exports.createOfferSchema = exports.updateOrderStatusSchema = exports.createOrderSchema = exports.addressSchema = exports.productCashbackSchema = void 0;
 exports.validateRequest = validateRequest;
+exports.validateParams = validateParams;
 exports.validateQuery = validateQuery;
 const zod_1 = require("zod");
+const orderStatuses_1 = require("../orderStatuses");
+const joi_1 = __importDefault(require("joi"));
+/**
+ * Product cashback subdocument schema (Joi)
+ * Field names match the backend Product.cashback subdocument shape
+ */
+exports.productCashbackSchema = joi_1.default.object({
+    percentage: joi_1.default.number().min(0).max(100),
+    maxAmount: joi_1.default.number().min(0),
+    minPurchase: joi_1.default.number().min(0),
+    validUntil: joi_1.default.date().iso(),
+    terms: joi_1.default.string(),
+    isActive: joi_1.default.boolean(),
+    conditions: joi_1.default.array().items(joi_1.default.string()),
+});
 /**
  * Phone number validation (India)
  */
@@ -62,7 +81,7 @@ exports.createOrderSchema = zod_1.z.object({
         rezCoins: zod_1.z.number().nonnegative().optional(),
         promoCoins: zod_1.z.number().nonnegative().optional(),
         storePromoCoins: zod_1.z.number().nonnegative().optional(),
-    }).refine(data => Object.values(data).some(v => typeof v === 'number' && v > 0), {
+    }).strict().refine(data => Object.values(data).some(v => typeof v === 'number' && v > 0), {
         message: 'At least one coin type must have a positive value',
     }).optional(),
     idempotencyKey: zod_1.z.string().uuid('Invalid idempotency key format'),
@@ -77,25 +96,30 @@ exports.createOrderSchema = zod_1.z.object({
  * Order status update schema
  */
 exports.updateOrderStatusSchema = zod_1.z.object({
-    status: zod_1.z.enum([
-        'placed', 'confirmed', 'preparing', 'ready',
-        'dispatched', 'out_for_delivery', 'delivered',
-        'cancelled', 'cancelling', 'returned', 'refunded'
-    ]),
+    status: zod_1.z.enum(orderStatuses_1.ORDER_STATUSES),
     note: zod_1.z.string().max(500).optional(),
 });
 /**
  * Offer creation schema (base)
+ * Field names match the rez-backend Offer model canonical shape:
+ *   type, cashbackPercentage, restrictions.minOrderValue,
+ *   restrictions.usageLimit, restrictions.usageLimitPerUser
  */
 const createOfferSchemaBase = zod_1.z.object({
     title: zod_1.z.string().min(1, 'Title is required').max(200),
     description: zod_1.z.string().max(1000).optional(),
-    offerType: zod_1.z.enum(['discount', 'cashback', 'voucher', 'combo', 'special', 'walk_in']),
-    startDate: zod_1.z.date(),
-    endDate: zod_1.z.date(),
-    minOrderAmount: zod_1.z.number().nonnegative().optional(),
-    maxRedemptions: zod_1.z.number().positive().optional(),
-    maxRedemptionsPerUser: zod_1.z.number().positive().optional(),
+    type: zod_1.z.enum(['discount', 'cashback', 'voucher', 'combo', 'special', 'walk_in']), // B03 fix: was offerType
+    validity: zod_1.z.object({
+        startDate: zod_1.z.date(),
+        endDate: zod_1.z.date(),
+    }),
+    // B05 fix: restrictions.minOrderValue (was flat minOrderAmount)
+    // B06 fix: restrictions.usageLimit / restrictions.usageLimitPerUser (were flat maxRedemptions/*)
+    restrictions: zod_1.z.object({
+        minOrderValue: zod_1.z.number().nonnegative().optional(),
+        usageLimit: zod_1.z.number().positive().optional(),
+        usageLimitPerUser: zod_1.z.number().positive().optional(),
+    }).optional(),
     isActive: zod_1.z.boolean().default(true),
     applicableCategories: zod_1.z.array(zod_1.z.string().max(24)).optional(),
     applicableProducts: zod_1.z.array(zod_1.z.string().max(24)).optional(),
@@ -105,9 +129,9 @@ const createOfferSchemaBase = zod_1.z.object({
  * Offer creation schema
  * Note: Backend validates non-overlapping offers per merchant (see merchant service)
  */
-exports.createOfferSchema = createOfferSchemaBase.refine((data) => data.startDate < data.endDate, {
+exports.createOfferSchema = createOfferSchemaBase.refine((data) => data.validity.startDate < data.validity.endDate, {
     message: 'startDate must be before endDate',
-    path: ['endDate'],
+    path: ['validity.endDate'],
 });
 /**
  * Discount offer schema (specific)
@@ -116,19 +140,64 @@ exports.createDiscountOfferSchema = createOfferSchemaBase.extend({
     discountType: zod_1.z.enum(['percentage', 'fixed']),
     discountValue: zod_1.z.number().positive('Discount value must be positive'),
     maxDiscountAmount: zod_1.z.number().nonnegative().optional(),
-}).refine((data) => data.startDate < data.endDate, {
+}).refine((data) => data.validity.startDate < data.validity.endDate, {
     message: 'startDate must be before endDate',
-    path: ['endDate'],
+    path: ['validity.endDate'],
 });
 /**
  * Cashback offer schema (specific)
  */
 exports.createCashbackOfferSchema = createOfferSchemaBase.extend({
     cashbackType: zod_1.z.enum(['coins', 'wallet']),
-    cashbackValue: zod_1.z.number().positive('Cashback value must be positive'),
-}).refine((data) => data.startDate < data.endDate, {
+    cashbackPercentage: zod_1.z.number().positive('Cashback percentage must be positive'), // B04 fix: was cashbackValue
+}).refine((data) => data.validity.startDate < data.validity.endDate, {
     message: 'startDate must be before endDate',
-    path: ['endDate'],
+    path: ['validity.endDate'],
+});
+/**
+ * Update offer schema — all fields optional (Zod equivalent of updateOfferSchema)
+ */
+exports.updateOfferSchema = zod_1.z.object({
+    title: zod_1.z.string().optional(),
+    description: zod_1.z.string().optional(),
+    image: zod_1.z.string().url().optional(),
+    category: zod_1.z.enum(['food', 'retail', 'travel', 'healthcare', 'entertainment', 'beauty', 'wellness', 'fitness', 'groceries', 'pharmacy', 'other']).optional(),
+    cashbackPercentage: zod_1.z.number().min(0).max(100).optional(),
+    validity: zod_1.z.object({
+        startDate: zod_1.z.date(),
+        endDate: zod_1.z.date(),
+    }).optional(),
+    restrictions: zod_1.z.object({
+        minOrderValue: zod_1.z.number().min(0).optional(),
+        usageLimit: zod_1.z.number().int().min(1).optional(),
+        usageLimitPerUser: zod_1.z.number().int().min(1).optional(),
+        applicableOn: zod_1.z.array(zod_1.z.string()).optional(),
+        excludedProducts: zod_1.z.array(zod_1.z.string()).optional(),
+        ageRestriction: zod_1.z.object({
+            minAge: zod_1.z.number().int().min(0).optional(),
+            maxAge: zod_1.z.number().int().min(0).optional(),
+        }).optional(),
+    }).optional(),
+    isActive: zod_1.z.boolean().optional(),
+});
+/**
+ * Create product schema (Zod equivalent of createProductSchema)
+ */
+exports.createProductSchema = zod_1.z.object({
+    name: zod_1.z.string().min(1, 'Name is required'),
+    description: zod_1.z.string().optional(),
+    pricing: zod_1.z.object({
+        original: zod_1.z.number().min(0).optional(),
+        selling: zod_1.z.number().min(0),
+        discount: zod_1.z.number().min(0).optional(),
+    }),
+    inventory: zod_1.z.object({
+        stock: zod_1.z.number().int().min(0).optional(),
+        inStock: zod_1.z.boolean().optional(),
+    }).optional(),
+    category: zod_1.z.string().optional(),
+    images: zod_1.z.array(zod_1.z.string()).optional(),
+    cashback: exports.productCashbackSchema.optional(),
 });
 /**
  * Merchant login schema
@@ -170,6 +239,33 @@ function validateRequest(schema) {
             });
         }
         req.validatedBody = result.data;
+        next();
+    };
+}
+/**
+ * Validate URL parameters
+ * Prevents injection attacks via URL parameters (e.g., /orders/:id where id is a MongoDB ObjectId)
+ */
+function validateParams(schema) {
+    return (req, res, next) => {
+        const result = schema.safeParse(req.params);
+        if (!result.success) {
+            const errors = result.error.errors.reduce((acc, err) => {
+                const path = err.path.join('.');
+                acc[path] = err.message;
+                return acc;
+            }, {});
+            return res.status(400).json({
+                success: false,
+                error: {
+                    code: 'VALIDATION_ERROR',
+                    message: 'URL parameter validation failed',
+                    statusCode: 400,
+                    details: errors,
+                },
+            });
+        }
+        req.validatedParams = result.data;
         next();
     };
 }

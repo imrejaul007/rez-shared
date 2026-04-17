@@ -6,7 +6,7 @@
  * Usage: app.use(requestLogger);
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logger = logger;
+exports.structuredLog = structuredLog;
 exports.logError = logError;
 exports.requestLogger = requestLogger;
 exports.attachLogger = attachLogger;
@@ -14,7 +14,7 @@ const uuid_1 = require("uuid");
 /**
  * Structured logger
  */
-function logger(context, message, data) {
+function structuredLog(context, message, data) {
     const log = {
         timestamp: new Date().toISOString(),
         level: 'info',
@@ -22,7 +22,7 @@ function logger(context, message, data) {
         message,
         ...(data && { data }),
     };
-    logger.debug(JSON.stringify(log));
+    console.log(JSON.stringify(log));
 }
 /**
  * Structured logger for errors
@@ -36,7 +36,7 @@ function logError(context, error, data) {
         stack: error.stack,
         ...(data && { data }),
     };
-    logger.error(JSON.stringify(log));
+    console.error(JSON.stringify(log));
 }
 /**
  * Request logging middleware
@@ -59,7 +59,7 @@ function requestLogger(req, res, next) {
     const userId = req.userId;
     const merchantId = req.merchantId;
     // Log incoming request
-    logger({
+    structuredLog({
         correlationId,
         requestId,
         path: req.path,
@@ -76,7 +76,7 @@ function requestLogger(req, res, next) {
     // Capture response
     res.on('finish', () => {
         const duration = Date.now() - startTime;
-        logger({
+        structuredLog({
             correlationId,
             requestId,
             path: req.path,
@@ -94,7 +94,7 @@ function requestLogger(req, res, next) {
  */
 function attachLogger(req, res, next) {
     req.logger = {
-        info: (message, data) => logger({
+        info: (message, data) => structuredLog({
             correlationId: req.correlationId,
             requestId: req.requestId,
             path: req.path,

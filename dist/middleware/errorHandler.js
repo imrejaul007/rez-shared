@@ -9,6 +9,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RateLimitError = exports.UnauthorizedError = exports.NotFoundError = exports.ValidationError = exports.AppError = exports.ErrorCode = void 0;
 exports.globalErrorHandler = globalErrorHandler;
 exports.asyncHandler = asyncHandler;
+const logger_1 = require("../config/logger");
+const logger = (0, logger_1.createServiceLogger)('error-handler');
 /**
  * Standard error codes used across the platform
  */
@@ -118,7 +120,7 @@ exports.RateLimitError = RateLimitError;
 function globalErrorHandler(error, req, res, next) {
     const requestId = req.correlationId || 'unknown';
     // Log error with proper context
-    console.error('[ERROR]', {
+    logger.error('[ERROR]', {
         requestId,
         path: req.path,
         method: req.method,
@@ -126,6 +128,7 @@ function globalErrorHandler(error, req, res, next) {
         code: error.code || error.constructor.name,
         errorType: error.name || error.constructor.name,
         stack: error.stack,
+        statusCode: error.statusCode || 500,
     });
     // Handle AppError
     if (error instanceof AppError) {
@@ -162,7 +165,11 @@ function globalErrorHandler(error, req, res, next) {
     // Handle validation errors (from Zod, Joi, etc.)
     if (error.isJoi || error.isZod) {
         const details = error.details ? error.details.reduce((acc, detail) => {
-            const fieldPath = Array.isArray(detail.path) ? detail.path.join('.') : String(detail.path || 'unknown');
+            // Defensive check: ensure path is an array before calling join()
+            let fieldPath = 'unknown';
+            if (detail.path) {
+                fieldPath = Array.isArray(detail.path) ? detail.path.join('.') : String(detail.path);
+            }
             acc[fieldPath] = detail.message;
             return acc;
         }, {}) : undefined;

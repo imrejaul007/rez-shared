@@ -13,22 +13,20 @@
  * Do NOT redefine these types in frontend apps — import from @rez/shared instead.
  */
 /**
- * CoinType as stored in Wallet documents.
- * 'rez' is the primary coin type. Use normalizeCoinType() from '@rez/shared'
- * to canonicalize any legacy values (e.g. 'nuqta') found in existing MongoDB docs.
- *
- * Note: CoinType is in constants/coins.ts.
- * Use this WalletCoinType when reading raw MongoDB wallet documents.
+ * CoinType from @rez/shared/constants/coins.ts — canonical coin type enum.
+ * WALLET-03 fix: the single source of truth, replacing WalletCoinType.
+ * Use normalizeCoinType() from '@rez/shared' to canonicalize any legacy values
+ * (e.g. 'nuqta') found in existing MongoDB docs.
  */
-/**
- * WalletCoinType: coin types that have a balance bucket in the Wallet document.
- * These correspond to the `type` field in Wallet.coins[].
- * TF-01 fix: Added 'referral' — referral coins have a balance bucket in the canonical
- * rez-shared constants/coins.ts (6 types). 'category' does not exist in any backend enum.
- */
-export type WalletCoinType = 'rez' | 'prive' | 'branded' | 'promo' | 'cashback' | 'referral';
+export type { CoinType } from '../constants/coins';
+export interface BrandedCoinDetails {
+    merchantId: string;
+    merchantName: string;
+    merchantLogo?: string;
+    merchantColor?: string;
+}
 export interface CoinBalance {
-    type: WalletCoinType;
+    type: CoinType;
     amount: number;
     isActive: boolean;
     color: string;
@@ -36,6 +34,7 @@ export interface CoinBalance {
     lastUsed?: string;
     lastEarned?: string;
     expiryDate?: string;
+    brandedDetails?: BrandedCoinDetails;
     promoDetails?: {
         campaignId?: string;
         campaignName?: string;
@@ -76,14 +75,59 @@ export interface WalletStatistics {
     totalTopups: number;
     totalWithdrawals: number;
 }
+export interface CategoryBalance {
+    available: number;
+    earned: number;
+    spent: number;
+}
+export interface SavingsInsights {
+    totalSaved: number;
+    thisMonth: number;
+    avgPerVisit: number;
+    lastCalculated: string;
+    topCategory: string;
+    topMerchant: {
+        id: string;
+        name: string;
+    };
+    monthlyTrend: number[];
+    weeklySpend: number;
+    savedVsAvgUser: number;
+    potentialMissedSavings: number;
+    favoriteStores: Array<{
+        id: string;
+        name: string;
+        visits: number;
+    }>;
+}
+export interface WalletLimits {
+    maxBalance: number;
+    minWithdrawal: number;
+    dailySpendLimit: number;
+    dailySpent: number;
+    lastResetDate: string;
+}
+export interface WalletSettings {
+    autoTopup: boolean;
+    autoTopupThreshold: number;
+    autoTopupAmount: number;
+    lowBalanceAlert: boolean;
+    lowBalanceThreshold: number;
+    smartAlertsEnabled: boolean;
+    expiringCoinsAlertDays: number;
+}
 export interface Wallet {
     _id: string;
     user: string;
     balance: WalletEntityBalance;
     coins: CoinBalance[];
     brandedCoins: BrandedCoin[];
+    categoryBalances: Record<string, CategoryBalance>;
     currency: string;
     statistics: WalletStatistics;
+    savingsInsights: SavingsInsights;
+    limits: WalletLimits;
+    settings: WalletSettings;
     isActive: boolean;
     isFrozen: boolean;
     frozenReason?: string;
@@ -117,10 +161,11 @@ export type TransactionStatus = 'SUCCESS' | 'PENDING' | 'FAILED' | 'CANCELLED' |
 /**
  * CoinTransactionCoinType: all coin types that can appear in a CoinTransaction document.
  * This is the full set from the CoinTransaction model (wallet-service + backend).
- * Superset of CoinType from constants/coins.ts (adds 'nuqta' for legacy doc compatibility).
- * Use normalizeCoinType() to map 'nuqta' → 'rez' before display or logic.
+ * Matches CoinType from constants/coins.ts.
+ * WALLET-03 fix: 'nuqta' removed — it is a legacy alias for 'rez'; normalize with
+ * normalizeCoinType() when reading existing MongoDB docs, but never write new docs with 'nuqta'.
  */
-export type CoinTransactionCoinType = 'rez' | 'nuqta' | 'prive' | 'branded' | 'promo' | 'cashback' | 'referral';
+export type CoinTransactionCoinType = 'rez' | 'prive' | 'branded' | 'promo' | 'cashback' | 'referral';
 export interface CoinTransactionEntity {
     _id: string;
     user: string;

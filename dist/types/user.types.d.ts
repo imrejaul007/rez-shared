@@ -10,7 +10,7 @@ export interface UserProfile {
     avatar?: string;
     bio?: string;
     dateOfBirth?: string;
-    gender?: 'male' | 'female' | 'other';
+    gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
     location?: {
         address?: string;
         city?: string;
@@ -18,6 +18,7 @@ export interface UserProfile {
         pincode?: string;
         coordinates?: [number, number];
     };
+    verificationStatus?: 'pending' | 'approved' | 'rejected';
 }
 export interface UserPreferences {
     language?: string;
@@ -33,13 +34,7 @@ export interface UserAuth {
     isOnboarded?: boolean;
     lastLogin?: string;
 }
-export interface UserWallet {
-    balance: number;
-    totalEarned: number;
-    totalSpent: number;
-    pendingAmount: number;
-}
-export type UserRole = 'user' | 'admin' | 'merchant' | 'support' | 'operator' | 'super_admin';
+export type UserRole = 'user' | 'admin' | 'merchant' | 'support' | 'operator' | 'super_admin' | 'consumer';
 export declare const USER_ROLES: readonly UserRole[];
 export type RezPlusTier = 'free' | 'premium' | 'vip';
 /** @deprecated use RezPlusTier */
@@ -51,17 +46,20 @@ export interface User {
     email?: string;
     profile: UserProfile;
     preferences?: UserPreferences;
-    wallet?: UserWallet;
     auth: UserAuth;
     role: UserRole;
     isActive: boolean;
     isSuspended?: boolean;
-    walletBalance?: number;
     referralCode?: string;
     fullName?: string;
     username?: string;
     isPremium?: boolean;
     rezPlusTier?: RezPlusTier;
+    status?: 'active' | 'suspended' | 'inactive';
+    suspendedAt?: string;
+    suspendReason?: string;
+    referralTier?: 'starter' | 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
+    premiumExpiresAt?: string;
     /** @deprecated use rezPlusTier */
     nuqtaPlusTier?: NuqtaPlusTier;
     priveTier?: PriveTier;

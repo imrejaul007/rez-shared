@@ -50,8 +50,16 @@ const PAYMENT_TO_ORDER_STATUS = {
     cancelled: 'failed',
     refunded: 'refunded',
     partially_refunded: 'partially_refunded',
-    // expired, refund_initiated, refund_processing, refund_failed
-    // have no OrderPaymentStatus equivalent — callers should handle null
+    // P0 FIX: Filled NULL gaps for terminal/terminalizing states.
+    // These states have no perfect OrderPaymentStatus equivalent, but 'failed'
+    // is the closest consumer-facing representation for expired payments.
+    expired: 'failed',
+    // refund_initiated|refund_processing|refund_failed are intermediate refund states.
+    // Map all to 'refunded' (the terminal refund state) as the closest equivalent.
+    // This is lossy but better than null for consumer-facing display.
+    refund_initiated: 'refunded',
+    refund_processing: 'refunded',
+    refund_failed: 'refunded',
 };
 /**
  * Normalize a legacy order status string to its canonical Phase 3 equivalent.
