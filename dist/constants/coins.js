@@ -5,10 +5,11 @@
  * Primary coin is 'rez' throughout the platform.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LOYALTY_TIER = exports.COIN_EARNING_RATE = exports.CASHBACK_STATUS = exports.REWARD_TYPES = exports.COIN_DISPLAY_NAMES = exports.COIN_EXPIRY_DAYS = exports.LEGACY_COIN_TYPE_MAP = exports.COIN_TYPE_VALUES = exports.COIN_TYPE_ARRAY = exports.COIN_TYPES = void 0;
+exports.LOYALTY_TIER = exports.COIN_TO_RUPEE_RATE = exports.COIN_EARNING_RATE = exports.CASHBACK_STATUS = exports.REWARD_TYPES = exports.COIN_DISPLAY_NAMES = exports.COIN_EXPIRY_DAYS = exports.LEGACY_COIN_TYPE_MAP = exports.COIN_TYPE_VALUES = exports.COIN_TYPE_ARRAY = exports.COIN_TYPES = void 0;
 exports.normalizeCoinType = normalizeCoinType;
 exports.normalizeCashbackStatus = normalizeCashbackStatus;
 exports.coinsEarned = coinsEarned;
+exports.coinsToRupees = coinsToRupees;
 exports.normalizeLoyaltyTier = normalizeLoyaltyTier;
 // ── Coin Type Constants ────────────────────────────────────────────────────────
 exports.COIN_TYPES = {
@@ -137,6 +138,20 @@ function coinsEarned(rupees, cap) {
     const earned = Math.floor(rupees * exports.COIN_EARNING_RATE.PER_RUPEE);
     const effectiveCap = cap ?? exports.COIN_EARNING_RATE.PER_TRANSACTION_CAP;
     return effectiveCap > 0 ? Math.min(earned, effectiveCap) : earned;
+}
+/**
+ * Canonical spend rate: 1 coin = ₹1 (net-zero coin economy).
+ * Locked as product decision on 2026-04-17: earn rate == spend rate.
+ * All env vars (COIN_TO_RUPEE_RATE, REZ_COIN_TO_RUPEE_RATE, REZ_COINS_PER_RUPEE)
+ * must remain aligned at 1.0 for this to hold.
+ */
+exports.COIN_TO_RUPEE_RATE = 1.0;
+/**
+ * Compute rupees equivalent for a given coin amount.
+ * Uses COIN_TO_RUPEE_RATE as the redemption rate.
+ */
+function coinsToRupees(coins) {
+    return coins * exports.COIN_TO_RUPEE_RATE;
 }
 exports.LOYALTY_TIER = {
     BRONZE: 'bronze',

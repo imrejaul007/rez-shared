@@ -1,6 +1,6 @@
 {
   "name": "@karim4987498/shared",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Shared utilities and canonical type definitions for all REZ services and apps",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

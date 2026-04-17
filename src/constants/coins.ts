@@ -157,6 +157,22 @@ export function coinsEarned(rupees: number, cap?: number): number {
   return effectiveCap > 0 ? Math.min(earned, effectiveCap) : earned;
 }
 
+/**
+ * Canonical spend rate: 1 coin = ₹1 (net-zero coin economy).
+ * Locked as product decision on 2026-04-17: earn rate == spend rate.
+ * All env vars (COIN_TO_RUPEE_RATE, REZ_COIN_TO_RUPEE_RATE, REZ_COINS_PER_RUPEE)
+ * must remain aligned at 1.0 for this to hold.
+ */
+export const COIN_TO_RUPEE_RATE = 1.0 as const;
+
+/**
+ * Compute rupees equivalent for a given coin amount.
+ * Uses COIN_TO_RUPEE_RATE as the redemption rate.
+ */
+export function coinsToRupees(coins: number): number {
+  return coins * COIN_TO_RUPEE_RATE;
+}
+
 export const LOYALTY_TIER = {
   BRONZE: 'bronze',
   SILVER: 'silver',

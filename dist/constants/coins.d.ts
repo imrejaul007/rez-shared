@@ -62,6 +62,18 @@ export declare const COIN_EARNING_RATE: {
  * @param cap - Optional per-transaction cap override
  */
 export declare function coinsEarned(rupees: number, cap?: number): number;
+/**
+ * Canonical spend rate: 1 coin = ₹1 (net-zero coin economy).
+ * Locked as product decision on 2026-04-17: earn rate == spend rate.
+ * All env vars (COIN_TO_RUPEE_RATE, REZ_COIN_TO_RUPEE_RATE, REZ_COINS_PER_RUPEE)
+ * must remain aligned at 1.0 for this to hold.
+ */
+export declare const COIN_TO_RUPEE_RATE: 1;
+/**
+ * Compute rupees equivalent for a given coin amount.
+ * Uses COIN_TO_RUPEE_RATE as the redemption rate.
+ */
+export declare function coinsToRupees(coins: number): number;
 export declare const LOYALTY_TIER: {
     readonly BRONZE: "bronze";
     readonly SILVER: "silver";
