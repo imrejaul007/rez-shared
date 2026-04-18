@@ -186,15 +186,23 @@ npx @claude-flow/cli@latest doctor --fix
 
 Architecture drift is prevented through automated fitness tests and governance:
 
-### Fitness Tests (5 checks)
+### Fitness Tests (10 checks)
 
-All run on every PR via `.github/workflows/arch-fitness.yml`:
+All run on every PR via `.github/workflows/arch-fitness.yml`. Tests 1-5 are hard failures; 6-10 are advisory warnings.
 
-1. **No Bespoke Buttons**: Client apps must import Button from `@rez/rez-ui`
-2. **No Console Logs**: Logging must use `rez-shared/telemetry` logger
-3. **No Bespoke Idempotency**: Services must use `rez-shared/idempotency`
-4. **No Bespoke Enums**: Enum definitions must not duplicate `rez-shared/enums/`
-5. **No Math.random() for IDs**: Use `uuid` or `crypto.randomUUID()` instead
+1. **No Bespoke Buttons** (hard fail): Client apps must import Button from `@rez/rez-ui`
+2. **No Console Logs** (hard fail): Logging must use `rez-shared/telemetry` logger
+3. **No Bespoke Idempotency** (hard fail): Services must use `rez-shared/idempotency`
+4. **No Bespoke Enums** (hard fail): Enum definitions must not duplicate `rez-shared/enums/`
+5. **No Math.random() for IDs** (hard fail): Use `uuid` or `crypto.randomUUID()` instead
+6. **No `as any`** (hard fail): TypeScript type assertions must not use bare `as any`
+7. **Centralized Button Advisory** (warn): Warn on bespoke Button imports outside rez-ui
+8. **No Bespoke Status** (warn): Use canonical OrderStatus types from rez-shared
+9. **Centralized API Client** (warn): Use shared API client instead of direct fetch
+10. **No Inline Styles** (warn): Use design system classes instead of JSX `style={{}}`
+
+Run all: `bash scripts/arch-fitness/run-all.sh`
+Install hooks: `bash scripts/arch-fitness/install-hooks.sh`
 
 ### Governance
 
@@ -207,11 +215,18 @@ See `docs/GOVERNANCE.md` for:
 ### Test Scripts
 
 Located in `scripts/arch-fitness/`:
-- `no-bespoke-buttons.sh` — grep-based Button import check
-- `no-console-log.sh` — centralized logger enforcement
-- `no-bespoke-idempotency.sh` — idempotency centralization
-- `no-bespoke-enums.sh` — enum duplication prevention
-- `no-math-random-for-ids.sh` — secure ID generation
+- `no-bespoke-buttons.sh` — grep-based Button import check (hard)
+- `no-console-log.sh` — centralized logger enforcement (hard)
+- `no-bespoke-idempotency.sh` — idempotency centralization (hard)
+- `no-bespoke-enums.sh` — enum duplication prevention (hard)
+- `no-math-random-for-ids.sh` — secure ID generation (hard)
+- `no-as-any.sh` — TypeScript type safety (hard)
+- `centralized-button.sh` — Button import advisory (warn)
+- `no-bespoke-status.sh` — OrderStatus type advisory (warn)
+- `centralized-api-client.sh` — HTTP client advisory (warn)
+- `no-inline-styles.sh` — JSX style advisory (warn)
+- `run-all.sh` — master runner for all tests
+- `install-hooks.sh` — install pre-commit hook
 
 ### Bug Workflow
 
