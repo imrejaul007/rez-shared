@@ -9,6 +9,7 @@
  */
 
 import type Redis from 'ioredis';
+const warn = (msg: string) => { console.warn(`[eventOrdering] ${msg}`); };
 
 /**
  * Event versioning for causal consistency
@@ -200,7 +201,7 @@ export class EventStreamValidator {
     // Check version continuity
     for (let i = 1; i < sorted.length; i++) {
       if (sorted[i].version !== sorted[i - 1].version + 1) {
-        console.warn(
+        warn(
           `Event ordering violation: expected v${sorted[i - 1].version + 1}, got v${sorted[i].version}`,
         );
         return false;
@@ -232,7 +233,7 @@ export class EventStreamValidator {
       const depVersion = entityVersions.get(depKey) || 0;
 
       if (depVersion < event.causality.requiredVersion) {
-        console.warn(
+        warn(
           `Causal ordering violation: ${key} v${event.version} requires ${depKey} v${event.causality.requiredVersion}, but only v${depVersion} is available`,
         );
         return false;
