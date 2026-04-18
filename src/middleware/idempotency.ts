@@ -90,22 +90,28 @@ export function idempotencyMiddleware(redis: Redis) {
             logger.error('Malformed cache entry after lock wait, skipping:', parseError);
           }
         }
-        // If still no cache, continue but release lock
-        await redis.del(lockKey).catch(() => {});
+        // If cached response is still not available after waiting, another request is
+        // actively processing this idempotency key. Return 409 so the client retries later.
+        return res.status(409).json({
+          success: false,
+          error: {
+            code: 'IDEMPOTENCY_CONFLICT',
+            message: 'Request with this idempotency key is currently being processed. Please retry.',
+            statusCode: 409,
+          },
+        });
       }
 
       // Helper to cache the response
-      const cacheResponse = (statusCode: number, body: any) => {
-        if (statusCode >= 200 && statusCode < 400) {
-          const responseData = { statusCode, body };
-          redis.setex(cacheKey, IDEMPOTENCY_TTL, JSON.stringify(responseData))
-            .then(() => redis.del(lockKey))
-            .catch((err: unknown) => {
-              logger.error('Failed to cache idempotent response', { error: err });
-              redis.del(lockKey).catch(() => {});
-            });
-        } else {
-          redis.del(lockKey).catch(() => {});
+      const cacheResponse = async (statusCode: number, body: any) => {
+        try {
+          if (statusCode >= 200 && statusCode < 400) {
+            const responseData = { statusCode, body };
+            await redis.setex(cacheKey, IDEMPOTENCY_TTL, JSON.stringify(responseData));
+          }
+          await redis.del(lockKey);
+        } catch (err: unknown) {
+          logger.error('Failed to cache response or release lock', { cacheKey, lockKey, error: err });
         }
       };
 
