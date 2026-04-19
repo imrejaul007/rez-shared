@@ -19,6 +19,12 @@ const ORDER_STATUS_MAP: Record<string, string> = {
   shipping: 'dispatched',
   packed: 'preparing',
   accepted: 'confirmed',
+  // DM-CRIT-01 P0 FIX: frontend e2e tests use 'pending_payment' as initial order state
+  // but backend FSM uses 'placed'. Map so normalizeOrderStatus('pending_payment') → 'placed'.
+  pending_payment: 'placed',
+  // DM-CRIT-01 P0 FIX: frontend e2e tests use 'completed' as terminal state
+  // but backend FSM uses 'delivered'. Map so normalizeOrderStatus('completed') → 'delivered'.
+  completed: 'delivered',
 };
 
 // ── Payment status normalizer ──────────────────────────────────────────────────
