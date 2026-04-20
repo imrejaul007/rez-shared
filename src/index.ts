@@ -13,6 +13,12 @@ export { OrderItemDTO, OrderPaymentDTO, OrderDTO, PaginatedDtoResponse, DtoWalle
 // PaginatedResponse re-exported from types/api.ts (canonical version)
 export * from './statusCompat';
 
+// DM-HIGH-02: Unified payment state
+export * from './paymentState';
+
+// DM-HIGH-04: Canonical notification categories
+export * from './notificationCategory';
+
 // ── Canonical entity types (Phase 8+: single source of truth) ─────────────────
 // Import entity types directly: import type { User, Order } from '@rez/shared'
 export * from './types/user.types';

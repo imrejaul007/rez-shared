@@ -14,6 +14,7 @@ export * from './order.types';
 export * from './wallet.types';
 export * from './booking.types';
 export * from './campaign.types';
+export * from './razorpay.types';
 
 // Re-export API response types for convenience
 export * from './api';
