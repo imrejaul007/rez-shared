@@ -12,10 +12,12 @@
 // paymentStatuses.ts, and statusCompat.ts. Do NOT re-export them here to avoid
 // duplicate identifier errors.
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.USER_ROLES = exports.TRANSACTION_TYPES = exports.LOYALTY_TIER_PERKS = exports.LOYALTY_TIERS = void 0;
+exports.USER_ROLES = exports.LOYALTY_TIER_PERKS = exports.TRANSACTION_TYPES = exports.LOYALTY_TIERS = void 0;
 exports.normalizeLoyaltyTier = normalizeLoyaltyTier;
 exports.getLoyaltyTierPerks = getLoyaltyTierPerks;
-// Loyalty Tiers
+// ── Loyalty Tiers ──────────────────────────────────────────────────────────────
+// DM-HIGH-05 FIX: Canonical lowercase enum. All comparisons must use this enum.
+// DM values: 'bronze', 'silver', 'gold', 'platinum', 'diamond'
 exports.LOYALTY_TIERS = ['bronze', 'silver', 'gold', 'platinum', 'diamond'];
 function normalizeLoyaltyTier(tier) {
     if (!tier)
@@ -30,17 +32,6 @@ function normalizeLoyaltyTier(tier) {
     };
     return map[tier.toUpperCase()] ?? (exports.LOYALTY_TIERS.includes(tier.toLowerCase()) ? tier.toLowerCase() : 'bronze');
 }
-exports.LOYALTY_TIER_PERKS = {
-    bronze: { tier: 'bronze', cashbackRate: 0.01, freeDeliveryMinOrder: 999, prioritySupport: false, exclusiveOffers: false, earlyAccess: false },
-    silver: { tier: 'silver', cashbackRate: 0.015, freeDeliveryMinOrder: 500, prioritySupport: false, exclusiveOffers: false, earlyAccess: false },
-    gold: { tier: 'gold', cashbackRate: 0.02, freeDeliveryMinOrder: 300, prioritySupport: true, exclusiveOffers: false, earlyAccess: false },
-    platinum: { tier: 'platinum', cashbackRate: 0.03, freeDeliveryMinOrder: 0, prioritySupport: true, exclusiveOffers: true, earlyAccess: false },
-    diamond: { tier: 'diamond', cashbackRate: 0.05, freeDeliveryMinOrder: 0, prioritySupport: true, exclusiveOffers: true, earlyAccess: true },
-};
-function getLoyaltyTierPerks(tier) {
-    const normalized = normalizeLoyaltyTier(tier);
-    return exports.LOYALTY_TIER_PERKS[normalized];
-}
 // Transaction Types
 // NOTE: Backend wallet service only supports 6 types (earned|spent|expired|refunded|bonus|branded_award).
 // 'transfer' and 'gift' are NOT in the backend type definition. Do NOT add them to
@@ -53,6 +44,56 @@ exports.TRANSACTION_TYPES = {
     BONUS: 'bonus',
     BRANDED_AWARD: 'branded_award',
 };
+exports.LOYALTY_TIER_PERKS = {
+    bronze: {
+        tier: 'bronze',
+        cashbackRate: 0.01, // 1% cashback
+        freeDeliveryMinOrder: 999, // No free delivery
+        prioritySupport: false,
+        exclusiveOffers: false,
+        earlyAccess: false,
+    },
+    silver: {
+        tier: 'silver',
+        cashbackRate: 0.015, // 1.5% cashback
+        freeDeliveryMinOrder: 500, // Free delivery on orders > ₹500
+        prioritySupport: false,
+        exclusiveOffers: false,
+        earlyAccess: false,
+    },
+    gold: {
+        tier: 'gold',
+        cashbackRate: 0.02, // 2% cashback
+        freeDeliveryMinOrder: 0, // Free delivery on all orders
+        prioritySupport: true,
+        exclusiveOffers: false,
+        earlyAccess: false,
+    },
+    platinum: {
+        tier: 'platinum',
+        cashbackRate: 0.03, // 3% cashback
+        freeDeliveryMinOrder: 0, // Free delivery on all orders
+        prioritySupport: true,
+        exclusiveOffers: true,
+        earlyAccess: false,
+    },
+    diamond: {
+        tier: 'diamond',
+        cashbackRate: 0.05, // 5% cashback
+        freeDeliveryMinOrder: 0, // Free delivery on all orders
+        prioritySupport: true,
+        exclusiveOffers: true,
+        earlyAccess: true,
+    },
+};
+/**
+ * Get the perks for a given loyalty tier.
+ * Falls back to bronze perks if the tier is unknown.
+ */
+function getLoyaltyTierPerks(tier) {
+    const normalized = normalizeLoyaltyTier(tier);
+    return exports.LOYALTY_TIER_PERKS[normalized] ?? exports.LOYALTY_TIER_PERKS.bronze;
+}
 // User Roles
 // 2026-04-16: CONSUMER added to match canonical shared-types/UserRole (7 values).
 exports.USER_ROLES = {

@@ -1,16 +1,6 @@
 export declare const LOYALTY_TIERS: readonly ["bronze", "silver", "gold", "platinum", "diamond"];
 export type LoyaltyTier = typeof LOYALTY_TIERS[number];
 export declare function normalizeLoyaltyTier(tier: string): LoyaltyTier;
-export interface LoyaltyTierPerks {
-    tier: LoyaltyTier;
-    cashbackRate: number;
-    freeDeliveryMinOrder: number;
-    prioritySupport: boolean;
-    exclusiveOffers: boolean;
-    earlyAccess: boolean;
-}
-export declare const LOYALTY_TIER_PERKS: Record<LoyaltyTier, LoyaltyTierPerks>;
-export declare function getLoyaltyTierPerks(tier: string): LoyaltyTierPerks;
 export declare const TRANSACTION_TYPES: {
     readonly EARNED: "earned";
     readonly SPENT: "spent";
@@ -20,6 +10,25 @@ export declare const TRANSACTION_TYPES: {
     readonly BRANDED_AWARD: "branded_award";
 };
 export type TransactionType = typeof TRANSACTION_TYPES[keyof typeof TRANSACTION_TYPES];
+export interface LoyaltyTierPerks {
+    tier: LoyaltyTier;
+    /** Cashback rate as a decimal (e.g., 0.01 = 1%) */
+    cashbackRate: number;
+    /** Free delivery on orders above this amount (INR). 0 = free delivery on all orders. null = no free delivery. */
+    freeDeliveryMinOrder: number | null;
+    /** Whether the user gets priority customer support */
+    prioritySupport: boolean;
+    /** Whether the user gets exclusive offers/deals */
+    exclusiveOffers: boolean;
+    /** Whether the user gets early access to new features/products */
+    earlyAccess: boolean;
+}
+export declare const LOYALTY_TIER_PERKS: Record<LoyaltyTier, LoyaltyTierPerks>;
+/**
+ * Get the perks for a given loyalty tier.
+ * Falls back to bronze perks if the tier is unknown.
+ */
+export declare function getLoyaltyTierPerks(tier: string): LoyaltyTierPerks;
 export declare const USER_ROLES: {
     readonly USER: "user";
     readonly CONSUMER: "consumer";

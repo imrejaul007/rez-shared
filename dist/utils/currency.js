@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.formatPaise = exports.toRupees = exports.toPaise = void 0;
 exports.formatCurrency = formatCurrency;
 exports.formatShortCurrency = formatShortCurrency;
 /**
@@ -22,3 +23,15 @@ function formatShortCurrency(amount) {
         return `₹${(amount / 1000).toFixed(1)}K`;
     return `₹${amount}`;
 }
+/** Convert rupees to paise. Always rounds to nearest integer. */
+const toPaise = (rupees) => Math.round(rupees * 100);
+exports.toPaise = toPaise;
+/** Convert paise to rupees. Returns float (e.g. 2500 paise → 25.00 rupees). */
+const toRupees = (paise) => paise / 100;
+exports.toRupees = toRupees;
+/**
+ * Display a PaiseAmount as a formatted rupee string.
+ * @example formatPaise(2500) → "₹25.00"
+ */
+const formatPaise = (paise) => formatCurrency((0, exports.toRupees)(paise));
+exports.formatPaise = formatPaise;

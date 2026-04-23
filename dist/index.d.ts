@@ -3,6 +3,8 @@ export * from './orderStatuses';
 export * from './paymentStatuses';
 export { OrderItemDTO, OrderPaymentDTO, OrderDTO, PaginatedDtoResponse, DtoWalletCoinType } from './dtos';
 export * from './statusCompat';
+export * from './paymentState';
+export * from './notificationCategory';
 export * from './types/user.types';
 export * from './types/merchant.types';
 export * from './types/offer.types';

@@ -25,6 +25,10 @@ __exportStar(require("./orderStatuses"), exports);
 __exportStar(require("./paymentStatuses"), exports);
 // PaginatedResponse re-exported from types/api.ts (canonical version)
 __exportStar(require("./statusCompat"), exports);
+// DM-HIGH-02: Unified payment state
+__exportStar(require("./paymentState"), exports);
+// DM-HIGH-04: Canonical notification categories
+__exportStar(require("./notificationCategory"), exports);
 // ── Canonical entity types (Phase 8+: single source of truth) ─────────────────
 // Import entity types directly: import type { User, Order } from '@rez/shared'
 __exportStar(require("./types/user.types"), exports);

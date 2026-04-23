@@ -29,5 +29,6 @@ __exportStar(require("./order.types"), exports);
 __exportStar(require("./wallet.types"), exports);
 __exportStar(require("./booking.types"), exports);
 __exportStar(require("./campaign.types"), exports);
+__exportStar(require("./razorpay.types"), exports);
 // Re-export API response types for convenience
 __exportStar(require("./api"), exports);

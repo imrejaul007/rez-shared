@@ -84,22 +84,28 @@ function idempotencyMiddleware(redis) {
                         logger.error('Malformed cache entry after lock wait, skipping:', parseError);
                     }
                 }
-                // If still no cache, continue but release lock
-                await redis.del(lockKey).catch(() => { });
+                // If cached response is still not available after waiting, another request is
+                // actively processing this idempotency key. Return 409 so the client retries later.
+                return res.status(409).json({
+                    success: false,
+                    error: {
+                        code: 'IDEMPOTENCY_CONFLICT',
+                        message: 'Request with this idempotency key is currently being processed. Please retry.',
+                        statusCode: 409,
+                    },
+                });
             }
             // Helper to cache the response
-            const cacheResponse = (statusCode, body) => {
-                if (statusCode >= 200 && statusCode < 400) {
-                    const responseData = { statusCode, body };
-                    redis.setex(cacheKey, IDEMPOTENCY_TTL, JSON.stringify(responseData))
-                        .then(() => redis.del(lockKey))
-                        .catch((err) => {
-                        logger.error('Failed to cache idempotent response', { error: err });
-                        redis.del(lockKey).catch(() => { });
-                    });
+            const cacheResponse = async (statusCode, body) => {
+                try {
+                    if (statusCode >= 200 && statusCode < 400) {
+                        const responseData = { statusCode, body };
+                        await redis.setex(cacheKey, IDEMPOTENCY_TTL, JSON.stringify(responseData));
+                    }
+                    await redis.del(lockKey);
                 }
-                else {
-                    redis.del(lockKey).catch(() => { });
+                catch (err) {
+                    logger.error('Failed to cache response or release lock', { cacheKey, lockKey, error: err });
                 }
             };
             // Intercept response to cache it — both send() and json()

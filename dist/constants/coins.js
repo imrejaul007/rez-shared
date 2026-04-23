@@ -46,7 +46,7 @@ exports.LEGACY_COIN_TYPE_MAP = {
 };
 /** Normalize any coin type string to canonical CoinType. Falls back to 'rez'. */
 function normalizeCoinType(type) {
-    return (exports.LEGACY_COIN_TYPE_MAP[type] ?? 'rez');
+    return (exports.LEGACY_COIN_TYPE_MAP[type.toLowerCase()] ?? 'rez');
 }
 // ── Coin Configuration ────────────────────────────────────────────────────────
 // H36 fix: COIN_EXPIRY_DAYS values must match currencyRules.ts (the canonical backend source).

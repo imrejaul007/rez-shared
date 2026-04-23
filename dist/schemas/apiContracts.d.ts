@@ -137,7 +137,7 @@ export declare const userProfileSchema: z.ZodObject<{
     verificationSegment: z.ZodOptional<z.ZodString>;
     verifications: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
     activeZones: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
-    role: z.ZodEnum<["user", "admin", "merchant"]>;
+    role: z.ZodEnum<["user", "admin", "merchant", "customer", "driver", "support", "manager", "owner"]>;
     isVerified: z.ZodBoolean;
     isOnboarded: z.ZodBoolean;
     createdAt: z.ZodString;
@@ -175,7 +175,7 @@ export declare const userProfileSchema: z.ZodObject<{
         currency?: string;
         theme?: "light" | "dark";
     };
-    role?: "user" | "merchant" | "admin";
+    role?: "user" | "merchant" | "admin" | "support" | "customer" | "driver" | "manager" | "owner";
     isOnboarded?: boolean;
     statedIdentity?: string;
     featureLevel?: number;
@@ -216,7 +216,7 @@ export declare const userProfileSchema: z.ZodObject<{
         currency?: string;
         theme?: "light" | "dark";
     };
-    role?: "user" | "merchant" | "admin";
+    role?: "user" | "merchant" | "admin" | "support" | "customer" | "driver" | "manager" | "owner";
     isOnboarded?: boolean;
     statedIdentity?: string;
     featureLevel?: number;
@@ -1041,7 +1041,7 @@ export declare const notificationSchema: z.ZodObject<{
     readAt: z.ZodOptional<z.ZodString>;
     createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    type?: "order_status" | "payment_received" | "promotion" | "system_alert" | "delivery_update" | "referral_success" | "gamification_milestone";
+    type?: "promotion" | "order_status" | "payment_received" | "system_alert" | "delivery_update" | "referral_success" | "gamification_milestone";
     id?: string;
     createdAt?: string;
     message?: string;
@@ -1057,7 +1057,7 @@ export declare const notificationSchema: z.ZodObject<{
     sentAt?: string;
     readAt?: string;
 }, {
-    type?: "order_status" | "payment_received" | "promotion" | "system_alert" | "delivery_update" | "referral_success" | "gamification_milestone";
+    type?: "promotion" | "order_status" | "payment_received" | "system_alert" | "delivery_update" | "referral_success" | "gamification_milestone";
     id?: string;
     createdAt?: string;
     message?: string;
@@ -1126,7 +1126,7 @@ export declare const campaignSchema: z.ZodObject<{
     updatedAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     isActive?: boolean;
-    type?: "referral" | "flash_sale" | "seasonal" | "loyalty" | "first_purchase";
+    type?: "referral" | "loyalty" | "flash_sale" | "seasonal" | "first_purchase";
     name?: string;
     id?: string;
     createdAt?: string;
@@ -1151,7 +1151,7 @@ export declare const campaignSchema: z.ZodObject<{
     };
 }, {
     isActive?: boolean;
-    type?: "referral" | "flash_sale" | "seasonal" | "loyalty" | "first_purchase";
+    type?: "referral" | "loyalty" | "flash_sale" | "seasonal" | "first_purchase";
     name?: string;
     id?: string;
     createdAt?: string;

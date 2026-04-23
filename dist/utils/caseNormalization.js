@@ -45,13 +45,9 @@ exports.getOfferValue = getOfferValue;
 function screamingToSnake(value) {
     if (!value)
         return value;
-    // Already lowercase or snake_case — pass through
-    if (value === value.toLowerCase())
-        return value;
-    return value
-        .replace(/([A-Z])/g, '_$1')
-        .replace(/^_/, '')
-        .toLowerCase();
+    // SCREAMING_CASE to snake_case is simply lowercasing the entire string.
+    // The underscores are already in place; only the letter case changes.
+    return value.toLowerCase();
 }
 /**
  * Convert a camelCase string to snake_case.

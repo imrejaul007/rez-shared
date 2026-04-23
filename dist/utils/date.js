@@ -4,8 +4,11 @@ exports.formatDate = formatDate;
 exports.getRelativeTime = getRelativeTime;
 exports.getExpiryCountdown = getExpiryCountdown;
 function formatDate(dateStr) {
+    // DATE-TZ-001 FIX: Added explicit Asia/Kolkata timezone so dates don't shift
+    // by ±N days depending on server timezone.
     return new Date(dateStr).toLocaleDateString('en-IN', {
-        day: '2-digit', month: 'short', year: 'numeric'
+        day: '2-digit', month: 'short', year: 'numeric',
+        timeZone: 'Asia/Kolkata',
     });
 }
 function getRelativeTime(dateStr) {
