@@ -6,6 +6,9 @@ export {
   type TransactionType,
 } from './enums';
 
+// ── Shared types enums ─────────────────────────────────────────────────────────
+export * from './enums';
+
 // ── Phase 7: Order & Payment status contracts ──────────────────────────────────
 export * from './orderStatuses';
 export * from './paymentStatuses';
@@ -28,6 +31,9 @@ export * from './types/order.types';
 export * from './types/wallet.types';
 export * from './types/booking.types';
 export * from './types/campaign.types';
+
+// ── Canonical entity types from shared-types ───────────────────────────────────
+export * from './entities';
 
 // ── Pre-existing shared exports ────────────────────────────────────────────────
 // Types
