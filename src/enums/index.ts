@@ -234,12 +234,13 @@ export enum PriveTier {
   ELITE = 'elite',
 }
 
-// Loyalty tier
+// Loyalty tier (E-T5 FIX: added DIAMOND as distinct tier)
 export enum LoyaltyTier {
   BRONZE = 'bronze',
   SILVER = 'silver',
   GOLD = 'gold',
   PLATINUM = 'platinum',
+  DIAMOND = 'diamond',
 }
 
 // Location source
