@@ -155,6 +155,11 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
     this.worker = new Worker(this.queue.name, handler, {
       connection: this.redisConnection,
       concurrency,
+      // C-28 FIX: Job timeout enforcement - prevent stuck jobs
+      lockDuration: 30000, // 30 second lock
+      lockRenewTime: 5000, // Renew lock every 5 seconds
+      stalledInterval: 30000, // Check for stalled jobs every 30 seconds
+      maxStalledCount: 2, // Fail job after 2 stalled attempts
     });
 
     this.worker.on('failed', (job, err) => {
@@ -163,6 +168,11 @@ export class JobQueue<T extends AsyncJobData = AsyncJobData> {
 
     this.worker.on('error', (err) => {
       logger.error(`[${this.queue.name}] Worker error`, { error: err });
+    });
+
+    // C-28 FIX: Stuck job detection and recovery
+    this.worker.on('stalled', (jobId: string) => {
+      logger.warn(`[${this.queue.name}] Job stalled (lock expired without renewal)`, { jobId });
     });
   }
 
