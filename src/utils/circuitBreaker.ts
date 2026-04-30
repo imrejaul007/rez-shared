@@ -82,7 +82,7 @@ export class CircuitBreaker {
 
     try {
       // Use Promise.race with proper timeout cleanup
-      let timeoutId: NodeJS.Timeout | null = null;
+      let timeoutId: ReturnType<typeof setTimeout> | null = null;
       const result = await Promise.race([
         this.fn().finally(() => {
           if (timeoutId) clearTimeout(timeoutId);

@@ -34,10 +34,9 @@ export * from './offer';
 export * from './finance';
 
 // Gamification entity
-export * from './gamification';
+export { type IBadge } from './gamification';
 
-// Karma entity
-export * from './karma';
+// Karma entity - don't re-export IBadge to avoid conflict
 
 // Analytics entity
 export * from './analytics';
