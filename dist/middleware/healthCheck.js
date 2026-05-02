@@ -2,8 +2,16 @@
 /**
  * Health Check Middleware
  *
+ * OPS-003 FIX: Standardized health check endpoints across all services.
+ *
  * Provides health status endpoints for monitoring and orchestration.
  * Usage: app.use(healthCheckRouter);
+ *
+ * Endpoints:
+ *   GET /health         — Basic health (always 200 if process is running)
+ *   GET /health/ready  — Readiness probe (checks dependencies)
+ *   GET /health/live   — Liveness probe (Kubernetes)
+ *   GET /health/startup — Startup probe (Kubernetes)
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createHealthCheckRouter = createHealthCheckRouter;
@@ -14,6 +22,19 @@ const express_1 = require("express");
  */
 function createHealthCheckRouter(deps) {
     const router = (0, express_1.Router)();
+    const { serviceName } = deps;
+    /**
+     * Basic health check - simple liveness indicator.
+     * Used by: Render health checks, basic monitoring
+     */
+    router.get('/health', (_req, res) => {
+        res.json({
+            status: 'ok',
+            service: serviceName || 'unknown',
+            uptime: process.uptime(),
+            timestamp: new Date().toISOString(),
+        });
+    });
     /**
      * Liveness probe (is the service alive?)
      * Used by orchestration systems (K8s, etc.)

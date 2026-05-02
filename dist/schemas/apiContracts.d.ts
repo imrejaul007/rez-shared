@@ -19,15 +19,15 @@ export declare const apiResponseSchema: z.ZodObject<{
     error: z.ZodOptional<z.ZodString>;
     meta: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
 }, "strip", z.ZodTypeAny, {
+    message?: string;
     success?: boolean;
     data?: unknown;
-    message?: string;
     error?: string;
     meta?: Record<string, unknown>;
 }, {
+    message?: string;
     success?: boolean;
     data?: unknown;
-    message?: string;
     error?: string;
     meta?: Record<string, unknown>;
 }>;
@@ -72,7 +72,7 @@ export declare const userProfileSchema: z.ZodObject<{
         avatar?: string;
         bio?: string;
         dateOfBirth?: string;
-        gender?: "male" | "female" | "other" | "prefer_not_to_say";
+        gender?: "other" | "male" | "female" | "prefer_not_to_say";
         location?: {
             address?: string;
             city?: string;
@@ -86,7 +86,7 @@ export declare const userProfileSchema: z.ZodObject<{
         avatar?: string;
         bio?: string;
         dateOfBirth?: string;
-        gender?: "male" | "female" | "other" | "prefer_not_to_say";
+        gender?: "other" | "male" | "female" | "prefer_not_to_say";
         location?: {
             address?: string;
             city?: string;
@@ -104,32 +104,32 @@ export declare const userProfileSchema: z.ZodObject<{
             email: z.ZodOptional<z.ZodBoolean>;
             sms: z.ZodOptional<z.ZodBoolean>;
         }, "strip", z.ZodTypeAny, {
-            email?: boolean;
             push?: boolean;
+            email?: boolean;
             sms?: boolean;
         }, {
-            email?: boolean;
             push?: boolean;
+            email?: boolean;
             sms?: boolean;
         }>>;
     }, "strip", z.ZodTypeAny, {
+        currency?: string;
+        language?: string;
+        theme?: "light" | "dark";
         notifications?: {
-            email?: boolean;
             push?: boolean;
+            email?: boolean;
             sms?: boolean;
         };
-        language?: string;
-        currency?: string;
-        theme?: "light" | "dark";
     }, {
+        currency?: string;
+        language?: string;
+        theme?: "light" | "dark";
         notifications?: {
-            email?: boolean;
             push?: boolean;
+            email?: boolean;
             sms?: boolean;
         };
-        language?: string;
-        currency?: string;
-        theme?: "light" | "dark";
     }>>;
     statedIdentity: z.ZodOptional<z.ZodString>;
     featureLevel: z.ZodOptional<z.ZodNumber>;
@@ -143,14 +143,19 @@ export declare const userProfileSchema: z.ZodObject<{
     createdAt: z.ZodString;
     updatedAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
+    _id?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    email?: string;
     id?: string;
+    phoneNumber?: string;
     profile?: {
         firstName?: string;
         lastName?: string;
         avatar?: string;
         bio?: string;
         dateOfBirth?: string;
-        gender?: "male" | "female" | "other" | "prefer_not_to_say";
+        gender?: "other" | "male" | "female" | "prefer_not_to_say";
         location?: {
             address?: string;
             city?: string;
@@ -159,39 +164,39 @@ export declare const userProfileSchema: z.ZodObject<{
             coordinates?: [number, number, ...unknown[]];
         };
     };
-    phoneNumber?: string;
-    email?: string;
-    isVerified?: boolean;
-    createdAt?: string;
-    updatedAt?: string;
-    _id?: string;
     preferences?: {
+        currency?: string;
+        language?: string;
+        theme?: "light" | "dark";
         notifications?: {
-            email?: boolean;
             push?: boolean;
+            email?: boolean;
             sms?: boolean;
         };
-        language?: string;
-        currency?: string;
-        theme?: "light" | "dark";
     };
-    role?: "user" | "merchant" | "admin" | "support" | "customer" | "driver" | "manager" | "owner";
-    isOnboarded?: boolean;
     statedIdentity?: string;
     featureLevel?: number;
     segment?: string;
     verificationSegment?: string;
-    activeZones?: string[];
     verifications?: Record<string, unknown>;
+    activeZones?: string[];
+    role?: "user" | "merchant" | "admin" | "support" | "customer" | "driver" | "manager" | "owner";
+    isVerified?: boolean;
+    isOnboarded?: boolean;
 }, {
+    _id?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    email?: string;
     id?: string;
+    phoneNumber?: string;
     profile?: {
         firstName?: string;
         lastName?: string;
         avatar?: string;
         bio?: string;
         dateOfBirth?: string;
-        gender?: "male" | "female" | "other" | "prefer_not_to_say";
+        gender?: "other" | "male" | "female" | "prefer_not_to_say";
         location?: {
             address?: string;
             city?: string;
@@ -200,30 +205,25 @@ export declare const userProfileSchema: z.ZodObject<{
             coordinates?: [number, number, ...unknown[]];
         };
     };
-    phoneNumber?: string;
-    email?: string;
-    isVerified?: boolean;
-    createdAt?: string;
-    updatedAt?: string;
-    _id?: string;
     preferences?: {
+        currency?: string;
+        language?: string;
+        theme?: "light" | "dark";
         notifications?: {
-            email?: boolean;
             push?: boolean;
+            email?: boolean;
             sms?: boolean;
         };
-        language?: string;
-        currency?: string;
-        theme?: "light" | "dark";
     };
-    role?: "user" | "merchant" | "admin" | "support" | "customer" | "driver" | "manager" | "owner";
-    isOnboarded?: boolean;
     statedIdentity?: string;
     featureLevel?: number;
     segment?: string;
     verificationSegment?: string;
-    activeZones?: string[];
     verifications?: Record<string, unknown>;
+    activeZones?: string[];
+    role?: "user" | "merchant" | "admin" | "support" | "customer" | "driver" | "manager" | "owner";
+    isVerified?: boolean;
+    isOnboarded?: boolean;
 }>;
 /**
  * Profile Update Request
@@ -263,7 +263,7 @@ export declare const profileUpdateSchema: z.ZodObject<{
         avatar?: string;
         bio?: string;
         dateOfBirth?: string;
-        gender?: "male" | "female" | "other" | "prefer_not_to_say";
+        gender?: "other" | "male" | "female" | "prefer_not_to_say";
         location?: {
             address?: string;
             city?: string;
@@ -277,7 +277,7 @@ export declare const profileUpdateSchema: z.ZodObject<{
         avatar?: string;
         bio?: string;
         dateOfBirth?: string;
-        gender?: "male" | "female" | "other" | "prefer_not_to_say";
+        gender?: "other" | "male" | "female" | "prefer_not_to_say";
         location?: {
             address?: string;
             city?: string;
@@ -295,32 +295,32 @@ export declare const profileUpdateSchema: z.ZodObject<{
             email: z.ZodOptional<z.ZodBoolean>;
             sms: z.ZodOptional<z.ZodBoolean>;
         }, "strip", z.ZodTypeAny, {
-            email?: boolean;
             push?: boolean;
+            email?: boolean;
             sms?: boolean;
         }, {
-            email?: boolean;
             push?: boolean;
+            email?: boolean;
             sms?: boolean;
         }>>;
     }, "strip", z.ZodTypeAny, {
+        currency?: string;
+        language?: string;
+        theme?: "light" | "dark";
         notifications?: {
-            email?: boolean;
             push?: boolean;
+            email?: boolean;
             sms?: boolean;
         };
-        language?: string;
-        currency?: string;
-        theme?: "light" | "dark";
     }, {
+        currency?: string;
+        language?: string;
+        theme?: "light" | "dark";
         notifications?: {
-            email?: boolean;
             push?: boolean;
+            email?: boolean;
             sms?: boolean;
         };
-        language?: string;
-        currency?: string;
-        theme?: "light" | "dark";
     }>>;
     statedIdentity: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
@@ -330,7 +330,7 @@ export declare const profileUpdateSchema: z.ZodObject<{
         avatar?: string;
         bio?: string;
         dateOfBirth?: string;
-        gender?: "male" | "female" | "other" | "prefer_not_to_say";
+        gender?: "other" | "male" | "female" | "prefer_not_to_say";
         location?: {
             address?: string;
             city?: string;
@@ -340,14 +340,14 @@ export declare const profileUpdateSchema: z.ZodObject<{
         };
     };
     preferences?: {
+        currency?: string;
+        language?: string;
+        theme?: "light" | "dark";
         notifications?: {
-            email?: boolean;
             push?: boolean;
+            email?: boolean;
             sms?: boolean;
         };
-        language?: string;
-        currency?: string;
-        theme?: "light" | "dark";
     };
     statedIdentity?: string;
 }, {
@@ -357,7 +357,7 @@ export declare const profileUpdateSchema: z.ZodObject<{
         avatar?: string;
         bio?: string;
         dateOfBirth?: string;
-        gender?: "male" | "female" | "other" | "prefer_not_to_say";
+        gender?: "other" | "male" | "female" | "prefer_not_to_say";
         location?: {
             address?: string;
             city?: string;
@@ -367,14 +367,14 @@ export declare const profileUpdateSchema: z.ZodObject<{
         };
     };
     preferences?: {
+        currency?: string;
+        language?: string;
+        theme?: "light" | "dark";
         notifications?: {
-            email?: boolean;
             push?: boolean;
+            email?: boolean;
             sms?: boolean;
         };
-        language?: string;
-        currency?: string;
-        theme?: "light" | "dark";
     };
     statedIdentity?: string;
 }>;
@@ -396,23 +396,23 @@ export declare const paymentMethodSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     type?: "wallet" | "card" | "upi" | "netbanking";
     name?: string;
-    id?: string;
+    description?: string;
     gateway?: string;
+    id?: string;
     icon?: string;
     isAvailable?: boolean;
     processingFee?: number;
     processingTime?: string;
-    description?: string;
 }, {
     type?: "wallet" | "card" | "upi" | "netbanking";
     name?: string;
-    id?: string;
+    description?: string;
     gateway?: string;
+    id?: string;
     icon?: string;
     isAvailable?: boolean;
     processingFee?: number;
     processingTime?: string;
-    description?: string;
 }>;
 export type PaymentMethod = z.infer<typeof paymentMethodSchema>;
 /**
@@ -431,19 +431,19 @@ export declare const paymentRequestSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     currency?: string;
     amount?: number;
-    paymentMethod?: "wallet" | "razorpay" | "paypal" | "internal";
-    paymentMethodType?: "wallet" | "card" | "upi" | "netbanking" | "rezcoins";
-    purpose?: "other" | "event_booking" | "wallet_topup" | "order_payment" | "financial_service";
-    idempotencyKey?: string;
     metadata?: Record<string, unknown>;
+    paymentMethod?: "wallet" | "razorpay" | "paypal" | "internal";
+    purpose?: "wallet_topup" | "order_payment" | "event_booking" | "financial_service" | "other";
+    idempotencyKey?: string;
+    paymentMethodType?: "wallet" | "card" | "upi" | "netbanking" | "rezcoins";
 }, {
     currency?: string;
     amount?: number;
-    paymentMethod?: "wallet" | "razorpay" | "paypal" | "internal";
-    paymentMethodType?: "wallet" | "card" | "upi" | "netbanking" | "rezcoins";
-    purpose?: "other" | "event_booking" | "wallet_topup" | "order_payment" | "financial_service";
-    idempotencyKey?: string;
     metadata?: Record<string, unknown>;
+    paymentMethod?: "wallet" | "razorpay" | "paypal" | "internal";
+    purpose?: "wallet_topup" | "order_payment" | "event_booking" | "financial_service" | "other";
+    idempotencyKey?: string;
+    paymentMethodType?: "wallet" | "card" | "upi" | "netbanking" | "rezcoins";
 }>;
 export type PaymentRequest = z.infer<typeof paymentRequestSchema>;
 /**
@@ -458,14 +458,14 @@ export declare const gatewayResponseSchema: z.ZodObject<{
     authCode: z.ZodOptional<z.ZodString>;
     rrn: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    message?: string;
     code?: string;
+    message?: string;
     transactionId?: string;
     authCode?: string;
     rrn?: string;
 }, {
-    message?: string;
     code?: string;
+    message?: string;
     transactionId?: string;
     authCode?: string;
     rrn?: string;
@@ -494,14 +494,14 @@ export declare const paymentResponseSchema: z.ZodObject<{
         authCode: z.ZodOptional<z.ZodString>;
         rrn: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        message?: string;
         code?: string;
+        message?: string;
         transactionId?: string;
         authCode?: string;
         rrn?: string;
     }, {
-        message?: string;
         code?: string;
+        message?: string;
         transactionId?: string;
         authCode?: string;
         rrn?: string;
@@ -509,18 +509,18 @@ export declare const paymentResponseSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     status?: "cancelled" | "pending" | "processing" | "completed" | "failed";
     currency?: string;
-    gateway?: string;
     amount?: number;
+    gateway?: string;
     transactionId?: string;
-    paymentId?: string;
-    orderId?: string;
     paymentUrl?: string;
     qrCode?: string;
     upiId?: string;
     expiryTime?: string;
+    paymentId?: string;
+    orderId?: string;
     gatewayResponse?: {
-        message?: string;
         code?: string;
+        message?: string;
         transactionId?: string;
         authCode?: string;
         rrn?: string;
@@ -528,18 +528,18 @@ export declare const paymentResponseSchema: z.ZodObject<{
 }, {
     status?: "cancelled" | "pending" | "processing" | "completed" | "failed";
     currency?: string;
-    gateway?: string;
     amount?: number;
+    gateway?: string;
     transactionId?: string;
-    paymentId?: string;
-    orderId?: string;
     paymentUrl?: string;
     qrCode?: string;
     upiId?: string;
     expiryTime?: string;
+    paymentId?: string;
+    orderId?: string;
     gatewayResponse?: {
-        message?: string;
         code?: string;
+        message?: string;
         transactionId?: string;
         authCode?: string;
         rrn?: string;
@@ -557,14 +557,14 @@ export declare const errorResponseSchema: z.ZodObject<{
     errorCode: z.ZodOptional<z.ZodString>;
     details: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
 }, "strip", z.ZodTypeAny, {
-    success?: false;
     message?: string;
+    success?: false;
     error?: string;
     errorCode?: string;
     details?: Record<string, unknown>;
 }, {
-    success?: false;
     message?: string;
+    success?: false;
     error?: string;
     errorCode?: string;
     details?: Record<string, unknown>;
@@ -581,15 +581,15 @@ export declare const paginationSchema: z.ZodObject<{
     hasNext: z.ZodBoolean;
     hasPrev: z.ZodBoolean;
 }, "strip", z.ZodTypeAny, {
-    limit?: number;
-    page?: number;
     total?: number;
+    page?: number;
+    limit?: number;
     hasNext?: boolean;
     hasPrev?: boolean;
 }, {
-    limit?: number;
-    page?: number;
     total?: number;
+    page?: number;
+    limit?: number;
     hasNext?: boolean;
     hasPrev?: boolean;
 }>;
@@ -607,15 +607,15 @@ export declare const paginatedResponseSchema: <T extends z.ZodTypeAny>(schema: T
         hasNext: z.ZodBoolean;
         hasPrev: z.ZodBoolean;
     }, "strip", z.ZodTypeAny, {
-        limit?: number;
-        page?: number;
         total?: number;
+        page?: number;
+        limit?: number;
         hasNext?: boolean;
         hasPrev?: boolean;
     }, {
-        limit?: number;
-        page?: number;
         total?: number;
+        page?: number;
+        limit?: number;
         hasNext?: boolean;
         hasPrev?: boolean;
     }>;
@@ -623,9 +623,9 @@ export declare const paginatedResponseSchema: <T extends z.ZodTypeAny>(schema: T
     success?: true;
     data?: T["_output"][];
     pagination?: {
-        limit?: number;
-        page?: number;
         total?: number;
+        page?: number;
+        limit?: number;
         hasNext?: boolean;
         hasPrev?: boolean;
     };
@@ -633,9 +633,9 @@ export declare const paginatedResponseSchema: <T extends z.ZodTypeAny>(schema: T
     success?: true;
     data?: T["_input"][];
     pagination?: {
-        limit?: number;
-        page?: number;
         total?: number;
+        page?: number;
+        limit?: number;
         hasNext?: boolean;
         hasPrev?: boolean;
     };
@@ -657,22 +657,22 @@ export declare const adminAuthResponseSchema: z.ZodObject<{
             permissions: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
         }, "strip", z.ZodTypeAny, {
             name?: string;
-            id?: string;
             email?: string;
+            id?: string;
             role?: "admin" | "support" | "super_admin";
             permissions?: string[];
         }, {
             name?: string;
-            id?: string;
             email?: string;
+            id?: string;
             role?: "admin" | "support" | "super_admin";
             permissions?: string[];
         }>;
     }, "strip", z.ZodTypeAny, {
         user?: {
             name?: string;
-            id?: string;
             email?: string;
+            id?: string;
             role?: "admin" | "support" | "super_admin";
             permissions?: string[];
         };
@@ -681,8 +681,8 @@ export declare const adminAuthResponseSchema: z.ZodObject<{
     }, {
         user?: {
             name?: string;
-            id?: string;
             email?: string;
+            id?: string;
             role?: "admin" | "support" | "super_admin";
             permissions?: string[];
         };
@@ -694,8 +694,8 @@ export declare const adminAuthResponseSchema: z.ZodObject<{
     data?: {
         user?: {
             name?: string;
-            id?: string;
             email?: string;
+            id?: string;
             role?: "admin" | "support" | "super_admin";
             permissions?: string[];
         };
@@ -707,8 +707,8 @@ export declare const adminAuthResponseSchema: z.ZodObject<{
     data?: {
         user?: {
             name?: string;
-            id?: string;
             email?: string;
+            id?: string;
             role?: "admin" | "support" | "super_admin";
             permissions?: string[];
         };
@@ -756,9 +756,9 @@ export declare const streakSchema: z.ZodObject<{
     updatedAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     type?: "referral" | "purchase" | "visit" | "engagement";
-    id?: string;
     createdAt?: string;
     updatedAt?: string;
+    id?: string;
     userId?: string;
     current?: number;
     longest?: number;
@@ -770,9 +770,9 @@ export declare const streakSchema: z.ZodObject<{
     };
 }, {
     type?: "referral" | "purchase" | "visit" | "engagement";
-    id?: string;
     createdAt?: string;
     updatedAt?: string;
+    id?: string;
     userId?: string;
     current?: number;
     longest?: number;
@@ -810,14 +810,14 @@ export declare const couponSchema: z.ZodObject<{
     updatedAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     value?: number;
-    isActive?: boolean;
-    type?: "percentage" | "fixed" | "bogo" | "freeshipping";
-    id?: string;
-    createdAt?: string;
-    updatedAt?: string;
     code?: string;
+    type?: "fixed" | "percentage" | "bogo" | "freeshipping";
     currency?: string;
     description?: string;
+    isActive?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+    id?: string;
     minPurchaseAmount?: number;
     maxDiscount?: number;
     usageLimit?: number;
@@ -829,14 +829,14 @@ export declare const couponSchema: z.ZodObject<{
     excludedCategories?: string[];
 }, {
     value?: number;
-    isActive?: boolean;
-    type?: "percentage" | "fixed" | "bogo" | "freeshipping";
-    id?: string;
-    createdAt?: string;
-    updatedAt?: string;
     code?: string;
+    type?: "fixed" | "percentage" | "bogo" | "freeshipping";
     currency?: string;
     description?: string;
+    isActive?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+    id?: string;
     minPurchaseAmount?: number;
     maxDiscount?: number;
     usageLimit?: number;
@@ -862,33 +862,33 @@ export declare const couponApplySchema: z.ZodObject<{
         quantity: z.ZodNumber;
         category: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        id?: string;
-        price?: number;
-        quantity?: number;
         category?: string;
+        quantity?: number;
+        price?: number;
+        id?: string;
     }, {
-        id?: string;
-        price?: number;
-        quantity?: number;
         category?: string;
+        quantity?: number;
+        price?: number;
+        id?: string;
     }>, "many">>;
 }, "strip", z.ZodTypeAny, {
-    items?: {
-        id?: string;
-        price?: number;
-        quantity?: number;
-        category?: string;
-    }[];
     code?: string;
+    items?: {
+        category?: string;
+        quantity?: number;
+        price?: number;
+        id?: string;
+    }[];
     cartTotal?: number;
 }, {
-    items?: {
-        id?: string;
-        price?: number;
-        quantity?: number;
-        category?: string;
-    }[];
     code?: string;
+    items?: {
+        category?: string;
+        quantity?: number;
+        price?: number;
+        id?: string;
+    }[];
     cartTotal?: number;
 }>;
 export type CouponApply = z.infer<typeof couponApplySchema>;
@@ -909,9 +909,9 @@ export declare const couponApplicationResponseSchema: z.ZodObject<{
     message: z.ZodOptional<z.ZodString>;
     errors: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
-    success?: boolean;
-    message?: string;
     code?: string;
+    message?: string;
+    success?: boolean;
     couponId?: string;
     isValid?: boolean;
     discountAmount?: number;
@@ -920,9 +920,9 @@ export declare const couponApplicationResponseSchema: z.ZodObject<{
     savings?: number;
     errors?: string[];
 }, {
-    success?: boolean;
-    message?: string;
     code?: string;
+    message?: string;
+    success?: boolean;
     couponId?: string;
     isValid?: boolean;
     discountAmount?: number;
@@ -974,9 +974,9 @@ export declare const referralSchema: z.ZodObject<{
     createdAt: z.ZodString;
     updatedAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    id?: string;
     createdAt?: string;
     updatedAt?: string;
+    id?: string;
     userId?: string;
     referralCode?: string;
     referrerName?: string;
@@ -996,9 +996,9 @@ export declare const referralSchema: z.ZodObject<{
     shareUrl?: string;
     termsAccepted?: boolean;
 }, {
-    id?: string;
     createdAt?: string;
     updatedAt?: string;
+    id?: string;
     userId?: string;
     referralCode?: string;
     referrerName?: string;
@@ -1041,14 +1041,14 @@ export declare const notificationSchema: z.ZodObject<{
     readAt: z.ZodOptional<z.ZodString>;
     createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    type?: "promotion" | "order_status" | "payment_received" | "system_alert" | "delivery_update" | "referral_success" | "gamification_milestone";
-    id?: string;
-    createdAt?: string;
     message?: string;
-    icon?: string;
+    type?: "order_status" | "payment_received" | "promotion" | "system_alert" | "delivery_update" | "referral_success" | "gamification_milestone";
+    createdAt?: string;
     metadata?: Record<string, unknown>;
+    id?: string;
+    icon?: string;
     userId?: string;
-    channel?: "email" | "push" | "sms" | "in_app";
+    channel?: "push" | "email" | "sms" | "in_app";
     title?: string;
     actionUrl?: string;
     actionLabel?: string;
@@ -1057,14 +1057,14 @@ export declare const notificationSchema: z.ZodObject<{
     sentAt?: string;
     readAt?: string;
 }, {
-    type?: "promotion" | "order_status" | "payment_received" | "system_alert" | "delivery_update" | "referral_success" | "gamification_milestone";
-    id?: string;
-    createdAt?: string;
     message?: string;
-    icon?: string;
+    type?: "order_status" | "payment_received" | "promotion" | "system_alert" | "delivery_update" | "referral_success" | "gamification_milestone";
+    createdAt?: string;
     metadata?: Record<string, unknown>;
+    id?: string;
+    icon?: string;
     userId?: string;
-    channel?: "email" | "push" | "sms" | "in_app";
+    channel?: "push" | "email" | "sms" | "in_app";
     title?: string;
     actionUrl?: string;
     actionLabel?: string;
@@ -1125,14 +1125,14 @@ export declare const campaignSchema: z.ZodObject<{
     createdAt: z.ZodString;
     updatedAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    isActive?: boolean;
-    type?: "referral" | "loyalty" | "flash_sale" | "seasonal" | "first_purchase";
+    type?: "referral" | "seasonal" | "flash_sale" | "loyalty" | "first_purchase";
     name?: string;
-    id?: string;
+    description?: string;
+    isActive?: boolean;
     createdAt?: string;
     updatedAt?: string;
-    description?: string;
     metadata?: Record<string, unknown>;
+    id?: string;
     rewards?: {
         cashback?: number;
         discount?: number;
@@ -1150,14 +1150,14 @@ export declare const campaignSchema: z.ZodObject<{
         firstTimeUsersOnly?: boolean;
     };
 }, {
-    isActive?: boolean;
-    type?: "referral" | "loyalty" | "flash_sale" | "seasonal" | "first_purchase";
+    type?: "referral" | "seasonal" | "flash_sale" | "loyalty" | "first_purchase";
     name?: string;
-    id?: string;
+    description?: string;
+    isActive?: boolean;
     createdAt?: string;
     updatedAt?: string;
-    description?: string;
     metadata?: Record<string, unknown>;
+    id?: string;
     rewards?: {
         cashback?: number;
         discount?: number;
@@ -1194,38 +1194,38 @@ export declare const searchRequestSchema: z.ZodObject<{
         sortBy: z.ZodOptional<z.ZodEnum<["relevance", "price_asc", "price_desc", "rating", "newest"]>>;
     }, "strip", z.ZodTypeAny, {
         category?: string[];
-        priceRange?: [number, number, ...unknown[]];
         rating?: number;
+        priceRange?: [number, number, ...unknown[]];
         inStock?: boolean;
         sortBy?: "rating" | "relevance" | "price_asc" | "price_desc" | "newest";
     }, {
         category?: string[];
-        priceRange?: [number, number, ...unknown[]];
         rating?: number;
+        priceRange?: [number, number, ...unknown[]];
         inStock?: boolean;
         sortBy?: "rating" | "relevance" | "price_asc" | "price_desc" | "newest";
     }>>;
 }, "strip", z.ZodTypeAny, {
+    type?: "merchant" | "category" | "product" | "all";
     limit?: number;
-    type?: "merchant" | "all" | "product" | "category";
     query?: string;
     offset?: number;
     filters?: {
         category?: string[];
-        priceRange?: [number, number, ...unknown[]];
         rating?: number;
+        priceRange?: [number, number, ...unknown[]];
         inStock?: boolean;
         sortBy?: "rating" | "relevance" | "price_asc" | "price_desc" | "newest";
     };
 }, {
+    type?: "merchant" | "category" | "product" | "all";
     limit?: number;
-    type?: "merchant" | "all" | "product" | "category";
     query?: string;
     offset?: number;
     filters?: {
         category?: string[];
-        priceRange?: [number, number, ...unknown[]];
         rating?: number;
+        priceRange?: [number, number, ...unknown[]];
         inStock?: boolean;
         sortBy?: "rating" | "relevance" | "price_asc" | "price_desc" | "newest";
     };
@@ -1249,26 +1249,26 @@ export declare const searchResultItemSchema: z.ZodObject<{
     inStock: z.ZodOptional<z.ZodBoolean>;
     metadata: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
 }, "strip", z.ZodTypeAny, {
+    type?: "merchant" | "category" | "product";
     discount?: number;
-    type?: "merchant" | "product" | "category";
     name?: string;
-    id?: string;
     description?: string;
-    metadata?: Record<string, unknown>;
-    price?: number;
     rating?: number;
+    price?: number;
+    metadata?: Record<string, unknown>;
+    id?: string;
     inStock?: boolean;
     image?: string;
     reviewCount?: number;
 }, {
+    type?: "merchant" | "category" | "product";
     discount?: number;
-    type?: "merchant" | "product" | "category";
     name?: string;
-    id?: string;
     description?: string;
-    metadata?: Record<string, unknown>;
-    price?: number;
     rating?: number;
+    price?: number;
+    metadata?: Record<string, unknown>;
+    id?: string;
     inStock?: boolean;
     image?: string;
     reviewCount?: number;
@@ -1286,25 +1286,25 @@ export declare const autocompleteResultSchema: z.ZodObject<{
         type: z.ZodEnum<["recent", "trending", "popular", "category"]>;
         metadata: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
     }, "strip", z.ZodTypeAny, {
-        type?: "trending" | "category" | "recent" | "popular";
+        type?: "category" | "recent" | "trending" | "popular";
         metadata?: Record<string, unknown>;
         text?: string;
     }, {
-        type?: "trending" | "category" | "recent" | "popular";
+        type?: "category" | "recent" | "trending" | "popular";
         metadata?: Record<string, unknown>;
         text?: string;
     }>, "many">;
 }, "strip", z.ZodTypeAny, {
     success?: true;
     suggestions?: {
-        type?: "trending" | "category" | "recent" | "popular";
+        type?: "category" | "recent" | "trending" | "popular";
         metadata?: Record<string, unknown>;
         text?: string;
     }[];
 }, {
     success?: true;
     suggestions?: {
-        type?: "trending" | "category" | "recent" | "popular";
+        type?: "category" | "recent" | "trending" | "popular";
         metadata?: Record<string, unknown>;
         text?: string;
     }[];

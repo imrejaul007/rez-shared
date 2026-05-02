@@ -178,7 +178,7 @@ export declare const createOrderSchema: z.ZodObject<{
         landmark?: string;
         addressType?: "other" | "home" | "work";
     };
-    fulfillmentType?: "delivery" | "pickup" | "drive_thru" | "dine_in";
+    fulfillmentType?: "delivery" | "pickup" | "dine_in" | "drive_thru";
     specialInstructions?: string;
     couponCode?: string;
     coinsUsed?: {
@@ -208,7 +208,7 @@ export declare const createOrderSchema: z.ZodObject<{
         landmark?: string;
         addressType?: "other" | "home" | "work";
     };
-    fulfillmentType?: "delivery" | "pickup" | "drive_thru" | "dine_in";
+    fulfillmentType?: "delivery" | "pickup" | "dine_in" | "drive_thru";
     specialInstructions?: string;
     couponCode?: string;
     coinsUsed?: {
@@ -274,9 +274,9 @@ export declare const createOfferSchema: z.ZodEffects<z.ZodObject<{
     applicableProducts: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     userSegments: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, "strip", z.ZodTypeAny, {
-    isActive?: boolean;
     type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
+    isActive?: boolean;
     applicableCategories?: string[];
     title?: string;
     validity?: {
@@ -291,9 +291,9 @@ export declare const createOfferSchema: z.ZodEffects<z.ZodObject<{
     applicableProducts?: string[];
     userSegments?: string[];
 }, {
-    isActive?: boolean;
     type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
+    isActive?: boolean;
     applicableCategories?: string[];
     title?: string;
     validity?: {
@@ -308,9 +308,9 @@ export declare const createOfferSchema: z.ZodEffects<z.ZodObject<{
     applicableProducts?: string[];
     userSegments?: string[];
 }>, {
-    isActive?: boolean;
     type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
+    isActive?: boolean;
     applicableCategories?: string[];
     title?: string;
     validity?: {
@@ -325,9 +325,9 @@ export declare const createOfferSchema: z.ZodEffects<z.ZodObject<{
     applicableProducts?: string[];
     userSegments?: string[];
 }, {
-    isActive?: boolean;
     type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
+    isActive?: boolean;
     applicableCategories?: string[];
     title?: string;
     validity?: {
@@ -382,10 +382,9 @@ export declare const createDiscountOfferSchema: z.ZodEffects<z.ZodObject<{
     discountValue: z.ZodNumber;
     maxDiscountAmount: z.ZodOptional<z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
-    discountValue?: number;
-    isActive?: boolean;
     type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
+    isActive?: boolean;
     applicableCategories?: string[];
     title?: string;
     validity?: {
@@ -399,13 +398,13 @@ export declare const createDiscountOfferSchema: z.ZodEffects<z.ZodObject<{
     };
     applicableProducts?: string[];
     userSegments?: string[];
-    discountType?: "percentage" | "fixed";
+    discountType?: "fixed" | "percentage";
+    discountValue?: number;
     maxDiscountAmount?: number;
 }, {
-    discountValue?: number;
-    isActive?: boolean;
     type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
+    isActive?: boolean;
     applicableCategories?: string[];
     title?: string;
     validity?: {
@@ -419,13 +418,13 @@ export declare const createDiscountOfferSchema: z.ZodEffects<z.ZodObject<{
     };
     applicableProducts?: string[];
     userSegments?: string[];
-    discountType?: "percentage" | "fixed";
+    discountType?: "fixed" | "percentage";
+    discountValue?: number;
     maxDiscountAmount?: number;
 }>, {
-    discountValue?: number;
-    isActive?: boolean;
     type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
+    isActive?: boolean;
     applicableCategories?: string[];
     title?: string;
     validity?: {
@@ -439,13 +438,13 @@ export declare const createDiscountOfferSchema: z.ZodEffects<z.ZodObject<{
     };
     applicableProducts?: string[];
     userSegments?: string[];
-    discountType?: "percentage" | "fixed";
+    discountType?: "fixed" | "percentage";
+    discountValue?: number;
     maxDiscountAmount?: number;
 }, {
-    discountValue?: number;
-    isActive?: boolean;
     type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
+    isActive?: boolean;
     applicableCategories?: string[];
     title?: string;
     validity?: {
@@ -459,7 +458,8 @@ export declare const createDiscountOfferSchema: z.ZodEffects<z.ZodObject<{
     };
     applicableProducts?: string[];
     userSegments?: string[];
-    discountType?: "percentage" | "fixed";
+    discountType?: "fixed" | "percentage";
+    discountValue?: number;
     maxDiscountAmount?: number;
 }>;
 export type CreateDiscountOfferRequest = z.infer<typeof createDiscountOfferSchema>;
@@ -501,10 +501,9 @@ export declare const createCashbackOfferSchema: z.ZodEffects<z.ZodObject<{
     cashbackType: z.ZodEnum<["coins", "wallet"]>;
     cashbackPercentage: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    cashbackPercentage?: number;
-    isActive?: boolean;
     type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
+    isActive?: boolean;
     applicableCategories?: string[];
     title?: string;
     validity?: {
@@ -519,11 +518,11 @@ export declare const createCashbackOfferSchema: z.ZodEffects<z.ZodObject<{
     applicableProducts?: string[];
     userSegments?: string[];
     cashbackType?: "wallet" | "coins";
+    cashbackPercentage?: number;
 }, {
-    cashbackPercentage?: number;
-    isActive?: boolean;
     type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
+    isActive?: boolean;
     applicableCategories?: string[];
     title?: string;
     validity?: {
@@ -538,11 +537,11 @@ export declare const createCashbackOfferSchema: z.ZodEffects<z.ZodObject<{
     applicableProducts?: string[];
     userSegments?: string[];
     cashbackType?: "wallet" | "coins";
+    cashbackPercentage?: number;
 }>, {
-    cashbackPercentage?: number;
-    isActive?: boolean;
     type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
+    isActive?: boolean;
     applicableCategories?: string[];
     title?: string;
     validity?: {
@@ -557,11 +556,11 @@ export declare const createCashbackOfferSchema: z.ZodEffects<z.ZodObject<{
     applicableProducts?: string[];
     userSegments?: string[];
     cashbackType?: "wallet" | "coins";
+    cashbackPercentage?: number;
 }, {
-    cashbackPercentage?: number;
-    isActive?: boolean;
     type?: "cashback" | "discount" | "voucher" | "combo" | "special" | "walk_in";
     description?: string;
+    isActive?: boolean;
     applicableCategories?: string[];
     title?: string;
     validity?: {
@@ -576,6 +575,7 @@ export declare const createCashbackOfferSchema: z.ZodEffects<z.ZodObject<{
     applicableProducts?: string[];
     userSegments?: string[];
     cashbackType?: "wallet" | "coins";
+    cashbackPercentage?: number;
 }>;
 export type CreateCashbackOfferRequest = z.infer<typeof createCashbackOfferSchema>;
 /**
@@ -636,10 +636,9 @@ export declare const updateOfferSchema: z.ZodObject<{
     }>>;
     isActive: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
-    cashbackPercentage?: number;
-    isActive?: boolean;
     description?: string;
-    category?: "other" | "food" | "entertainment" | "beauty" | "wellness" | "healthcare" | "retail" | "travel" | "fitness" | "groceries" | "pharmacy";
+    category?: "other" | "pharmacy" | "retail" | "food" | "travel" | "healthcare" | "entertainment" | "beauty" | "wellness" | "fitness" | "groceries";
+    isActive?: boolean;
     title?: string;
     image?: string;
     validity?: {
@@ -657,11 +656,11 @@ export declare const updateOfferSchema: z.ZodObject<{
             maxAge?: number;
         };
     };
+    cashbackPercentage?: number;
 }, {
-    cashbackPercentage?: number;
-    isActive?: boolean;
     description?: string;
-    category?: "other" | "food" | "entertainment" | "beauty" | "wellness" | "healthcare" | "retail" | "travel" | "fitness" | "groceries" | "pharmacy";
+    category?: "other" | "pharmacy" | "retail" | "food" | "travel" | "healthcare" | "entertainment" | "beauty" | "wellness" | "fitness" | "groceries";
+    isActive?: boolean;
     title?: string;
     image?: string;
     validity?: {
@@ -679,6 +678,7 @@ export declare const updateOfferSchema: z.ZodObject<{
             maxAge?: number;
         };
     };
+    cashbackPercentage?: number;
 }>;
 export type UpdateOfferRequest = z.infer<typeof updateOfferSchema>;
 /**
@@ -692,13 +692,13 @@ export declare const createProductSchema: z.ZodObject<{
         selling: z.ZodNumber;
         discount: z.ZodOptional<z.ZodNumber>;
     }, "strip", z.ZodTypeAny, {
+        selling?: number;
         discount?: number;
         original?: number;
-        selling?: number;
     }, {
+        selling?: number;
         discount?: number;
         original?: number;
-        selling?: number;
     }>;
     inventory: z.ZodOptional<z.ZodObject<{
         stock: z.ZodOptional<z.ZodNumber>;
@@ -751,15 +751,15 @@ export declare const createProductSchema: z.ZodObject<{
     description?: string;
     category?: string;
     pricing?: {
+        selling?: number;
         discount?: number;
         original?: number;
-        selling?: number;
     };
+    images?: string[];
     inventory?: {
         inStock?: boolean;
         stock?: number;
     };
-    images?: string[];
 }, {
     cashback?: {
         isActive?: boolean;
@@ -774,15 +774,15 @@ export declare const createProductSchema: z.ZodObject<{
     description?: string;
     category?: string;
     pricing?: {
+        selling?: number;
         discount?: number;
         original?: number;
-        selling?: number;
     };
+    images?: string[];
     inventory?: {
         inStock?: boolean;
         stock?: number;
     };
-    images?: string[];
 }>;
 export type CreateProductRequest = z.infer<typeof createProductSchema>;
 /**

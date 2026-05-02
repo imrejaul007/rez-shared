@@ -5,3 +5,4 @@ export * from './rateLimiter';
 export * from './idempotency';
 export * from './healthCheck';
 export * from './validation';
+export * from './internalAuth';
