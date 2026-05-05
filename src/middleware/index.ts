@@ -6,3 +6,4 @@ export * from './idempotency';
 export * from './healthCheck';
 export * from './validation';
 export * from './internalAuth';
+export * from './apiVersion';
